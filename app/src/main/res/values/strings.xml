@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DemosportsAPL</string>
+    <string name="home">Home</string>
+    <string name="sports">Sports</string>
+    <string name="my_table">My Table</string>
+    <string name="alerts">Alerts</string>
+    <string name="fixtures">Fixtures</string>
+    <string name="results">Results</string>
+    <string name="standings">Standings</string>
+    <string name="search">Search</string>
+    <string name="rulebook">Rulebook</string>
+    <string name="login">Login</string>
+</resources>
