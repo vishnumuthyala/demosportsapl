@@ -278,6 +278,81 @@
       font-size: .8rem;
       border-top: 1px solid #21262d;
     }
+
+    /* ══════════════════════════════════════
+       WORKOUT PLAN
+    ══════════════════════════════════════ */
+    .workout-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 22px;
+      padding: 0 20px 60px;
+      max-width: 1060px;
+      margin: 0 auto;
+    }
+    .workout-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 16px;
+      width: 155px;
+      padding: 22px 14px 18px;
+      text-align: center;
+      position: relative;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      cursor: default;
+    }
+    .workout-card:hover {
+      transform: translateY(-6px);
+      border-color: #f0c040;
+      box-shadow: 0 8px 28px rgba(240,192,64,.18);
+    }
+    .workout-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+      animation: icon-pulse 2s ease-in-out infinite;
+    }
+    @keyframes icon-pulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.18); }
+    }
+    .workout-card .ex-name {
+      font-size: .9rem;
+      font-weight: 700;
+      color: #e6edf3;
+      letter-spacing: .5px;
+    }
+    .workout-card .ex-target {
+      margin-top: 8px;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #f0c040;
+      line-height: 1;
+    }
+    .workout-card .ex-unit {
+      font-size: .72rem;
+      color: #8b949e;
+      margin-top: 3px;
+    }
+    /* progress bar under each card */
+    .ex-bar-wrap {
+      margin-top: 12px;
+      background: #21262d;
+      border-radius: 6px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .ex-bar {
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #f0c040, #e05c2a);
+      animation: bar-fill 2.4s ease-in-out infinite alternate;
+    }
+    @keyframes bar-fill {
+      from { width: 20%; }
+      to   { width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -459,6 +534,60 @@
       <h3>Casey Power</h3>
       <div class="pos">Winger · #7</div>
       <div class="rating">87</div>
+    </div>
+
+  </div>
+
+  <!-- ── Workout Plan ── -->
+  <h2 class="section-title">🏋️ Workout Plan</h2>
+  <div class="workout-grid">
+
+    <div class="workout-card">
+      <span class="workout-icon">💪</span>
+      <div class="ex-name">Push-ups</div>
+      <div class="ex-target">12</div>
+      <div class="ex-unit">REPS</div>
+      <div class="ex-bar-wrap"><div class="ex-bar" style="animation-delay:.0s"></div></div>
+    </div>
+
+    <div class="workout-card">
+      <span class="workout-icon">🤸</span>
+      <div class="ex-name">Crunches</div>
+      <div class="ex-target">25</div>
+      <div class="ex-unit">REPS</div>
+      <div class="ex-bar-wrap"><div class="ex-bar" style="animation-delay:.4s"></div></div>
+    </div>
+
+    <div class="workout-card">
+      <span class="workout-icon">🦵</span>
+      <div class="ex-name">Lunges</div>
+      <div class="ex-target">20</div>
+      <div class="ex-unit">REPS</div>
+      <div class="ex-bar-wrap"><div class="ex-bar" style="animation-delay:.8s"></div></div>
+    </div>
+
+    <div class="workout-card">
+      <span class="workout-icon">🏋️</span>
+      <div class="ex-name">Squats</div>
+      <div class="ex-target">25</div>
+      <div class="ex-unit">REPS</div>
+      <div class="ex-bar-wrap"><div class="ex-bar" style="animation-delay:1.2s"></div></div>
+    </div>
+
+    <div class="workout-card">
+      <span class="workout-icon">⭐</span>
+      <div class="ex-name">Jumping Jacks</div>
+      <div class="ex-target">50</div>
+      <div class="ex-unit">REPS</div>
+      <div class="ex-bar-wrap"><div class="ex-bar" style="animation-delay:1.6s"></div></div>
+    </div>
+
+    <div class="workout-card">
+      <span class="workout-icon">🧱</span>
+      <div class="ex-name">Wall Sit</div>
+      <div class="ex-target">60</div>
+      <div class="ex-unit">SECONDS</div>
+      <div class="ex-bar-wrap"><div class="ex-bar" style="animation-delay:2.0s"></div></div>
     </div>
 
   </div>
