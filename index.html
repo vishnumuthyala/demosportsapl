@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DemoSports APL</title>
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1a3c5e, #0d5c3a);
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(0,0,0,.5);
+    }
+    header h1 {
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+      color: #f0c040;
+      text-shadow: 0 0 12px rgba(240,192,64,.6);
+    }
+    nav a {
+      color: #c9d1d9;
+      text-decoration: none;
+      margin-left: 24px;
+      font-size: .95rem;
+      transition: color .2s;
+    }
+    nav a:hover { color: #f0c040; }
+
+    /* ── Hero banner ── */
+    .hero {
+      text-align: center;
+      padding: 60px 20px 20px;
+    }
+    .hero h2 {
+      font-size: 2.4rem;
+      color: #f0c040;
+      margin-bottom: 10px;
+    }
+    .hero p { color: #8b949e; font-size: 1.05rem; }
+
+    /* ══════════════════════════════════════
+       ANIMATION STAGE
+    ══════════════════════════════════════ */
+    .stage {
+      width: 100%;
+      max-width: 900px;
+      margin: 40px auto;
+      background: linear-gradient(180deg, #0a2540 60%, #0d5c3a 60%);
+      border-radius: 20px;
+      padding: 40px 0 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,.6);
+      min-height: 280px;
+    }
+
+    /* field lines */
+    .stage::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+      width: 160px;
+      height: 160px;
+      border: 3px solid rgba(255,255,255,.15);
+      border-radius: 50%;
+    }
+    .stage::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+      width: 3px;
+      height: 40%;
+      background: rgba(255,255,255,.15);
+    }
+
+    /* ── Human figure (SVG-based, CSS animated) ── */
+    .player {
+      position: absolute;
+      bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* SVG stick-figure player */
+    .player svg { overflow: visible; }
+
+    /* Player 1 – running left→right */
+    .player-1 { left: 5%; animation: run-across 4s linear infinite; }
+
+    /* Player 2 – runs right→left (mirrored) */
+    .player-2 {
+      right: 5%;
+      animation: run-back 5s linear infinite;
+      transform: scaleX(-1);
+    }
+
+    /* Player 3 – dribbles in centre */
+    .player-3 {
+      left: calc(50% - 20px);
+      animation: dribble 2s ease-in-out infinite;
+    }
+
+    /* Ball */
+    .ball {
+      position: absolute;
+      width: 22px; height: 22px;
+      background: radial-gradient(circle at 35% 35%, #fff, #e2a000);
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,.5);
+      bottom: 18px;
+      left: calc(50% - 11px);
+      animation: ball-bounce 2s ease-in-out infinite;
+    }
+
+    /* Arm / leg swing inside SVG */
+    .arm-swing  { transform-origin: 10px 0; animation: swing-arm  0.6s ease-in-out infinite alternate; }
+    .leg-front  { transform-origin: 10px 0; animation: swing-leg  0.6s ease-in-out infinite alternate; }
+    .leg-back   { transform-origin: 10px 0; animation: swing-leg  0.6s ease-in-out infinite alternate-reverse; }
+
+    /* ── Keyframes ── */
+    @keyframes run-across {
+      0%   { left: 5%;  }
+      45%  { left: 40%; }
+      55%  { left: 40%; }
+      100% { left: 5%;  }
+    }
+    @keyframes run-back {
+      0%   { right: 5%;  }
+      45%  { right: 40%; }
+      55%  { right: 40%; }
+      100% { right: 5%;  }
+    }
+    @keyframes dribble {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+    @keyframes ball-bounce {
+      0%, 100% { transform: translateY(0)   scale(1, 1); }
+      40%       { transform: translateY(-60px) scale(1, 1); }
+      50%       { transform: translateY(-65px) scale(1, 1); }
+      90%       { transform: translateY(0)   scale(1.15, 0.85); }
+    }
+    @keyframes swing-arm {
+      from { transform: rotate(-30deg); }
+      to   { transform: rotate( 30deg); }
+    }
+    @keyframes swing-leg {
+      from { transform: rotate(-35deg); }
+      to   { transform: rotate( 35deg); }
+    }
+
+    /* label under each player */
+    .player-label {
+      color: #f0c040;
+      font-size: .7rem;
+      margin-top: 4px;
+      white-space: nowrap;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    /* ══════════════════════════════════════
+       SCOREBOARD
+    ══════════════════════════════════════ */
+    .scoreboard {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 0 auto 40px;
+      max-width: 700px;
+      flex-wrap: wrap;
+    }
+    .score-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px 36px;
+      text-align: center;
+      transition: transform .2s, box-shadow .2s;
+      cursor: default;
+    }
+    .score-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(240,192,64,.2);
+    }
+    .score-card .team { font-size: .85rem; color: #8b949e; letter-spacing: 1px; }
+    .score-card .score { font-size: 2.8rem; font-weight: 700; color: #f0c040; }
+    .score-card .label { font-size: .75rem; color: #555; margin-top: 4px; }
+
+    /* ══════════════════════════════════════
+       PLAYER CARDS
+    ══════════════════════════════════════ */
+    .section-title {
+      text-align: center;
+      font-size: 1.4rem;
+      color: #f0c040;
+      margin: 20px 0 16px;
+      letter-spacing: 1px;
+    }
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 0 20px 60px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 14px;
+      width: 180px;
+      padding: 24px 16px 16px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: transform .25s, border-color .25s;
+    }
+    .card:hover { transform: translateY(-6px); border-color: #f0c040; }
+
+    /* mini animated player inside card */
+    .card-player {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 12px;
+      animation: card-bounce 1.6s ease-in-out infinite;
+    }
+    @keyframes card-bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    .card h3 { font-size: .95rem; color: #e6edf3; }
+    .card .pos { font-size: .75rem; color: #8b949e; margin-top: 4px; }
+    .card .rating {
+      margin-top: 10px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #f0c040;
+    }
+    .card .badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #f0c040;
+      color: #0d1117;
+      font-size: .6rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 20px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #555;
+      font-size: .8rem;
+      border-top: 1px solid #21262d;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header>
+    <h1>⚽ DemoSports APL</h1>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Teams</a>
+      <a href="#">Schedule</a>
+      <a href="#">Stats</a>
+    </nav>
+  </header>
+
+  <!-- ── Hero ── -->
+  <div class="hero">
+    <h2>Action Premier League</h2>
+    <p>Live scores · Player stats · Animated match moments</p>
+  </div>
+
+  <!-- ── Animation Stage ── -->
+  <div class="stage">
+
+    <!-- Player 1 -->
+    <div class="player player-1">
+      <svg width="40" height="90" viewBox="0 0 40 90">
+        <!-- head -->
+        <circle cx="20" cy="12" r="10" fill="#f4a261"/>
+        <!-- body -->
+        <line x1="20" y1="22" x2="20" y2="55" stroke="#2196f3" stroke-width="5" stroke-linecap="round"/>
+        <!-- left arm -->
+        <line class="arm-swing" x1="20" y1="30" x2="6" y2="48" stroke="#2196f3" stroke-width="4" stroke-linecap="round"/>
+        <!-- right arm -->
+        <line class="arm-swing" x1="20" y1="30" x2="34" y2="48"
+              stroke="#2196f3" stroke-width="4" stroke-linecap="round"
+              style="animation-direction:alternate-reverse"/>
+        <!-- left leg -->
+        <line class="leg-front" x1="20" y1="55" x2="8" y2="80" stroke="#1565c0" stroke-width="4" stroke-linecap="round"/>
+        <!-- right leg -->
+        <line class="leg-back"  x1="20" y1="55" x2="32" y2="80" stroke="#1565c0" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <span class="player-label">STRIKER</span>
+    </div>
+
+    <!-- Ball -->
+    <div class="ball"></div>
+
+    <!-- Player 3 (centre) -->
+    <div class="player player-3">
+      <svg width="40" height="90" viewBox="0 0 40 90">
+        <circle cx="20" cy="12" r="10" fill="#f4a261"/>
+        <line x1="20" y1="22" x2="20" y2="55" stroke="#e53935" stroke-width="5" stroke-linecap="round"/>
+        <line class="arm-swing" x1="20" y1="30" x2="6"  y2="48" stroke="#e53935" stroke-width="4" stroke-linecap="round"/>
+        <line class="arm-swing" x1="20" y1="30" x2="34" y2="48"
+              stroke="#e53935" stroke-width="4" stroke-linecap="round"
+              style="animation-direction:alternate-reverse"/>
+        <line class="leg-front" x1="20" y1="55" x2="8"  y2="80" stroke="#b71c1c" stroke-width="4" stroke-linecap="round"/>
+        <line class="leg-back"  x1="20" y1="55" x2="32" y2="80" stroke="#b71c1c" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <span class="player-label">MIDFIELDER</span>
+    </div>
+
+    <!-- Player 2 -->
+    <div class="player player-2">
+      <svg width="40" height="90" viewBox="0 0 40 90">
+        <circle cx="20" cy="12" r="10" fill="#f4a261"/>
+        <line x1="20" y1="22" x2="20" y2="55" stroke="#43a047" stroke-width="5" stroke-linecap="round"/>
+        <line class="arm-swing" x1="20" y1="30" x2="6"  y2="48" stroke="#43a047" stroke-width="4" stroke-linecap="round"/>
+        <line class="arm-swing" x1="20" y1="30" x2="34" y2="48"
+              stroke="#43a047" stroke-width="4" stroke-linecap="round"
+              style="animation-direction:alternate-reverse"/>
+        <line class="leg-front" x1="20" y1="55" x2="8"  y2="80" stroke="#1b5e20" stroke-width="4" stroke-linecap="round"/>
+        <line class="leg-back"  x1="20" y1="55" x2="32" y2="80" stroke="#1b5e20" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <span class="player-label">DEFENDER</span>
+    </div>
+
+  </div><!-- /.stage -->
+
+  <!-- ── Scoreboard ── -->
+  <div class="scoreboard">
+    <div class="score-card">
+      <div class="team">TEAM ALPHA</div>
+      <div class="score">3</div>
+      <div class="label">GOALS</div>
+    </div>
+    <div class="score-card" style="padding:20px 24px;">
+      <div class="team" style="font-size:1.1rem;color:#f0c040;">VS</div>
+      <div style="color:#8b949e;font-size:.8rem;margin-top:8px;">LIVE · 74'</div>
+    </div>
+    <div class="score-card">
+      <div class="team">TEAM BETA</div>
+      <div class="score">2</div>
+      <div class="label">GOALS</div>
+    </div>
+  </div>
+
+  <!-- ── Player Cards ── -->
+  <h2 class="section-title">⭐ Top Players</h2>
+  <div class="cards">
+
+    <div class="card">
+      <span class="badge">MVP</span>
+      <div class="card-player">
+        <svg width="36" height="80" viewBox="0 0 40 90">
+          <circle cx="20" cy="12" r="10" fill="#f4a261"/>
+          <line x1="20" y1="22" x2="20" y2="55" stroke="#f0c040" stroke-width="5" stroke-linecap="round"/>
+          <line x1="20" y1="30" x2="6"  y2="48" stroke="#f0c040" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="30" x2="34" y2="48" stroke="#f0c040" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="55" x2="8"  y2="80" stroke="#c8960c" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="55" x2="32" y2="80" stroke="#c8960c" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>Alex Blaze</h3>
+      <div class="pos">Forward · #10</div>
+      <div class="rating">98</div>
+    </div>
+
+    <div class="card">
+      <div class="card-player">
+        <svg width="36" height="80" viewBox="0 0 40 90">
+          <circle cx="20" cy="12" r="10" fill="#f4a261"/>
+          <line x1="20" y1="22" x2="20" y2="55" stroke="#2196f3" stroke-width="5" stroke-linecap="round"/>
+          <line x1="20" y1="30" x2="6"  y2="48" stroke="#2196f3" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="30" x2="34" y2="48" stroke="#2196f3" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="55" x2="8"  y2="80" stroke="#1565c0" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="55" x2="32" y2="80" stroke="#1565c0" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>Jordan Swift</h3>
+      <div class="pos">Midfielder · #8</div>
+      <div class="rating">94</div>
+    </div>
+
+    <div class="card">
+      <div class="card-player">
+        <svg width="36" height="80" viewBox="0 0 40 90">
+          <circle cx="20" cy="12" r="10" fill="#f4a261"/>
+          <line x1="20" y1="22" x2="20" y2="55" stroke="#e53935" stroke-width="5" stroke-linecap="round"/>
+          <line x1="20" y1="30" x2="6"  y2="48" stroke="#e53935" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="30" x2="34" y2="48" stroke="#e53935" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="55" x2="8"  y2="80" stroke="#b71c1c" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="55" x2="32" y2="80" stroke="#b71c1c" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>Sam Rocket</h3>
+      <div class="pos">Defender · #5</div>
+      <div class="rating">91</div>
+    </div>
+
+    <div class="card">
+      <div class="card-player">
+        <svg width="36" height="80" viewBox="0 0 40 90">
+          <circle cx="20" cy="12" r="10" fill="#f4a261"/>
+          <line x1="20" y1="22" x2="20" y2="55" stroke="#43a047" stroke-width="5" stroke-linecap="round"/>
+          <line x1="20" y1="30" x2="6"  y2="48" stroke="#43a047" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="30" x2="34" y2="48" stroke="#43a047" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="55" x2="8"  y2="80" stroke="#1b5e20" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="55" x2="32" y2="80" stroke="#1b5e20" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>Riley Storm</h3>
+      <div class="pos">Goalkeeper · #1</div>
+      <div class="rating">89</div>
+    </div>
+
+    <div class="card">
+      <div class="card-player">
+        <svg width="36" height="80" viewBox="0 0 40 90">
+          <circle cx="20" cy="12" r="10" fill="#f4a261"/>
+          <line x1="20" y1="22" x2="20" y2="55" stroke="#ab47bc" stroke-width="5" stroke-linecap="round"/>
+          <line x1="20" y1="30" x2="6"  y2="48" stroke="#ab47bc" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="30" x2="34" y2="48" stroke="#ab47bc" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="55" x2="8"  y2="80" stroke="#6a1b9a" stroke-width="4" stroke-linecap="round"/>
+          <line x1="20" y1="55" x2="32" y2="80" stroke="#6a1b9a" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>Casey Power</h3>
+      <div class="pos">Winger · #7</div>
+      <div class="rating">87</div>
+    </div>
+
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer>
+    &copy; 2026 DemoSports APL &mdash; All rights reserved.
+  </footer>
+
+</body>
+</html>
