@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAPT Framework — ramamano.com</title>
+  <style>
+    /* ── Reset & Variables ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        #0d1117;
+      --bg2:       #161b22;
+      --bg3:       #21262d;
+      --border:    #30363d;
+      --accent:    #e05e1a;
+      --accent2:   #f07d3a;
+      --accent3:   #ff9a5c;
+      --text:      #e6edf3;
+      --text2:     #8b949e;
+      --green:     #3fb950;
+      --red:       #f85149;
+      --yellow:    #d29922;
+      --blue:      #58a6ff;
+      --purple:    #bc8cff;
+      --radius:    8px;
+      --shadow:    0 4px 20px rgba(0,0,0,.5);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Header / Nav ──────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1a0a00 0%, #2a1200 40%, #0d1117 100%);
+      border-bottom: 2px solid var(--accent);
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 20px rgba(224,94,26,.3);
+    }
+    .header-inner {
+      max-width: 1400px; margin: auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 24px; gap: 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-logo {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 18px; color: #fff;
+      box-shadow: 0 0 16px rgba(224,94,26,.6);
+      flex-shrink: 0;
+    }
+    .brand-text h1 { font-size: 20px; font-weight: 800; color: var(--accent3); letter-spacing: .5px; }
+    .brand-text p  { font-size: 11px; color: var(--text2); }
+    .header-meta {
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .badge {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 12px;
+      font-size: 11px; color: var(--text2); white-space: nowrap;
+    }
+    .badge.live { border-color: var(--green); color: var(--green); }
+    .nav-tabs {
+      display: flex; gap: 4px; flex-wrap: wrap;
+      max-width: 1400px; margin: 0 auto;
+      padding: 0 24px 10px;
+    }
+    .nav-tab {
+      background: none; border: none; cursor: pointer;
+      padding: 6px 16px; border-radius: 20px;
+      color: var(--text2); font-size: 13px; font-weight: 600;
+      transition: all .2s;
+    }
+    .nav-tab:hover { background: var(--bg3); color: var(--text); }
+    .nav-tab.active {
+      background: var(--accent); color: #fff;
+      box-shadow: 0 0 12px rgba(224,94,26,.4);
+    }
+
+    /* ── Layout ────────────────────────────────────────────────────── */
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── Section Titles ────────────────────────────────────────────── */
+    .section-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-icon {
+      width: 38px; height: 38px; border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 20px; font-weight: 700; }
+    .section-header p  { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+    /* ── Grid layouts ──────────────────────────────────────────────── */
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 16px; }
+
+    /* ── Tool Card ─────────────────────────────────────────────────── */
+    .tool-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+      transition: border-color .2s, box-shadow .2s;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .tool-card:hover {
+      border-color: var(--accent2);
+      box-shadow: 0 0 12px rgba(224,94,26,.2);
+    }
+    .tool-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .tool-name { font-weight: 700; font-size: 15px; color: var(--accent3); }
+    .tool-tag {
+      font-size: 10px; padding: 2px 8px; border-radius: 12px;
+      font-weight: 600; white-space: nowrap; flex-shrink: 0;
+    }
+    .tag-go     { background: #00acd7; color: #000; }
+    .tag-python { background: #3572a5; color: #fff; }
+    .tag-ruby   { background: #cc342d; color: #fff; }
+    .tag-js     { background: #f7df1e; color: #000; }
+    .tag-java   { background: #b07219; color: #fff; }
+    .tag-c      { background: #555555; color: #fff; }
+    .tag-multi  { background: var(--purple); color: #000; }
+    .tool-desc  { font-size: 12px; color: var(--text2); flex: 1; }
+    .tool-footer { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); font-size: 12px;
+      cursor: pointer; text-decoration: none; transition: all .2s;
+    }
+    .btn:hover { border-color: var(--accent); color: var(--accent3); text-decoration: none; }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+
+    /* ── Checklist ─────────────────────────────────────────────────── */
+    .checklist-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px; margin-bottom: 16px;
+    }
+    .checklist-title {
+      font-weight: 700; font-size: 14px; margin-bottom: 12px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border);
+      color: var(--accent3);
+    }
+    .check-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 7px 0; border-bottom: 1px solid rgba(48,54,61,.6);
+    }
+    .check-item:last-child { border-bottom: none; }
+    .check-item input[type=checkbox] {
+      width: 16px; height: 16px; accent-color: var(--accent);
+      cursor: pointer; flex-shrink: 0; margin-top: 2px;
+    }
+    .check-item label { cursor: pointer; flex: 1; font-size: 13px; }
+    .check-item input:checked + label { text-decoration: line-through; color: var(--text2); }
+    .severity {
+      font-size: 10px; padding: 1px 7px; border-radius: 10px;
+      font-weight: 700; flex-shrink: 0;
+    }
+    .sev-critical { background: #6e040d; color: #f85149; }
+    .sev-high     { background: #3d2100; color: #f0883e; }
+    .sev-medium   { background: #2f2000; color: #d29922; }
+    .sev-low      { background: #002200; color: #3fb950; }
+    .sev-info     { background: #002244; color: #58a6ff; }
+
+    /* ── Progress Bar ──────────────────────────────────────────────── */
+    .progress-wrap {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px; margin-bottom: 24px;
+    }
+    .progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+    .progress-bar-bg {
+      background: var(--bg3); border-radius: 10px;
+      height: 10px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; border-radius: 10px;
+      background: linear-gradient(90deg, var(--accent), var(--accent3));
+      transition: width .5s ease;
+      width: 0%;
+    }
+
+    /* ── OWASP Top 10 ─────────────────────────────────────────────── */
+    .owasp-item {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px; margin-bottom: 10px;
+      display: flex; align-items: flex-start; gap: 14px;
+      transition: border-color .2s;
+    }
+    .owasp-item:hover { border-color: var(--accent2); }
+    .owasp-num {
+      width: 36px; height: 36px; border-radius: 6px;
+      background: var(--accent); display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 13px; color: #fff; flex-shrink: 0;
+    }
+    .owasp-body h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .owasp-body p  { font-size: 12px; color: var(--text2); }
+    .owasp-body .tools-used { font-size: 11px; color: var(--accent3); margin-top: 4px; }
+
+    /* ── Findings Panel ───────────────────────────────────────────── */
+    .findings-panel {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+    }
+    .finding-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .finding-form input,
+    .finding-form select,
+    .finding-form textarea {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 8px 12px; font-size: 13px;
+      outline: none; transition: border-color .2s;
+      font-family: inherit;
+    }
+    .finding-form input:focus,
+    .finding-form select:focus,
+    .finding-form textarea:focus { border-color: var(--accent); }
+    .finding-form textarea { resize: vertical; min-height: 80px; }
+    .finding-list { display: flex; flex-direction: column; gap: 8px; }
+    .finding-item {
+      background: var(--bg3); border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0; padding: 10px 14px;
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+    }
+    .finding-item.crit { border-color: var(--red); }
+    .finding-item.high { border-color: #f0883e; }
+    .finding-item.med  { border-color: var(--yellow); }
+    .finding-item.low  { border-color: var(--green); }
+    .finding-item.info { border-color: var(--blue); }
+    .finding-title { font-weight: 600; font-size: 13px; }
+    .finding-meta  { font-size: 11px; color: var(--text2); margin-top: 2px; }
+    .finding-del { cursor: pointer; color: var(--text2); background: none; border: none; font-size: 16px; padding: 0 4px; }
+    .finding-del:hover { color: var(--red); }
+
+    /* ── Stats Row ────────────────────────────────────────────────── */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px; text-align: center;
+    }
+    .stat-num { font-size: 28px; font-weight: 800; color: var(--accent3); }
+    .stat-label { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+    /* ── Phase Flow ───────────────────────────────────────────────── */
+    .phase-flow {
+      display: flex; gap: 0; margin-bottom: 28px;
+      overflow-x: auto; padding-bottom: 4px;
+    }
+    .phase-step {
+      background: var(--bg2); border: 1px solid var(--border);
+      padding: 10px 20px; display: flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600; white-space: nowrap;
+      position: relative;
+    }
+    .phase-step:not(:first-child)::before {
+      content: '';
+      position: absolute; left: -1px; top: 50%;
+      transform: translateY(-50%);
+      width: 0; height: 0;
+      border-top: 20px solid transparent;
+      border-bottom: 20px solid transparent;
+      border-left: 12px solid var(--bg);
+    }
+    .phase-step:not(:last-child)::after {
+      content: '';
+      position: absolute; right: -12px; top: 50%;
+      transform: translateY(-50%); z-index: 1;
+      width: 0; height: 0;
+      border-top: 20px solid transparent;
+      border-bottom: 20px solid transparent;
+      border-left: 12px solid var(--bg2);
+    }
+    .phase-step.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .phase-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .phase-step:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+
+    /* ── Alert / Info boxes ───────────────────────────────────────── */
+    .alert {
+      border-radius: var(--radius); padding: 12px 16px;
+      margin-bottom: 16px; border-left: 4px solid;
+      font-size: 13px;
+    }
+    .alert-info    { background: #001f3d; border-color: var(--blue); color: #a8d4ff; }
+    .alert-warning { background: #1f1200; border-color: var(--yellow); color: #ffe08a; }
+    .alert-danger  { background: #1f0000; border-color: var(--red); color: #ffa8a8; }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    footer {
+      margin-top: 60px; padding: 24px;
+      border-top: 1px solid var(--border);
+      text-align: center; color: var(--text2); font-size: 12px;
+    }
+    footer span { color: var(--accent3); }
+
+    /* ── Utility ──────────────────────────────────────────────────── */
+    .mt-16 { margin-top: 16px; }
+    .mb-16 { margin-bottom: 16px; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .tag {
+      font-size: 11px; padding: 2px 8px; border-radius: 12px;
+      background: var(--bg3); border: 1px solid var(--border); color: var(--text2);
+    }
+
+    @media (max-width: 640px) {
+      .header-meta { display: none; }
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: repeat(2,1fr); }
+      .phase-flow { flex-direction: column; }
+      .phase-step::before, .phase-step::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo">R</div>
+      <div class="brand-text">
+        <h1>ramamano.com</h1>
+        <p>Web Application Vulnerability Assessment &amp; Penetration Testing Framework</p>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span class="badge live">● LIVE</span>
+      <span class="badge">VAPT v2.0</span>
+      <span class="badge">OWASP Aligned</span>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+    <button class="nav-tab" onclick="showTab('recon')">🔍 Reconnaissance</button>
+    <button class="nav-tab" onclick="showTab('scanning')">🛰️ Scanning</button>
+    <button class="nav-tab" onclick="showTab('vuln')">🔬 Vulnerability Assessment</button>
+    <button class="nav-tab" onclick="showTab('exploit')">⚔️ Exploitation</button>
+    <button class="nav-tab" onclick="showTab('checklist')">✅ Checklist</button>
+    <button class="nav-tab" onclick="showTab('findings')">📋 Findings</button>
+    <button class="nav-tab" onclick="showTab('owasp')">🛡️ OWASP Top 10</button>
+    <button class="nav-tab" onclick="showTab('tools')">🧰 All Tools</button>
+  </div>
+</header>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="container">
+
+  <!-- ─── DASHBOARD ─── -->
+  <div id="tab-dashboard" class="tab-content active">
+    <div class="section-header">
+      <div class="section-icon">📊</div>
+      <div>
+        <h2>VAPT Dashboard</h2>
+        <p>Overview of your web application security assessment — ramamano.com</p>
+      </div>
+    </div>
+
+    <div class="alert alert-warning">
+      ⚠️ <strong>Authorized Use Only.</strong> This framework is intended for security professionals with explicit written permission to test the target application. Unauthorized use is illegal.
+    </div>
+
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total Findings</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--red)" id="stat-crit">0</div><div class="stat-label">Critical</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#f0883e" id="stat-high">0</div><div class="stat-label">High</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--yellow)" id="stat-med">0</div><div class="stat-label">Medium</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--green)" id="stat-low">0</div><div class="stat-label">Low</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--blue)" id="stat-info">0</div><div class="stat-label">Info</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-checks">0%</div><div class="stat-label">Checklist Done</div></div>
+    </div>
+
+    <!-- Pentest Phase Flow -->
+    <div class="phase-flow">
+      <div class="phase-step active">1. Reconnaissance</div>
+      <div class="phase-step">2. Scanning</div>
+      <div class="phase-step">3. Vulnerability Assessment</div>
+      <div class="phase-step">4. Exploitation</div>
+      <div class="phase-step">5. Post-Exploitation</div>
+      <div class="phase-step">6. Reporting</div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Quick Scope -->
+      <div class="findings-panel">
+        <div class="checklist-title">🎯 Engagement Scope</div>
+        <div class="finding-form">
+          <input type="text" id="scope-target" placeholder="Target URL (e.g. https://target.com)" />
+          <input type="text" id="scope-ip" placeholder="IP / CIDR Range" />
+          <input type="text" id="scope-company" placeholder="Company Name" value="ramamano.com" />
+          <input type="text" id="scope-tester" placeholder="Tester Name" />
+          <input type="date" id="scope-date" />
+          <button class="btn btn-primary" onclick="saveScope()">💾 Save Scope</button>
+        </div>
+        <div id="scope-display" style="font-size:12px;color:var(--text2);display:none;"></div>
+      </div>
+
+      <!-- VAPT Methodology -->
+      <div class="checklist-card">
+        <div class="checklist-title">📖 VAPT Methodology Overview</div>
+        <div class="owasp-item" style="margin-bottom:8px;">
+          <div class="owasp-num">1</div>
+          <div class="owasp-body">
+            <h4>Reconnaissance</h4>
+            <p>Passive &amp; active info-gathering — subdomains, IPs, technologies, emails.</p>
+            <div class="tools-used">Tools: Amass, Subfinder, theHarvester, Nmap</div>
+          </div>
+        </div>
+        <div class="owasp-item" style="margin-bottom:8px;">
+          <div class="owasp-num">2</div>
+          <div class="owasp-body">
+            <h4>Scanning &amp; Enumeration</h4>
+            <p>Port scanning, service detection, web crawling, parameter discovery.</p>
+            <div class="tools-used">Tools: Nmap, Naabu, httpx, Katana, Param Miner</div>
+          </div>
+        </div>
+        <div class="owasp-item" style="margin-bottom:8px;">
+          <div class="owasp-num">3</div>
+          <div class="owasp-body">
+            <h4>Vulnerability Assessment</h4>
+            <p>Automated scanning + manual testing against OWASP WSTG checklist.</p>
+            <div class="tools-used">Tools: Nuclei, ZAP, Nikto, Semgrep, OWASP WSTG</div>
+          </div>
+        </div>
+        <div class="owasp-item" style="margin-bottom:8px;">
+          <div class="owasp-num">4</div>
+          <div class="owasp-body">
+            <h4>Exploitation</h4>
+            <p>Validate and exploit confirmed findings to determine real-world impact.</p>
+            <div class="tools-used">Tools: sqlmap, XSStrike, jwt_tool, Metasploit, ffuf</div>
+          </div>
+        </div>
+        <div class="owasp-item">
+          <div class="owasp-num">5</div>
+          <div class="owasp-body">
+            <h4>Reporting</h4>
+            <p>Document findings with CVSS scores, evidence, and remediation steps.</p>
+            <div class="tools-used">Frameworks: OWASP ASVS, CVSS v3.1, OWASP WSTG</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── RECONNAISSANCE ─── -->
+  <div id="tab-recon" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🔍</div>
+      <div>
+        <h2>Reconnaissance</h2>
+        <p>Passive and active information gathering about the target</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      💡 Start with <strong>passive recon</strong> (no direct interaction with target) before moving to active scanning. Use OSINT, DNS enumeration, and certificate transparency logs.
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">Subdomain &amp; DNS Enumeration</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">OWASP Amass</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">In-depth attack surface mapping and asset discovery using DNS, certificates, APIs, and web archives.</div>
+        <div class="tag-list"><span class="tag">Subdomain</span><span class="tag">DNS</span><span class="tag">OSINT</span><span class="tag">ASN</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/OWASP/Amass" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">amass enum -d target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Subfinder</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Fast passive subdomain discovery tool using 40+ passive sources including Shodan, VirusTotal, crt.sh.</div>
+        <div class="tag-list"><span class="tag">Subdomain</span><span class="tag">Passive</span><span class="tag">Fast</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/subfinder" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">subfinder -d target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Sublist3r</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Enumerates subdomains using OSINT and brute-force with subbrute integration.</div>
+        <div class="tag-list"><span class="tag">Subdomain</span><span class="tag">OSINT</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/aboul3la/Sublist3r" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">python sublist3r.py -d target.com</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">OSINT &amp; Email Harvesting</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">theHarvester</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Gathers emails, subdomains, hosts, employee names, open ports, and banners from different public sources.</div>
+        <div class="tag-list"><span class="tag">Email</span><span class="tag">OSINT</span><span class="tag">LinkedIn</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/laramies/theHarvester" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">theHarvester -d target.com -b all</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Interactsh</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Out-of-band interaction server for detecting blind SSRF, blind XSS, XXE, and other OOB vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">OOB</span><span class="tag">SSRF</span><span class="tag">Blind XSS</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/interactsh" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">interactsh-client</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">OWASP WSTG</span><span class="tool-tag tag-multi">Guide</span></div>
+        <div class="tool-desc">Comprehensive web security testing guide covering all recon methodologies. The gold standard for VAPT.</div>
+        <div class="tag-list"><span class="tag">Guide</span><span class="tag">OWASP</span><span class="tag">Methodology</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/OWASP/wstg" target="_blank" class="btn">🔗 GitHub</a>
+          <a href="https://owasp.org/www-project-web-security-testing-guide/" target="_blank" class="btn btn-primary">📖 Read Guide</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SCANNING ─── -->
+  <div id="tab-scanning" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🛰️</div>
+      <div>
+        <h2>Scanning &amp; Enumeration</h2>
+        <p>Port scanning, service detection, HTTP probing, directory brute-forcing</p>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">Network &amp; Port Scanning</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Nmap</span><span class="tool-tag tag-c">C/C++</span></div>
+        <div class="tool-desc">Industry-standard network scanner for host discovery, port scanning, OS/service detection, and scripting (NSE).</div>
+        <div class="tag-list"><span class="tag">Ports</span><span class="tag">OS Detection</span><span class="tag">NSE Scripts</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/nmap/nmap" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">nmap -sV -sC -A target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Naabu</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Fast and reliable port scanner built with a focus on reliability and simplicity for security researchers.</div>
+        <div class="tag-list"><span class="tag">Fast Scan</span><span class="tag">SYN Scan</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/naabu" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">naabu -host target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">httpx</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Fast and multi-purpose HTTP toolkit that probes services, follows redirects, and identifies web technologies.</div>
+        <div class="tag-list"><span class="tag">HTTP Probe</span><span class="tag">Tech Detection</span><span class="tag">Status</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/httpx" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">httpx -l hosts.txt -tech-detect</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">Web Crawling &amp; Fuzzing</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Katana</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Next-generation crawling framework designed for Attack Surface Management, with JS parsing support.</div>
+        <div class="tag-list"><span class="tag">Crawler</span><span class="tag">JS Parsing</span><span class="tag">ASM</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/katana" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">katana -u https://target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">ffuf</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Blazing-fast web fuzzer for directory, file, vhost, and parameter discovery using wordlists.</div>
+        <div class="tag-list"><span class="tag">Fuzzing</span><span class="tag">Directory</span><span class="tag">VHost</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/ffuf/ffuf" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">ffuf -w wordlist.txt -u URL/FUZZ</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">dirsearch</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Advanced web path scanner featuring recursive scanning, multi-threading, and smart output filtering.</div>
+        <div class="tag-list"><span class="tag">Path Scan</span><span class="tag">Recursive</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/maurosoria/dirsearch" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">dirsearch -u https://target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">gobuster</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Directory/file, DNS, VHost, S3, and TFTP brute-forcing tool — fast, reliable, and feature-rich.</div>
+        <div class="tag-list"><span class="tag">Directory</span><span class="tag">DNS</span><span class="tag">S3</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/OJ/gobuster" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">gobuster dir -u URL -w wordlist</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Param Miner</span><span class="tool-tag tag-java">Java/Burp</span></div>
+        <div class="tool-desc">Burp Suite extension that identifies hidden/unlinked parameters using wordlists and diff-based analysis.</div>
+        <div class="tag-list"><span class="tag">Parameters</span><span class="tag">Burp</span><span class="tag">Cache Poison</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/PortSwigger/param-miner" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">wafw00f</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Detects and fingerprints Web Application Firewall (WAF) products protecting the target — crucial before testing.</div>
+        <div class="tag-list"><span class="tag">WAF</span><span class="tag">Fingerprint</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/EnableSecurity/wafw00f" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">wafw00f https://target.com</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── VULNERABILITY ASSESSMENT ─── -->
+  <div id="tab-vuln" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🔬</div>
+      <div>
+        <h2>Vulnerability Assessment</h2>
+        <p>Automated scanning and manual testing to discover security weaknesses</p>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">Web Application Scanners</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">OWASP ZAP</span><span class="tool-tag tag-java">Java</span></div>
+        <div class="tool-desc">The world's most widely used web app scanner. Active/passive scanning, spider, REST API, CI/CD integration.</div>
+        <div class="tag-list"><span class="tag">Active Scan</span><span class="tag">Passive Scan</span><span class="tag">AJAX Spider</span><span class="tag">API</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/OWASP/ZAP" target="_blank" class="btn">🔗 GitHub</a>
+          <a href="https://www.zaproxy.org/download/" target="_blank" class="btn btn-primary">⬇ Download</a>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Nuclei</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Template-based vulnerability scanner with 7000+ community templates for CVEs, misconfigs, and exposures.</div>
+        <div class="tag-list"><span class="tag">Templates</span><span class="tag">CVE</span><span class="tag">Fast</span><span class="tag">CI/CD</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/nuclei" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">nuclei -u https://target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Nikto</span><span class="tool-tag tag-multi">Perl</span></div>
+        <div class="tool-desc">Open-source web server scanner that checks for dangerous files, outdated server software, and known vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">Web Server</span><span class="tag">Misconfig</span><span class="tag">Outdated</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/sullo/nikto" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">nikto -h https://target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Wapiti</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Web application vulnerability scanner that audits security by injecting payloads and analyzing responses.</div>
+        <div class="tag-list"><span class="tag">SQLi</span><span class="tag">XSS</span><span class="tag">LFI</span><span class="tag">SSRF</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/EnableSecurity/wapiti" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">wapiti -u https://target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">OWASP Nettacker</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Automated penetration testing framework with modules for scanning, brute-force, and vulnerability detection.</div>
+        <div class="tag-list"><span class="tag">Automated</span><span class="tag">Modules</span><span class="tag">Brute Force</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/OWASP/Nettacker" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">OpenVAS / Greenbone</span><span class="tool-tag tag-c">C</span></div>
+        <div class="tool-desc">Full-featured vulnerability scanner with daily NVT feed updates, covering network and web vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">NVT Feed</span><span class="tag">Network</span><span class="tag">CVE</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/Greenbone/openvas-scanner" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">Static Analysis &amp; Code Review</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Semgrep</span><span class="tool-tag tag-multi">Multi</span></div>
+        <div class="tool-desc">Lightweight SAST tool with 2000+ rules. Supports 30+ languages, runs in CI/CD, finds bugs and vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">SAST</span><span class="tag">Rules</span><span class="tag">CI/CD</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/semgrep/semgrep" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">semgrep --config=auto .</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">CodeQL</span><span class="tool-tag tag-multi">Multi</span></div>
+        <div class="tool-desc">GitHub's semantic code analysis engine that treats code as data, finding complex security vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">SAST</span><span class="tag">Semantic</span><span class="tag">GitHub</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/github/codeql" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">SonarQube</span><span class="tool-tag tag-java">Java</span></div>
+        <div class="tool-desc">Continuous code quality and security platform with deep analysis for 27+ languages. Detects bugs, smells, vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">SAST</span><span class="tag">Quality</span><span class="tag">Coverage</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/SonarSource/sonarqube" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── EXPLOITATION ─── -->
+  <div id="tab-exploit" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">⚔️</div>
+      <div>
+        <h2>Exploitation Tools</h2>
+        <p>Validate discovered vulnerabilities — use only with explicit authorization</p>
+      </div>
+    </div>
+
+    <div class="alert alert-danger">
+      🚨 <strong>Warning:</strong> Only use exploitation tools against systems you own or have written authorization to test. Unauthorized exploitation is a criminal offense.
+    </div>
+
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">sqlmap</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Automatic SQL injection detection and exploitation tool supporting 6 injection techniques across all major DBs.</div>
+        <div class="tag-list"><span class="tag">SQLi</span><span class="tag">Blind SQLi</span><span class="tag">DB Dump</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/sqlmapproject/sqlmap" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">sqlmap -u "URL?id=1" --dbs</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">XSStrike</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Advanced XSS detection suite with DOM analysis, fuzzer, and payload generator that bypasses WAF filters.</div>
+        <div class="tag-list"><span class="tag">XSS</span><span class="tag">DOM</span><span class="tag">WAF Bypass</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/s0md3v/XSStrike" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">python xsstrike.py -u URL</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">jwt_tool</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Toolkit for testing JWT security: decode, forge, crack weak secrets, and test algorithm confusion attacks.</div>
+        <div class="tag-list"><span class="tag">JWT</span><span class="tag">Auth Bypass</span><span class="tag">Brute Force</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/ticarpi/jwt_tool" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">python jwt_tool.py [token]</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Metasploit</span><span class="tool-tag tag-ruby">Ruby</span></div>
+        <div class="tool-desc">The world's most used penetration testing framework. Thousands of exploits, payloads, and auxiliary modules.</div>
+        <div class="tag-list"><span class="tag">Exploits</span><span class="tag">Payloads</span><span class="tag">Post-Exploit</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/rapid7/metasploit-framework" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">msfconsole</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">PayloadsAllTheThings</span><span class="tool-tag tag-multi">Reference</span></div>
+        <div class="tool-desc">Massive collection of payloads and bypasses for SQLi, XSS, SSRF, SSTI, XXE, open redirect, and 40+ attack types.</div>
+        <div class="tag-list"><span class="tag">Payloads</span><span class="tag">Bypass</span><span class="tag">Reference</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/swisskyrepo/PayloadsAllTheThings" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Impacket</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Python classes for network protocols — ideal for SMB, NTLM, Kerberos, and Active Directory attacks.</div>
+        <div class="tag-list"><span class="tag">SMB</span><span class="tag">Kerberos</span><span class="tag">NTLM</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/fortra/impacket" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── CHECKLIST ─── -->
+  <div id="tab-checklist" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">✅</div>
+      <div>
+        <h2>VAPT Checklist</h2>
+        <p>OWASP WSTG-aligned testing checklist — track your progress</p>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span>Overall Testing Progress</span>
+        <span id="progress-pct">0 / 0 completed (0%)</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+    </div>
+
+    <!-- Information Gathering -->
+    <div class="checklist-card">
+      <div class="checklist-title">📡 Information Gathering (WSTG-INFO)</div>
+      <div class="check-item"><input type="checkbox" id="c1"><label for="c1">Fingerprint web server, OS, and framework versions</label><span class="severity sev-info">INFO</span></div>
+      <div class="check-item"><input type="checkbox" id="c2"><label for="c2">Enumerate application entry points and functionality</label><span class="severity sev-info">INFO</span></div>
+      <div class="check-item"><input type="checkbox" id="c3"><label for="c3">Map application architecture (load balancers, CDN, WAF)</label><span class="severity sev-info">INFO</span></div>
+      <div class="check-item"><input type="checkbox" id="c4"><label for="c4">Enumerate all subdomains and related assets</label><span class="severity sev-low">LOW</span></div>
+      <div class="check-item"><input type="checkbox" id="c5"><label for="c5">Identify third-party services and JavaScript libraries</label><span class="severity sev-info">INFO</span></div>
+      <div class="check-item"><input type="checkbox" id="c6"><label for="c6">Review HTTP response headers for security misconfigs</label><span class="severity sev-medium">MED</span></div>
+    </div>
+
+    <!-- Configuration Testing -->
+    <div class="checklist-card">
+      <div class="checklist-title">⚙️ Configuration &amp; Deployment Testing (WSTG-CONF)</div>
+      <div class="check-item"><input type="checkbox" id="c7"><label for="c7">Test for HTTP Strict Transport Security (HSTS)</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c8"><label for="c8">Test for Content Security Policy (CSP) header</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c9"><label for="c9">Test for clickjacking (X-Frame-Options / CSP frame-ancestors)</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c10"><label for="c10">Check for exposed admin interfaces and default credentials</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c11"><label for="c11">Enumerate HTTP methods allowed (PUT, DELETE, TRACE, etc.)</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c12"><label for="c12">Test for sensitive files and backup files (.bak, .old, .git, etc.)</label><span class="severity sev-high">HIGH</span></div>
+    </div>
+
+    <!-- Identity / Authentication -->
+    <div class="checklist-card">
+      <div class="checklist-title">🔐 Authentication Testing (WSTG-ATHN)</div>
+      <div class="check-item"><input type="checkbox" id="c13"><label for="c13">Test for weak / default passwords and account enumeration</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c14"><label for="c14">Test password reset functionality for flaws (predictable tokens, no expiry)</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c15"><label for="c15">Test authentication bypass (SQL injection in login, response manipulation)</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c16"><label for="c16">Test MFA implementation for bypasses</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c17"><label for="c17">Check for account lockout mechanism and brute-force protection</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c18"><label for="c18">Test JWT token security (algorithm confusion, weak secret, none alg)</label><span class="severity sev-critical">CRIT</span></div>
+    </div>
+
+    <!-- Session Management -->
+    <div class="checklist-card">
+      <div class="checklist-title">🍪 Session Management Testing (WSTG-SESS)</div>
+      <div class="check-item"><input type="checkbox" id="c19"><label for="c19">Analyze session token entropy and predictability</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c20"><label for="c20">Test for CSRF vulnerabilities on state-changing actions</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c21"><label for="c21">Test session cookie attributes (HttpOnly, Secure, SameSite)</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c22"><label for="c22">Test session fixation and session expiry</label><span class="severity sev-high">HIGH</span></div>
+    </div>
+
+    <!-- Input Validation -->
+    <div class="checklist-card">
+      <div class="checklist-title">🔡 Input Validation Testing (WSTG-INPV)</div>
+      <div class="check-item"><input type="checkbox" id="c23"><label for="c23">Test for Reflected XSS in all input parameters</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c24"><label for="c24">Test for Stored XSS in persistent data (comments, profiles, messages)</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c25"><label for="c25">Test for DOM-based XSS via JavaScript sources/sinks</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c26"><label for="c26">Test for SQL Injection (error-based, blind, time-based, OOB)</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c27"><label for="c27">Test for Server-Side Template Injection (SSTI)</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c28"><label for="c28">Test for XML/XXE injection</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c29"><label for="c29">Test for SSRF in URL parameters, file imports, webhooks</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c30"><label for="c30">Test for Path Traversal / Local File Inclusion</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c31"><label for="c31">Test for Open Redirect vulnerabilities</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c32"><label for="c32">Test for HTTP Request Smuggling</label><span class="severity sev-high">HIGH</span></div>
+    </div>
+
+    <!-- Access Control -->
+    <div class="checklist-card">
+      <div class="checklist-title">🚦 Authorization &amp; Access Control (WSTG-ATHZ)</div>
+      <div class="check-item"><input type="checkbox" id="c33"><label for="c33">Test for Insecure Direct Object References (IDOR)</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c34"><label for="c34">Test horizontal and vertical privilege escalation</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c35"><label for="c35">Test for function-level access control bypass</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c36"><label for="c36">Test API endpoints for missing authorization checks</label><span class="severity sev-high">HIGH</span></div>
+    </div>
+
+    <!-- Business Logic -->
+    <div class="checklist-card">
+      <div class="checklist-title">💼 Business Logic Testing (WSTG-BUSL)</div>
+      <div class="check-item"><input type="checkbox" id="c37"><label for="c37">Test for race conditions (e.g. buy multiple items with one payment)</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c38"><label for="c38">Test for negative values and integer overflow in financial logic</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c39"><label for="c39">Test workflow bypass (skipping steps in multi-stage processes)</label><span class="severity sev-high">HIGH</span></div>
+    </div>
+
+    <!-- Client-Side -->
+    <div class="checklist-card">
+      <div class="checklist-title">🌐 Client-Side Testing (WSTG-CLNT)</div>
+      <div class="check-item"><input type="checkbox" id="c40"><label for="c40">Test for DOM XSS via postMessage, location.hash, document.referrer</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c41"><label for="c41">Analyze JavaScript files for secrets, API keys, and sensitive logic</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c42"><label for="c42">Test for CORS misconfigurations (wildcard origins, credentials)</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c43"><label for="c43">Test for sensitive data in localStorage / sessionStorage</label><span class="severity sev-medium">MED</span></div>
+    </div>
+  </div>
+
+  <!-- ─── FINDINGS ─── -->
+  <div id="tab-findings" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">📋</div>
+      <div>
+        <h2>Findings Tracker</h2>
+        <p>Document and manage discovered vulnerabilities</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="findings-panel">
+        <div class="checklist-title">➕ Add New Finding</div>
+        <div class="finding-form">
+          <input type="text" id="f-title" placeholder="Finding Title (e.g. Reflected XSS in search parameter)" />
+          <select id="f-severity">
+            <option value="">-- Severity --</option>
+            <option value="crit">Critical</option>
+            <option value="high">High</option>
+            <option value="med">Medium</option>
+            <option value="low">Low</option>
+            <option value="info">Informational</option>
+          </select>
+          <input type="text" id="f-url" placeholder="Affected URL / Endpoint" />
+          <input type="text" id="f-cwe" placeholder="CWE / CVE (e.g. CWE-79, CVE-2024-1234)" />
+          <textarea id="f-desc" placeholder="Description / Proof of Concept / Evidence..."></textarea>
+          <button class="btn btn-primary" onclick="addFinding()">➕ Add Finding</button>
+        </div>
+      </div>
+
+      <div class="findings-panel">
+        <div class="flex-between mb-16">
+          <div class="checklist-title" style="margin-bottom:0">📋 Findings Log (<span id="findings-count">0</span>)</div>
+          <button class="btn" onclick="exportFindings()">📤 Export JSON</button>
+        </div>
+        <div id="findings-list" class="finding-list">
+          <div style="text-align:center;padding:30px;color:var(--text2);">No findings yet. Add your first finding above.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── OWASP TOP 10 ─── -->
+  <div id="tab-owasp" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🛡️</div>
+      <div>
+        <h2>OWASP Top 10 (2021)</h2>
+        <p>The most critical web application security risks — quick reference</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      📚 Reference the full <a href="https://github.com/OWASP/wstg" target="_blank">OWASP Web Security Testing Guide</a>, <a href="https://github.com/OWASP/ASVS" target="_blank">ASVS</a>, and <a href="https://github.com/OWASP/CheatSheetSeries" target="_blank">Cheat Sheet Series</a> for detailed methodology.
+    </div>
+
+    <div class="owasp-item">
+      <div class="owasp-num">A01</div>
+      <div class="owasp-body">
+        <h4>Broken Access Control</h4>
+        <p>Users acting outside intended permissions. Includes IDOR, path traversal, privilege escalation, and CORS misconfigs.</p>
+        <div class="tools-used">🔧 Tools: Nuclei, ffuf, gobuster, Burp Suite, OWASP ZAP</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A02</div>
+      <div class="owasp-body">
+        <h4>Cryptographic Failures</h4>
+        <p>Sensitive data exposure due to weak/missing encryption. Includes cleartext transmission, weak hashing, hardcoded keys.</p>
+        <div class="tools-used">🔧 Tools: Gitleaks, TruffleHog, detect-secrets, Semgrep, Trivy</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A03</div>
+      <div class="owasp-body">
+        <h4>Injection</h4>
+        <p>SQL, NoSQL, OS command, LDAP, SSTI, XXE injection. Hostile data is sent as part of a command or query.</p>
+        <div class="tools-used">🔧 Tools: sqlmap, XSStrike, Nuclei, ZAP, PayloadsAllTheThings</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A04</div>
+      <div class="owasp-body">
+        <h4>Insecure Design</h4>
+        <p>Missing or ineffective control design. Includes lack of threat modeling, insecure business logic, and design flaws.</p>
+        <div class="tools-used">🔧 Tools: OWASP WSTG, ASVS, Manual review</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A05</div>
+      <div class="owasp-body">
+        <h4>Security Misconfiguration</h4>
+        <p>Default configs, incomplete setup, open cloud storage, verbose error messages, unnecessary features enabled.</p>
+        <div class="tools-used">🔧 Tools: Nikto, Nuclei, KICS, Checkov, httpx, Nmap</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A06</div>
+      <div class="owasp-body">
+        <h4>Vulnerable and Outdated Components</h4>
+        <p>Using components with known vulnerabilities. Includes outdated libraries, frameworks, and OS packages.</p>
+        <div class="tools-used">🔧 Tools: retire.js, Grype, Trivy, OWASP Dependency-Check, dep-scan, Syft</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A07</div>
+      <div class="owasp-body">
+        <h4>Identification and Authentication Failures</h4>
+        <p>Weak credentials, missing MFA, exposed session tokens, weak password reset, credential stuffing.</p>
+        <div class="tools-used">🔧 Tools: jwt_tool, Hydra, Nuclei, ZAP, Burp Suite</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A08</div>
+      <div class="owasp-body">
+        <h4>Software and Data Integrity Failures</h4>
+        <p>Code and infrastructure not protected against integrity violations. Insecure CI/CD, unsigned updates, deserialisation.</p>
+        <div class="tools-used">🔧 Tools: Syft, CycloneDX, Semgrep, Gitleaks, Checkov</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A09</div>
+      <div class="owasp-body">
+        <h4>Security Logging and Monitoring Failures</h4>
+        <p>Insufficient logging, missing alerting, logs not monitored. Enables attackers to persist undetected.</p>
+        <div class="tools-used">🔧 Tools: Falco, Manual review, OWASP WSTG (WSTG-ERRH)</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A10</div>
+      <div class="owasp-body">
+        <h4>Server-Side Request Forgery (SSRF)</h4>
+        <p>Web application fetches remote resources without validating the user-supplied URL, enabling internal access.</p>
+        <div class="tools-used">🔧 Tools: Interactsh, Nuclei (SSRF templates), Burp Collaborator, ffuf</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── ALL TOOLS ─── -->
+  <div id="tab-tools" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🧰</div>
+      <div>
+        <h2>Complete Tool Library</h2>
+        <p>All 65+ security tools and resources organized by category</p>
+      </div>
+    </div>
+
+    <!-- Secret Detection -->
+    <h3 style="margin:0 0 12px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">🔑 Secret Detection</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Gitleaks</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Detect hardcoded secrets, API keys, and credentials in git repositories and CI/CD pipelines.</div><div class="tool-footer"><a href="https://github.com/gitleaks/gitleaks" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">TruffleHog</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Searches through git history and filesystems for high-entropy strings and over 700 secret detectors.</div><div class="tool-footer"><a href="https://github.com/trufflesecurity/trufflehog" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">detect-secrets</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">Yelp's enterprise-friendly secret detection tool designed to work in pre-commit hooks and CI.</div><div class="tool-footer"><a href="https://github.com/Yelp/detect-secrets" target="_blank" class="btn">🔗 GitHub</a></div></div>
+    </div>
+
+    <!-- Supply Chain / SBOM -->
+    <h3 style="margin:0 0 12px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">📦 Supply Chain &amp; SBOM</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Syft</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">CLI tool and library for generating an SBOM from container images and filesystems (CycloneDX, SPDX).</div><div class="tool-footer"><a href="https://github.com/anchore/syft" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Grype</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Vulnerability scanner for container images and filesystems, uses multiple vulnerability DBs.</div><div class="tool-footer"><a href="https://github.com/anchore/grype" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Trivy</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Comprehensive all-in-one security scanner for containers, filesystems, git repos, IaC, and SBOMs.</div><div class="tool-footer"><a href="https://github.com/aquasecurity/trivy" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">OWASP dep-scan</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">Next-gen dependency and DevSecOps audit tool with risk scoring and reachability analysis.</div><div class="tool-footer"><a href="https://github.com/owasp-dep-scan/dep-scan" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Dependency-Check</span><span class="tool-tag tag-java">Java</span></div><div class="tool-desc">OWASP tool that identifies project dependencies and checks for known, publicly disclosed vulnerabilities.</div><div class="tool-footer"><a href="https://github.com/jeremylong/DependencyCheck" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">retire.js</span><span class="tool-tag tag-js">JS</span></div><div class="tool-desc">Scanner detecting use of JavaScript libraries with known vulnerabilities — CLI, Grunt, browser extension.</div><div class="tool-footer"><a href="https://github.com/retirejs/retire.js" target="_blank" class="btn">🔗 GitHub</a></div></div>
+    </div>
+
+    <!-- Cloud / Infrastructure -->
+    <h3 style="margin:0 0 12px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">☁️ Cloud &amp; Infrastructure</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">KICS</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Checkmarx's IaC security scanner for Terraform, CloudFormation, Docker, Ansible, and more.</div><div class="tool-footer"><a href="https://github.com/Checkmarx/kics" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Checkov</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">Static analysis tool for IaC: Terraform, CloudFormation, Kubernetes, Helm, ARM, and Bicep.</div><div class="tool-footer"><a href="https://github.com/bridgecrewio/checkov" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">kube-bench</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Checks whether Kubernetes is deployed securely by running the CIS Kubernetes Benchmark tests.</div><div class="tool-footer"><a href="https://github.com/aquasecurity/kube-bench" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">kube-hunter</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">Hunts for security weaknesses in Kubernetes clusters from an attacker's perspective.</div><div class="tool-footer"><a href="https://github.com/aquasecurity/kube-hunter" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Falco</span><span class="tool-tag tag-c">C++</span></div><div class="tool-desc">Cloud-native runtime security tool that detects anomalous activity in applications, containers, and hosts.</div><div class="tool-footer"><a href="https://github.com/falcosecurity/falco" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Prowler</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">AWS/Azure/GCP security tool for best-practice assessments, audits, incident response, and compliance.</div><div class="tool-footer"><a href="https://github.com/ProwlerCloud/prowler" target="_blank" class="btn">🔗 GitHub</a></div></div>
+    </div>
+
+    <!-- Red Team -->
+    <h3 style="margin:0 0 12px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">⚔️ Red Team &amp; Post-Exploitation</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">BloodHound</span><span class="tool-tag tag-js">JS/Go</span></div><div class="tool-desc">Uses graph theory to reveal hidden and unintended relationships within Active Directory / Azure AD.</div><div class="tool-footer"><a href="https://github.com/SpecterOps/BloodHound" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Sliver</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Open-source adversary simulation framework supporting multiple C2 protocols (mTLS, WireGuard, DNS, HTTP).</div><div class="tool-footer"><a href="https://github.com/BishopFox/sliver" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">CrackMapExec</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">Swiss army knife for pentesting Windows/AD environments. SMB, WinRM, LDAP, RDP, SSH modules.</div><div class="tool-footer"><a href="https://github.com/byt3bl33d3r/CrackMapExec" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Responder</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">LLMNR, NBT-NS, and MDNS poisoner for capturing NTLMv1/NTLMv2 hashes in internal network assessments.</div><div class="tool-footer"><a href="https://github.com/lgandx/Responder" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">PowerSploit</span><span class="tool-tag tag-multi">PowerShell</span></div><div class="tool-desc">PowerShell post-exploitation framework with modules for recon, privilege escalation, and persistence.</div><div class="tool-footer"><a href="https://github.com/PowerShellMafia/PowerSploit" target="_blank" class="btn">🔗 GitHub</a></div></div>
+    </div>
+
+    <!-- Reference / Guides -->
+    <h3 style="margin:0 0 12px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">📚 Guides, Standards &amp; References</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">OWASP WSTG</span><span class="tool-tag tag-multi">Guide</span></div><div class="tool-desc">The Web Security Testing Guide — comprehensive methodology for web application security testing.</div><div class="tool-footer"><a href="https://github.com/OWASP/wstg" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">OWASP ASVS</span><span class="tool-tag tag-multi">Standard</span></div><div class="tool-desc">Application Security Verification Standard — defines security requirements for web application testing.</div><div class="tool-footer"><a href="https://github.com/OWASP/ASVS" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">OWASP CheatSheets</span><span class="tool-tag tag-multi">Guide</span></div><div class="tool-desc">Concise, actionable security guidance for developers on authentication, XSS prevention, SQL injection, and more.</div><div class="tool-footer"><a href="https://github.com/OWASP/CheatSheetSeries" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">OWASP MASTG</span><span class="tool-tag tag-multi">Guide</span></div><div class="tool-desc">Mobile Application Security Testing Guide for Android and iOS security assessments.</div><div class="tool-footer"><a href="https://github.com/OWASP/mastg" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Awesome Pentest</span><span class="tool-tag tag-multi">List</span></div><div class="tool-desc">Collection of penetration testing resources, tools, writeups, and cheatsheets.</div><div class="tool-footer"><a href="https://github.com/enaqx/awesome-pentest" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Awesome Hacking</span><span class="tool-tag tag-multi">List</span></div><div class="tool-desc">Curated list of awesome hacking tools, resources, books, and learning materials by Hack-with-Github.</div><div class="tool-footer"><a href="https://github.com/Hack-with-Github/Awesome-Hacking" target="_blank" class="btn">🔗 GitHub</a></div></div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  <p>Built for <span>ramamano.com</span> · Web Application VAPT Framework · Powered by Open-Source Security Tools</p>
+  <p style="margin-top:6px;">Based on OWASP WSTG · OWASP Top 10 2021 · 65+ Open-Source Security Tools</p>
+  <p style="margin-top:8px;font-size:10px;">⚠️ For authorized security testing only. Unauthorized use is prohibited.</p>
+</footer>
+
+<script>
+  /* ── Tab Navigation ──────────────────────────────────────────────── */
+  function showTab(name) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  /* ── Scope Save ─────────────────────────────────────────────────── */
+  function saveScope() {
+    const t = document.getElementById('scope-target').value;
+    const i = document.getElementById('scope-ip').value;
+    const c = document.getElementById('scope-company').value;
+    const te = document.getElementById('scope-tester').value;
+    const d = document.getElementById('scope-date').value;
+    const d2 = document.getElementById('scope-display');
+    d2.style.display = 'block';
+    d2.innerHTML = `<strong style="color:var(--accent3)">Scope saved ✓</strong><br>
+      Target: ${t || '—'} | IP: ${i || '—'}<br>
+      Company: ${c || '—'} | Tester: ${te || '—'} | Date: ${d || '—'}`;
+    localStorage.setItem('vapt_scope', JSON.stringify({t,i,c,te,d}));
+  }
+
+  /* ── Checklist Progress ─────────────────────────────────────────── */
+  function updateProgress() {
+    const all = document.querySelectorAll('#tab-checklist input[type=checkbox]');
+    const done = document.querySelectorAll('#tab-checklist input[type=checkbox]:checked');
+    const pct = all.length ? Math.round((done.length / all.length) * 100) : 0;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = `${done.length} / ${all.length} completed (${pct}%)`;
+    document.getElementById('stat-checks').textContent = pct + '%';
+  }
+
+  document.addEventListener('change', function(e) {
+    if (e.target.type === 'checkbox') updateProgress();
+  });
+
+  /* ── Findings ───────────────────────────────────────────────────── */
+  let findings = JSON.parse(localStorage.getItem('vapt_findings') || '[]');
+
+  function renderFindings() {
+    const list = document.getElementById('findings-list');
+    const counts = { crit:0, high:0, med:0, low:0, info:0 };
+    findings.forEach(f => { if (counts[f.sev] !== undefined) counts[f.sev]++; });
+
+    document.getElementById('findings-count').textContent = findings.length;
+    document.getElementById('stat-total').textContent = findings.length;
+    document.getElementById('stat-crit').textContent  = counts.crit;
+    document.getElementById('stat-high').textContent  = counts.high;
+    document.getElementById('stat-med').textContent   = counts.med;
+    document.getElementById('stat-low').textContent   = counts.low;
+    document.getElementById('stat-info').textContent  = counts.info;
+
+    if (!findings.length) {
+      list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2);">No findings yet. Add your first finding above.</div>';
+      return;
+    }
+    list.innerHTML = findings.map((f, i) => `
+      <div class="finding-item ${f.sev}">
+        <div>
+          <div class="finding-title">${escHtml(f.title)}</div>
+          <div class="finding-meta">
+            ${f.sev.toUpperCase()} · ${escHtml(f.url || 'N/A')} · ${escHtml(f.cwe || '')}
+          </div>
+          ${f.desc ? `<div class="finding-meta" style="margin-top:4px;white-space:pre-wrap;">${escHtml(f.desc)}</div>` : ''}
+        </div>
+        <button class="finding-del" onclick="deleteFinding(${i})" title="Delete">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function addFinding() {
+    const title = document.getElementById('f-title').value.trim();
+    const sev   = document.getElementById('f-severity').value;
+    if (!title || !sev) { alert('Please enter a title and severity.'); return; }
+    findings.unshift({
+      title,
+      sev,
+      url:  document.getElementById('f-url').value.trim(),
+      cwe:  document.getElementById('f-cwe').value.trim(),
+      desc: document.getElementById('f-desc').value.trim(),
+      ts:   new Date().toISOString()
+    });
+    localStorage.setItem('vapt_findings', JSON.stringify(findings));
+    ['f-title','f-url','f-cwe','f-desc'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-severity').value = '';
+    renderFindings();
+  }
+
+  function deleteFinding(i) {
+    if (!confirm('Delete this finding?')) return;
+    findings.splice(i, 1);
+    localStorage.setItem('vapt_findings', JSON.stringify(findings));
+    renderFindings();
+  }
+
+  function exportFindings() {
+    const blob = new Blob([JSON.stringify(findings, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'vapt-findings-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Init ───────────────────────────────────────────────────────── */
+  (function init() {
+    renderFindings();
+    updateProgress();
+
+    // Restore scope
+    const sc = localStorage.getItem('vapt_scope');
+    if (sc) {
+      try {
+        const s = JSON.parse(sc);
+        document.getElementById('scope-target').value  = s.t  || '';
+        document.getElementById('scope-ip').value      = s.i  || '';
+        document.getElementById('scope-company').value = s.c  || 'ramamano.com';
+        document.getElementById('scope-tester').value  = s.te || '';
+        document.getElementById('scope-date').value    = s.d  || '';
+      } catch(e) {}
+    }
+  })();
+</script>
+</body>
+</html>
