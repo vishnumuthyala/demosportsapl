@@ -454,6 +454,120 @@
     .history-item-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
     .history-del { cursor:pointer; background:none; border:none; color:var(--text2); font-size:16px; }
     .history-del:hover { color: var(--red); }
+
+    /* ── PDF Report Hidden Div (shown only when printing) ─────────── */
+    #pdf-report { display: none; }
+
+    @media print {
+      /* Hide all UI; show only the report */
+      header, footer, .container, #pdf-report ~ * { display: none !important; }
+      body { background: #fff !important; color: #111 !important; font-size: 11pt; margin: 0; padding: 0; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      #pdf-report { display: block !important; }
+
+      .rpt-cover {
+        text-align: center;
+        padding: 80px 40px 60px;
+        background: linear-gradient(160deg, #1a0a00 0%, #2a1200 50%, #0d1117 100%);
+        color: #fff;
+        page-break-after: always;
+        min-height: 100vh;
+        box-sizing: border-box;
+      }
+      .rpt-cover-logo {
+        width: 80px; height: 80px; border-radius: 50%;
+        background: linear-gradient(135deg, #e05e1a, #ff9a5c);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-weight: 900; font-size: 32px; color: #fff;
+        margin-bottom: 24px;
+        box-shadow: 0 0 30px rgba(224,94,26,.6);
+      }
+      .rpt-cover h1 { font-size: 28pt; color: #ff9a5c; margin: 0 0 8px; font-weight: 900; }
+      .rpt-cover h2 { font-size: 16pt; color: #fff; margin: 0 0 32px; font-weight: 400; }
+      .rpt-cover-meta {
+        display: inline-block; text-align: left;
+        background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+        border-radius: 10px; padding: 20px 32px; margin-top: 16px;
+        min-width: 320px;
+      }
+      .rpt-cover-meta table { border-collapse: collapse; width: 100%; }
+      .rpt-cover-meta td { padding: 6px 8px; font-size: 11pt; color: #e6edf3; }
+      .rpt-cover-meta td:first-child { color: #ff9a5c; font-weight: 700; padding-right: 16px; }
+      .rpt-cover-disclaimer {
+        margin-top: 48px; font-size: 9pt; color: rgba(255,255,255,.45);
+        border-top: 1px solid rgba(255,255,255,.15); padding-top: 16px;
+      }
+
+      .rpt-section { padding: 24px 40px; page-break-inside: avoid; }
+      .rpt-section + .rpt-section { border-top: 2px solid #f0f0f0; }
+      .rpt-h1 { font-size: 18pt; font-weight: 800; color: #e05e1a; margin: 0 0 4px; border-bottom: 3px solid #e05e1a; padding-bottom: 8px; }
+      .rpt-h2 { font-size: 13pt; font-weight: 700; color: #333; margin: 24px 0 10px; }
+      .rpt-sub { font-size: 10pt; color: #666; margin: 0 0 20px; }
+
+      /* Severity bar */
+      .rpt-stats { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+      .rpt-stat { flex: 1; min-width: 80px; text-align: center; border-radius: 8px; padding: 14px 8px; border: 1.5px solid #ddd; }
+      .rpt-stat-num { font-size: 22pt; font-weight: 900; }
+      .rpt-stat-lbl { font-size: 9pt; color: #666; margin-top: 4px; }
+      .rpt-stat.crit { border-color: #f85149; background: #fff5f5; }
+      .rpt-stat.crit .rpt-stat-num { color: #c0392b; }
+      .rpt-stat.high { border-color: #f0883e; background: #fff8f0; }
+      .rpt-stat.high .rpt-stat-num { color: #e06000; }
+      .rpt-stat.med  { border-color: #d29922; background: #fffdf0; }
+      .rpt-stat.med  .rpt-stat-num { color: #b8860b; }
+      .rpt-stat.low  { border-color: #3fb950; background: #f0fff4; }
+      .rpt-stat.low  .rpt-stat-num { color: #267326; }
+      .rpt-stat.info { border-color: #58a6ff; background: #f0f8ff; }
+      .rpt-stat.info .rpt-stat-num { color: #1a6db5; }
+      .rpt-stat.total { border-color: #888; background: #f9f9f9; }
+      .rpt-stat.total .rpt-stat-num { color: #333; }
+
+      /* Risk bar */
+      .rpt-risk-bar { display: flex; border-radius: 6px; overflow: hidden; height: 18px; margin-bottom: 8px; }
+      .rpt-risk-seg { height: 100%; transition: width .3s; }
+
+      /* Finding cards */
+      .rpt-finding {
+        border: 1.5px solid #ddd; border-radius: 8px;
+        margin-bottom: 18px; page-break-inside: avoid;
+        overflow: hidden;
+      }
+      .rpt-finding-header {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #ddd;
+      }
+      .rpt-finding-header.crit { background: #fff0f0; border-left: 5px solid #f85149; }
+      .rpt-finding-header.high { background: #fff5ee; border-left: 5px solid #f0883e; }
+      .rpt-finding-header.med  { background: #fffdf0; border-left: 5px solid #d29922; }
+      .rpt-finding-header.low  { background: #f0fff4; border-left: 5px solid #3fb950; }
+      .rpt-finding-header.info { background: #f0f8ff; border-left: 5px solid #58a6ff; }
+      .rpt-finding-title { font-size: 12pt; font-weight: 700; color: #222; flex: 1; }
+      .rpt-sev-badge {
+        font-size: 8pt; font-weight: 800; padding: 3px 10px;
+        border-radius: 12px; text-transform: uppercase;
+      }
+      .rpt-sev-badge.crit { background: #f85149; color: #fff; }
+      .rpt-sev-badge.high { background: #f0883e; color: #fff; }
+      .rpt-sev-badge.med  { background: #d29922; color: #fff; }
+      .rpt-sev-badge.low  { background: #3fb950; color: #fff; }
+      .rpt-sev-badge.info { background: #58a6ff; color: #fff; }
+      .rpt-finding-body { padding: 12px 16px; font-size: 10pt; color: #333; background: #fafafa; }
+      .rpt-finding-body table { border-collapse: collapse; width: 100%; margin-bottom: 10px; }
+      .rpt-finding-body td { padding: 5px 8px; border: 1px solid #e8e8e8; vertical-align: top; font-size: 10pt; }
+      .rpt-finding-body td:first-child { font-weight: 700; color: #555; width: 130px; background: #f0f0f0; }
+      .rpt-rec-title { font-weight: 700; color: #e05e1a; margin: 10px 0 6px; font-size: 10pt; }
+      .rpt-rec-list { margin: 0; padding-left: 18px; }
+      .rpt-rec-list li { margin-bottom: 4px; font-size: 10pt; color: #333; }
+
+      /* Signature page */
+      .rpt-sig { page-break-before: always; padding: 60px 40px; }
+      .rpt-sig-line { border-top: 1.5px solid #333; width: 280px; margin: 40px 0 6px; }
+      .rpt-sig-label { font-size: 10pt; color: #555; }
+
+      @page { margin: 0; size: A4; }
+    }
   </style>
 </head>
 <body>
@@ -1064,7 +1178,10 @@
       <div class="findings-panel">
         <div class="flex-between mb-16">
           <div class="checklist-title" style="margin-bottom:0">📋 Findings Log (<span id="findings-count">0</span>)</div>
-          <button class="btn" onclick="exportFindings()">📤 Export JSON</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn" onclick="exportFindings()">📤 Export JSON</button>
+            <button class="btn btn-primary" onclick="exportPDF('findings')" style="background:#c0392b;border-color:#c0392b;">📄 Export PDF</button>
+          </div>
         </div>
         <div id="findings-list" class="finding-list">
           <div style="text-align:center;padding:30px;color:var(--text2);">No findings yet. Add your first finding above.</div>
@@ -1412,7 +1529,8 @@
           <div id="ws-status-badge" class="scan-status-badge ssb-idle"><span class="ssb-dot"></span>Idle</div>
           <div style="display:flex;gap:8px;">
             <button class="btn" onclick="clearScanOutput()">🗑 Clear</button>
-            <button class="btn" onclick="exportScanReport()">📤 Export Report</button>
+            <button class="btn" onclick="exportScanReport()">📤 Export JSON</button>
+            <button class="btn" onclick="exportPDF('scan')" style="background:#c0392b;border-color:#c0392b;color:#fff;">📄 Export PDF</button>
           </div>
         </div>
 
@@ -1481,6 +1599,9 @@ Configure a target and click "Generate Commands" to see commands.
   </div>
 
 </div><!-- /container -->
+
+<!-- ══════════════ PDF REPORT (print-only) ══════════════ -->
+<div id="pdf-report"></div>
 
 <footer>
   <p>Built for <span>ramamano.com</span> · Web Application VAPT Framework · Powered by Open-Source Security Tools</p>
@@ -2131,6 +2252,443 @@ Configure a target and click "Generate Commands" to see commands.
   (function initScan() {
     renderScanHistory();
   })();
+
+  /* ── PDF Report Export ──────────────────────────────────────────── */
+
+  // Remediation recommendations keyed by CWE number (string) and fallback by keyword
+  const remediations = {
+    'CWE-79': {
+      title: 'Cross-Site Scripting (XSS) Remediation',
+      steps: [
+        'Encode all user-supplied output using context-aware encoding (HTML, JS, CSS, URL).',
+        'Implement a strict Content Security Policy (CSP) header: Content-Security-Policy: default-src \'self\'.',
+        'Use modern frameworks (React, Angular, Vue) which auto-escape output by default.',
+        'Sanitize rich-text input with a allow-list HTML sanitizer (e.g. DOMPurify).',
+        'Set the HttpOnly and Secure flags on session cookies.',
+        'Validate and sanitize all input on the server side regardless of client-side validation.'
+      ]
+    },
+    'CWE-89': {
+      title: 'SQL Injection Remediation',
+      steps: [
+        'Use parameterized queries / prepared statements for all database interactions.',
+        'Apply stored procedures that do not concatenate input into queries.',
+        'Implement an ORM (Object-Relational Mapper) that handles parameterization automatically.',
+        'Apply the principle of least privilege — database accounts should have only required permissions.',
+        'Deploy a Web Application Firewall (WAF) with SQL injection rule sets as a defence-in-depth measure.',
+        'Regularly audit and review all database query code for raw concatenation.'
+      ]
+    },
+    'CWE-352': {
+      title: 'CSRF Remediation',
+      steps: [
+        'Implement synchronizer token pattern (CSRF tokens) on all state-changing requests.',
+        'Use the SameSite=Strict or SameSite=Lax cookie attribute for session cookies.',
+        'Validate the Origin and Referer headers on the server.',
+        'For REST APIs, use custom request headers (e.g. X-Requested-With) and validate them.',
+        'Require re-authentication for sensitive operations such as password/email change.'
+      ]
+    },
+    'CWE-918': {
+      title: 'SSRF Remediation',
+      steps: [
+        'Whitelist allowed destinations/protocols — reject all requests to internal RFC-1918 address ranges.',
+        'Disable support for non-HTTP(S) URL schemes (file://, dict://, gopher://).',
+        'Resolve hostnames server-side and validate the resolved IP before making requests.',
+        'Deploy network-level controls to prevent server egress to internal services.',
+        'Use a metadata service firewall (AWS IMDSv2, GCP metadata IP restriction).',
+        'Return generic error messages that do not reveal internal topology.'
+      ]
+    },
+    'CWE-284': {
+      title: 'IDOR / Broken Access Control Remediation',
+      steps: [
+        'Implement server-side authorization checks on every resource access — never rely on client-supplied IDs alone.',
+        'Use indirect references (GUIDs/opaque tokens) instead of sequential numeric IDs.',
+        'Apply attribute-based access control (ABAC) or role-based access control (RBAC).',
+        'Log all access control failures and alert on unusual patterns.',
+        'Perform regular automated and manual access-control testing as part of the SDLC.'
+      ]
+    },
+    'CWE-287': {
+      title: 'Authentication Bypass Remediation',
+      steps: [
+        'Enforce multi-factor authentication (MFA) on all privileged accounts.',
+        'Implement account lockout / progressive delay after failed login attempts.',
+        'Use a proven identity framework (OAuth 2.0, OpenID Connect) rather than custom auth.',
+        'Hash passwords with bcrypt, scrypt, or Argon2id — never MD5 or plain SHA.',
+        'Rotate session tokens after authentication and privilege changes.',
+        'Conduct regular penetration tests focused on authentication logic.'
+      ]
+    },
+    'CWE-307': {
+      title: 'Brute Force / No Rate Limiting Remediation',
+      steps: [
+        'Implement rate limiting and progressive delays on all authentication endpoints.',
+        'Lock accounts or require CAPTCHA after N consecutive failed attempts.',
+        'Monitor and alert on high-frequency login attempts from a single IP or user.',
+        'Deploy IP reputation-based blocking via a WAF or CDN security layer.',
+        'Enforce strong minimum password policy and check against known-breached-password lists (e.g. HaveIBeenPwned API).'
+      ]
+    },
+    'CWE-693': {
+      title: 'Missing Security Headers Remediation',
+      steps: [
+        'Add Content-Security-Policy (CSP) with a strict policy — use nonces/hashes for inline scripts.',
+        'Add X-Frame-Options: DENY or use CSP frame-ancestors \'none\'.',
+        'Add Strict-Transport-Security: max-age=63072000; includeSubDomains; preload.',
+        'Add X-Content-Type-Options: nosniff.',
+        'Add Referrer-Policy: strict-origin-when-cross-origin.',
+        'Remove or suppress Server and X-Powered-By headers to reduce information disclosure.',
+        'Regularly audit headers using tools like Mozilla Observatory or securityheaders.com.'
+      ]
+    },
+    'CWE-22': {
+      title: 'Path Traversal / LFI Remediation',
+      steps: [
+        'Validate and canonicalize file paths before use — reject paths containing "..", "%2e", or absolute path separators.',
+        'Use an allow-list of permitted files/directories rather than relying on blacklists.',
+        'Run the application under a dedicated OS user with minimal filesystem permissions (principle of least privilege).',
+        'Store sensitive files outside the web root.',
+        'Apply chroot or container isolation to limit filesystem access.',
+        'Log all file-access errors and alert on repeated traversal attempts.'
+      ]
+    },
+    'CWE-611': {
+      title: 'XXE Injection Remediation',
+      steps: [
+        'Disable external entity processing in all XML parsers (set FEATURE_EXTERNAL_GENERAL_ENTITIES to false).',
+        'Disable DTD processing entirely if not required.',
+        'Prefer JSON over XML where possible.',
+        'Use a modern, security-hardened XML library that defaults to safe settings.',
+        'Validate XML against a strict schema before processing.',
+        'Apply WAF rules that detect and block XXE payloads.'
+      ]
+    },
+    'CWE-94': {
+      title: 'SSTI / Code Injection Remediation',
+      steps: [
+        'Never pass user-supplied input directly into template render calls.',
+        'Use a sandboxed template engine that restricts access to dangerous built-ins.',
+        'Validate and whitelist allowed characters in any dynamic template context.',
+        'Apply output encoding to all template-rendered values.',
+        'Conduct code review specifically targeting template engine usage.',
+        'Move to a logic-less template engine (Mustache, Handlebars with no helpers) for simpler contexts.'
+      ]
+    },
+    'CWE-601': {
+      title: 'Open Redirect Remediation',
+      steps: [
+        'Validate redirect targets against an allow-list of trusted URLs or paths.',
+        'Use relative paths for post-login redirects instead of absolute URLs.',
+        'Reject redirects to external domains unless explicitly configured.',
+        'Encode the redirect URL and sign it with an HMAC to prevent tampering.',
+        'Warn users before redirecting to external sites.'
+      ]
+    },
+    'CWE-942': {
+      title: 'CORS Misconfiguration Remediation',
+      steps: [
+        'Explicitly whitelist trusted origins — never use Access-Control-Allow-Origin: * with credentials.',
+        'Validate the Origin header server-side against a strict allow-list.',
+        'Avoid Access-Control-Allow-Credentials: true unless absolutely required.',
+        'Do not echo back arbitrary Origin values from the request header.',
+        'Limit allowed methods and headers to the minimum required.'
+      ]
+    },
+    'CWE-1021': {
+      title: 'Clickjacking Remediation',
+      steps: [
+        'Set Content-Security-Policy: frame-ancestors \'none\' (or \'self\' if framing is required).',
+        'Add X-Frame-Options: DENY as a fallback for older browsers.',
+        'Apply JavaScript frame-busting code as defence-in-depth.',
+        'Review all sensitive pages to ensure framing headers are consistently applied.'
+      ]
+    },
+    'CWE-327': {
+      title: 'Weak JWT / Cryptographic Algorithm Remediation',
+      steps: [
+        'Use RS256 or ES256 asymmetric algorithms — never HS256 with a weak shared secret.',
+        'Explicitly reject tokens with alg: "none" on the server-side.',
+        'Validate the "typ" header and all standard claims (iss, aud, exp, nbf).',
+        'Use a short token expiry (15–60 minutes) and implement refresh token rotation.',
+        'Store tokens in httpOnly cookies, not localStorage, to mitigate XSS-based theft.',
+        'Rotate signing keys regularly and maintain a key revocation strategy.'
+      ]
+    },
+    'CWE-326': {
+      title: 'Weak Secret / Insufficient Key Strength Remediation',
+      steps: [
+        'Generate JWT secrets with at least 256 bits of entropy (32+ random bytes).',
+        'Store secrets in a secrets manager (AWS Secrets Manager, HashiCorp Vault) — never in source code.',
+        'Rotate secrets on a regular schedule and immediately after suspected compromise.',
+        'Use asymmetric key pairs (RSA/EC) for inter-service token validation.'
+      ]
+    },
+    'CWE-434': {
+      title: 'Unrestricted File Upload / RCE Remediation',
+      steps: [
+        'Validate file type server-side using magic bytes (file signature), not just the extension or Content-Type header.',
+        'Whitelist allowed MIME types and extensions; deny all others.',
+        'Store uploaded files outside the web root and serve them through a controller that sets Content-Disposition: attachment.',
+        'Rename uploaded files to a random UUID — never use the original filename.',
+        'Scan uploaded files with a malware/antivirus engine before storage.',
+        'Set the upload directory to be non-executable at the OS/web-server level.'
+      ]
+    },
+    'CWE-444': {
+      title: 'HTTP Request Smuggling Remediation',
+      steps: [
+        'Ensure consistent handling of Content-Length and Transfer-Encoding headers between all proxy and backend servers.',
+        'Upgrade HTTP/1.1 infrastructure to HTTP/2 where possible (H2 removes the ambiguity).',
+        'Configure your load balancer/reverse proxy to reject ambiguous requests.',
+        'Disable HTTP/1.1 keep-alive if it is not required.',
+        'Use a WAF with HTTP desync / smuggling detection rules.',
+        'Regularly test with tools like PortSwigger HTTP Request Smuggler.'
+      ]
+    },
+    'CWE-312': {
+      title: 'Exposed Secrets / Credential Exposure Remediation',
+      steps: [
+        'Rotate the exposed credential immediately and treat it as fully compromised.',
+        'Remove the secret from source code / static files and audit git history (use git-filter-repo).',
+        'Store all secrets in a secrets manager — never in frontend JS, HTML, or version control.',
+        'Add a pre-commit hook (git-secrets, gitleaks) to prevent future accidental commits.',
+        'Enable AWS CloudTrail / GCP Audit Logs to audit usage of the compromised key.',
+        'Implement SAST scanning in the CI/CD pipeline to detect secrets in every build.'
+      ]
+    },
+    'CWE-200': {
+      title: 'Information Disclosure Remediation',
+      steps: [
+        'Remove or suppress Server, X-Powered-By, X-AspNet-Version, and similar version-disclosure headers.',
+        'Return generic error messages to users — log detailed errors server-side only.',
+        'Review robots.txt and ensure it does not expose sensitive paths or credentials.',
+        'Disable directory listing on the web server.',
+        'Conduct regular source-code audits for hardcoded credentials, API keys, and debug information.'
+      ]
+    },
+    // Fallback generic
+    'default': {
+      title: 'General Remediation Guidance',
+      steps: [
+        'Apply the principle of least privilege across all application components.',
+        'Validate and sanitize all user-supplied input on the server side.',
+        'Keep all dependencies and frameworks up to date with security patches.',
+        'Implement defence-in-depth: multiple complementary security controls.',
+        'Perform regular security testing (SAST, DAST, penetration tests) as part of the SDLC.',
+        'Follow OWASP guidelines and the Web Security Testing Guide (WSTG).'
+      ]
+    }
+  };
+
+  function getRemediation(cwe) {
+    if (!cwe) return remediations['default'];
+    // Extract number like "CWE-79" or "79"
+    const m = String(cwe).match(/\d+/);
+    if (m) {
+      const key = 'CWE-' + m[0];
+      if (remediations[key]) return remediations[key];
+    }
+    return remediations['default'];
+  }
+
+  function sevLabel(s) {
+    const map = { crit:'CRITICAL', high:'HIGH', med:'MEDIUM', low:'LOW', info:'INFO' };
+    return map[s] || s.toUpperCase();
+  }
+
+  function exportPDF(source) {
+    // Gather findings
+    let data = [];
+    if (source === 'findings') {
+      data = findings;
+    } else {
+      // scan results
+      data = scanResults.map(r => ({
+        title: r.title,
+        sev:   r.sev,
+        url:   r.url || '',
+        cwe:   r.cwe || '',
+        desc:  r.detail || r.desc || '',
+        ts:    r.ts || new Date().toISOString()
+      }));
+    }
+
+    if (!data.length) {
+      alert('No findings to export. Add findings first or run a scan.');
+      return;
+    }
+
+    // Gather scope info
+    const sc = localStorage.getItem('vapt_scope');
+    let scope = { t:'', i:'', c:'ramamano.com', te:'', d:'' };
+    if (sc) { try { scope = { ...scope, ...JSON.parse(sc) }; } catch(e){} }
+    const target  = scope.t  || (source === 'scan' ? (getTargetUrl() || 'N/A') : 'N/A');
+    const company = scope.c  || 'ramamano.com';
+    const tester  = scope.te || 'Security Analyst';
+    const date    = scope.d  || new Date().toLocaleDateString();
+
+    // Count severities
+    const cnt = { crit:0, high:0, med:0, low:0, info:0 };
+    data.forEach(f => { if (cnt[f.sev] !== undefined) cnt[f.sev]++; });
+    const total = data.length;
+
+    // Build risk bar widths
+    const riskSegs = [
+      { sev:'crit', color:'#f85149', count: cnt.crit },
+      { sev:'high', color:'#f0883e', count: cnt.high },
+      { sev:'med',  color:'#d29922', count: cnt.med  },
+      { sev:'low',  color:'#3fb950', count: cnt.low  },
+      { sev:'info', color:'#58a6ff', count: cnt.info }
+    ].filter(s => s.count > 0)
+     .map(s => `<div class="rpt-risk-seg" style="width:${(s.count/total*100).toFixed(1)}%;background:${s.color};"></div>`)
+     .join('');
+
+    // Build findings HTML
+    const findingsHtml = data.map((f, i) => {
+      const rem = getRemediation(f.cwe);
+      const stepsHtml = rem.steps.map(s => `<li>${escHtml(s)}</li>`).join('');
+      return `
+        <div class="rpt-finding">
+          <div class="rpt-finding-header ${f.sev}">
+            <span class="rpt-finding-title">#${i+1} — ${escHtml(f.title)}</span>
+            <span class="rpt-sev-badge ${f.sev}">${sevLabel(f.sev)}</span>
+          </div>
+          <div class="rpt-finding-body">
+            <table>
+              <tr><td>CWE</td><td>${escHtml(f.cwe || '—')}</td></tr>
+              <tr><td>URL / Endpoint</td><td>${escHtml(f.url || '—')}</td></tr>
+              <tr><td>Description</td><td>${escHtml(f.desc || '—')}</td></tr>
+              <tr><td>Detected</td><td>${new Date(f.ts || Date.now()).toLocaleString()}</td></tr>
+            </table>
+            <div class="rpt-rec-title">🔧 ${escHtml(rem.title)}</div>
+            <ul class="rpt-rec-list">${stepsHtml}</ul>
+          </div>
+        </div>`;
+    }).join('');
+
+    const now = new Date().toLocaleString();
+    const reportHtml = `
+      <!-- Cover Page -->
+      <div class="rpt-cover">
+        <div class="rpt-cover-logo">R</div>
+        <h1>ramamano.com</h1>
+        <h2>Web Application Vulnerability Assessment &amp; Penetration Testing Report</h2>
+        <div class="rpt-cover-meta">
+          <table>
+            <tr><td>Target</td><td>${escHtml(target)}</td></tr>
+            <tr><td>Organisation</td><td>${escHtml(company)}</td></tr>
+            <tr><td>Tester / Author</td><td>${escHtml(tester)}</td></tr>
+            <tr><td>Report Date</td><td>${escHtml(date)}</td></tr>
+            <tr><td>Generated</td><td>${escHtml(now)}</td></tr>
+            <tr><td>Total Findings</td><td>${total}</td></tr>
+          </table>
+        </div>
+        <div class="rpt-cover-disclaimer">
+          CONFIDENTIAL — For authorized use only. This report contains sensitive security findings and must be handled accordingly.
+          Unauthorized disclosure is prohibited.
+        </div>
+      </div>
+
+      <!-- Executive Summary -->
+      <div class="rpt-section">
+        <div class="rpt-h1">📊 Executive Summary</div>
+        <div class="rpt-sub">Severity breakdown of findings identified during the assessment of ${escHtml(target)}</div>
+
+        <div class="rpt-stats">
+          <div class="rpt-stat total">
+            <div class="rpt-stat-num">${total}</div>
+            <div class="rpt-stat-lbl">Total</div>
+          </div>
+          <div class="rpt-stat crit">
+            <div class="rpt-stat-num">${cnt.crit}</div>
+            <div class="rpt-stat-lbl">Critical</div>
+          </div>
+          <div class="rpt-stat high">
+            <div class="rpt-stat-num">${cnt.high}</div>
+            <div class="rpt-stat-lbl">High</div>
+          </div>
+          <div class="rpt-stat med">
+            <div class="rpt-stat-num">${cnt.med}</div>
+            <div class="rpt-stat-lbl">Medium</div>
+          </div>
+          <div class="rpt-stat low">
+            <div class="rpt-stat-num">${cnt.low}</div>
+            <div class="rpt-stat-lbl">Low</div>
+          </div>
+          <div class="rpt-stat info">
+            <div class="rpt-stat-num">${cnt.info}</div>
+            <div class="rpt-stat-lbl">Info</div>
+          </div>
+        </div>
+
+        <div class="rpt-h2">Risk Distribution</div>
+        <div class="rpt-risk-bar">${riskSegs}</div>
+
+        <div class="rpt-h2">Overall Risk Rating</div>
+        <p style="font-size:11pt;color:#333;">
+          ${cnt.crit > 0 ? '<strong style="color:#c0392b">CRITICAL</strong> — Immediate remediation required. Critical vulnerabilities can lead to full system compromise, data breach, or service disruption.' :
+            cnt.high > 0 ? '<strong style="color:#e06000">HIGH</strong> — High-severity findings require prompt remediation within 7 days.' :
+            cnt.med  > 0 ? '<strong style="color:#b8860b">MEDIUM</strong> — Medium-severity issues should be addressed in the next sprint or release cycle.' :
+            cnt.low  > 0 ? '<strong style="color:#267326">LOW</strong> — Low-severity findings represent minor risks; schedule remediation in the next maintenance window.' :
+            '<strong style="color:#1a6db5">INFORMATIONAL</strong> — No exploitable vulnerabilities identified. Review informational findings for best-practice improvements.'}
+        </p>
+      </div>
+
+      <!-- Detailed Findings & Recommendations -->
+      <div class="rpt-section">
+        <div class="rpt-h1">🔍 Detailed Findings &amp; Recommendations</div>
+        <div class="rpt-sub">Each finding includes severity, affected URL, description, and specific remediation guidance.</div>
+        ${findingsHtml}
+      </div>
+
+      <!-- Methodology -->
+      <div class="rpt-section">
+        <div class="rpt-h1">📋 Methodology</div>
+        <p style="font-size:11pt;color:#333;margin-bottom:10px;">This assessment was conducted in accordance with the following industry standards:</p>
+        <ul style="font-size:11pt;color:#333;padding-left:20px;line-height:2;">
+          <li>OWASP Web Security Testing Guide (WSTG) v4.2</li>
+          <li>OWASP Top 10 Web Application Security Risks (2021)</li>
+          <li>OWASP Application Security Verification Standard (ASVS) v4.0</li>
+          <li>PTES (Penetration Testing Execution Standard)</li>
+          <li>NIST SP 800-115 Technical Guide to Information Security Testing</li>
+        </ul>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="rpt-section">
+        <div class="rpt-h1">⚖️ Disclaimer</div>
+        <p style="font-size:10pt;color:#555;line-height:1.8;">
+          This report is intended solely for the use of ${escHtml(company)} and its authorised representatives.
+          The findings documented herein reflect the state of the application at the time of testing and may not reflect all
+          vulnerabilities present. The tester(s) assume no liability for actions taken or not taken based on this report.
+          All testing was performed with explicit written authorisation.
+        </p>
+      </div>
+
+      <!-- Signature Page -->
+      <div class="rpt-sig">
+        <div class="rpt-h1" style="border:none;">✍️ Sign-off</div>
+        <br/>
+        <div style="display:flex;gap:80px;flex-wrap:wrap;">
+          <div>
+            <div class="rpt-sig-line"></div>
+            <div class="rpt-sig-label">Security Tester — ${escHtml(tester)}</div>
+            <div class="rpt-sig-label">Date: _______________</div>
+          </div>
+          <div>
+            <div class="rpt-sig-line"></div>
+            <div class="rpt-sig-label">Client Representative</div>
+            <div class="rpt-sig-label">Date: _______________</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('pdf-report').innerHTML = reportHtml;
+    window.print();
+  }
 
 </script>
 </body>
