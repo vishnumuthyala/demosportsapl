@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAPT Tool – Web App Scan</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --accent: #238636;
+      --accent-hover: #2ea043;
+      --danger: #da3633;
+      --warn: #d29922;
+      --info: #388bfd;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header .logo { font-size: 1.6rem; }
+    header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: .5px; }
+    header span.tag {
+      background: var(--accent);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 760px; margin: 0 auto; padding: 40px 24px; }
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .page-sub {
+      color: var(--muted);
+      margin-bottom: 36px;
+      font-size: .95rem;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .card:hover {
+      border-color: var(--info);
+      box-shadow: 0 0 0 1px var(--info);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .card-icon { font-size: 1.8rem; line-height: 1; }
+    .card-title { font-size: 1rem; font-weight: 700; }
+    .card-desc {
+      font-size: .875rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ── Form elements ── */
+    .form-row { display: flex; gap: 8px; }
+    input[type="url"] {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: .875rem;
+      padding: 8px 12px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus { border-color: var(--info); }
+    input::placeholder { color: var(--muted); }
+
+    button.btn {
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: .875rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      transition: background .2s, opacity .2s;
+      white-space: nowrap;
+    }
+    button.btn-primary { background: var(--accent); color: #fff; }
+    button.btn-primary:hover { background: var(--accent-hover); }
+    button.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-block;
+      font-size: .7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-left: auto;
+    }
+    .badge-high { background: #3b1212; color: var(--danger); border: 1px solid var(--danger); }
+
+    /* ── Progress ── */
+    .progress-wrap { display: none; }
+    .progress-wrap.active { display: block; }
+    .progress-bar-bg {
+      background: var(--border);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--info);
+      border-radius: 99px;
+      transition: width .4s ease;
+    }
+    .progress-label { font-size: .78rem; color: var(--muted); }
+
+    /* ── Result ── */
+    .result-box {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: .8rem;
+      font-family: 'Consolas', monospace;
+      padding: 12px;
+      max-height: 180px;
+      overflow-y: auto;
+      display: none;
+      line-height: 1.6;
+    }
+    .result-box.visible { display: block; }
+    .result-box .ok   { color: #3fb950; }
+    .result-box .warn { color: var(--warn); }
+    .result-box .err  { color: var(--danger); }
+    .result-box .info { color: var(--info); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-size: .8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="logo">🛡️</span>
+  <h1>VAPT Tool<span class="tag">DEMO</span></h1>
+</header>
+
+<div class="container">
+  <h2 class="page-title">Vulnerability Assessment &amp; Penetration Testing</h2>
+  <p class="page-sub">Run a full-spectrum vulnerability scan against your web application.</p>
+
+  <!-- 🌐 Web App Scan – the only visible feature -->
+  <div class="card" id="card-webapp">
+    <div class="card-header">
+      <span class="card-icon">🌐</span>
+      <span class="card-title">Web App Scan</span>
+      <span class="badge badge-high">Critical</span>
+    </div>
+    <p class="card-desc">Full-spectrum web application vulnerability scan: OWASP Top-10, misconfiguration checks, sensitive file exposure, and security-header analysis.</p>
+    <div class="form-row">
+      <input type="url" id="webapp-url" placeholder="https://target.example.com" />
+      <button class="btn btn-primary" onclick="runScan('webapp')">Scan</button>
+    </div>
+    <div class="progress-wrap" id="webapp-progress">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="webapp-bar"></div></div>
+      <p class="progress-label" id="webapp-label">Initialising…</p>
+    </div>
+    <div class="result-box" id="webapp-result"></div>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  VAPT Tool &mdash; For authorised security testing only. Unauthorised use is illegal.
+</footer>
+
+<script>
+  const scanData = {
+    webapp: {
+      steps: [
+        'Crawling target…',
+        'Analysing security headers…',
+        'Testing OWASP Top-10 vectors…',
+        'Checking for sensitive file exposure…',
+        'Generating report…'
+      ],
+      output: [
+        { cls: 'warn', msg: '[WARN]  Missing Content-Security-Policy header' },
+        { cls: 'warn', msg: '[WARN]  X-Frame-Options not set (Clickjacking risk)' },
+        { cls: 'err',  msg: '[HIGH]  Directory listing enabled at /uploads/' },
+        { cls: 'err',  msg: '[HIGH]  Reflected XSS in ?search= parameter' },
+        { cls: 'ok',   msg: '[OK]    HTTPS enforced, valid certificate' },
+        { cls: 'info', msg: '[INFO]  5 endpoints discovered, 2 require auth' }
+      ]
+    }
+  };
+
+  function runScan(id) {
+    const data   = scanData[id];
+    const bar    = document.getElementById(id + '-bar');
+    const label  = document.getElementById(id + '-label');
+    const prog   = document.getElementById(id + '-progress');
+    const result = document.getElementById(id + '-result');
+
+    prog.classList.add('active');
+    result.classList.remove('visible');
+    result.innerHTML = '';
+    bar.style.width = '0%';
+
+    const total = data.steps.length;
+    let step = 0;
+
+    const tick = setInterval(() => {
+      step++;
+      const pct = Math.round((step / total) * 100);
+      bar.style.width = pct + '%';
+      label.textContent = data.steps[step - 1] || 'Done.';
+
+      if (step >= total) {
+        clearInterval(tick);
+        setTimeout(() => {
+          prog.classList.remove('active');
+          result.innerHTML = data.output
+            .map(o => `<div class="${o.cls}">${o.msg}</div>`)
+            .join('');
+          result.classList.add('visible');
+        }, 400);
+      }
+    }, 600);
+  }
+</script>
+</body>
+</html>
