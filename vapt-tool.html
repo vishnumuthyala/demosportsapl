@@ -451,7 +451,7 @@
       <!-- Progress -->
       <div id="webapp-progress-section" class="hidden mt-2">
         <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:0.3rem;">
-          <span id="webapp-progress-label">Initialising…</span>
+          <span id="webapp-progress-label">Initializing…</span>
           <span id="webapp-progress-pct">0%</span>
         </div>
         <div class="progress-wrap"><div class="progress-bar" id="webapp-progress-bar" style="width:0%"></div></div>
@@ -516,7 +516,7 @@
 
         <div id="repo-progress-section" class="hidden mt-2">
           <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:0.3rem;">
-            <span id="repo-progress-label">Initialising…</span>
+            <span id="repo-progress-label">Initializing…</span>
             <span id="repo-progress-pct">0%</span>
           </div>
           <div class="progress-wrap"><div class="progress-bar" id="repo-progress-bar" style="width:0%"></div></div>
@@ -604,10 +604,8 @@
       if (token) headers.Authorization = `token ${token}`;
       const res = await fetch(`https://api.github.com/user/repos?per_page=100&page=${page}`, { headers });
       if (!res.ok) {
-        // Fall back to public repos for vishnumuthyala
-        const pub = await fetch('https://api.github.com/users/vishnumuthyala/repos?per_page=100', { headers });
-        if (pub.ok) repos = await pub.json();
-        break;
+        // Without a valid token we cannot list private repos; surface the error.
+        throw new Error(`GitHub API error ${res.status}: ${res.statusText}. Please provide a valid Personal Access Token.`);
       }
       const data = await res.json();
       if (!data.length) break;
@@ -631,7 +629,12 @@
         const opt = document.createElement('option');
         opt.value = r.id;
         opt.textContent = r.full_name;
-        opt.dataset.url = r.homepage || ('https://' + r.full_name.replace('/', '.github.io').toLowerCase());
+        // Use the explicit homepage if set; flag GitHub Pages repos; otherwise leave blank for manual entry.
+        const hasPages = r.has_pages;
+        const [owner, name] = r.full_name.split('/');
+        opt.dataset.url = r.homepage
+          ? r.homepage
+          : (hasPages ? `https://${owner.toLowerCase()}.github.io/${name.toLowerCase()}` : '');
         opt.dataset.html = r.html_url;
         sel.appendChild(opt);
       });
@@ -649,11 +652,18 @@
     const hint = document.getElementById('repo-url-hint');
     if (!opt.value) { hint.classList.add('hidden'); return; }
 
-    const guessedUrl = opt.dataset.url;
-    document.getElementById('target-url').value = guessedUrl;
-    hint.innerHTML = `🔗 Suggested URL based on repository: <strong>${guessedUrl}</strong><br>
-      GitHub: <a href="${opt.dataset.html}" target="_blank">${opt.dataset.html}</a><br>
-      <em>You can edit the URL above if needed.</em>`;
+    const suggestedUrl = opt.dataset.url;
+    if (suggestedUrl) {
+      document.getElementById('target-url').value = suggestedUrl;
+      hint.innerHTML = `🔗 Suggested URL based on repository: <strong>${suggestedUrl}</strong><br>
+        GitHub: <a href="${opt.dataset.html}" target="_blank">${opt.dataset.html}</a><br>
+        <em>You can edit the URL above if needed.</em>`;
+    } else {
+      document.getElementById('target-url').value = '';
+      hint.innerHTML = `ℹ️ No homepage or GitHub Pages URL found for this repository.<br>
+        GitHub: <a href="${opt.dataset.html}" target="_blank">${opt.dataset.html}</a><br>
+        <em>Please enter the target URL manually above.</em>`;
+    }
     hint.classList.remove('hidden');
   }
 
