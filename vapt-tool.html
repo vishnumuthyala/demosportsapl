@@ -1,0 +1,2695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAPT Framework — ramamano.com</title>
+  <style>
+    /* ── Reset & Variables ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        #0d1117;
+      --bg2:       #161b22;
+      --bg3:       #21262d;
+      --border:    #30363d;
+      --accent:    #e05e1a;
+      --accent2:   #f07d3a;
+      --accent3:   #ff9a5c;
+      --text:      #e6edf3;
+      --text2:     #8b949e;
+      --green:     #3fb950;
+      --red:       #f85149;
+      --yellow:    #d29922;
+      --blue:      #58a6ff;
+      --purple:    #bc8cff;
+      --radius:    8px;
+      --shadow:    0 4px 20px rgba(0,0,0,.5);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Header / Nav ──────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1a0a00 0%, #2a1200 40%, #0d1117 100%);
+      border-bottom: 2px solid var(--accent);
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 20px rgba(224,94,26,.3);
+    }
+    .header-inner {
+      max-width: 1400px; margin: auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 24px; gap: 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-logo {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 18px; color: #fff;
+      box-shadow: 0 0 16px rgba(224,94,26,.6);
+      flex-shrink: 0;
+    }
+    .brand-text h1 { font-size: 20px; font-weight: 800; color: var(--accent3); letter-spacing: .5px; }
+    .brand-text p  { font-size: 11px; color: var(--text2); }
+    .header-meta {
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .badge {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 12px;
+      font-size: 11px; color: var(--text2); white-space: nowrap;
+    }
+    .badge.live { border-color: var(--green); color: var(--green); }
+    .nav-tabs {
+      display: flex; gap: 4px; flex-wrap: wrap;
+      max-width: 1400px; margin: 0 auto;
+      padding: 0 24px 10px;
+    }
+    .nav-tab {
+      background: none; border: none; cursor: pointer;
+      padding: 6px 16px; border-radius: 20px;
+      color: var(--text2); font-size: 13px; font-weight: 600;
+      transition: all .2s;
+    }
+    .nav-tab:hover { background: var(--bg3); color: var(--text); }
+    .nav-tab.active {
+      background: var(--accent); color: #fff;
+      box-shadow: 0 0 12px rgba(224,94,26,.4);
+    }
+
+    /* ── Layout ────────────────────────────────────────────────────── */
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── Section Titles ────────────────────────────────────────────── */
+    .section-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-icon {
+      width: 38px; height: 38px; border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 20px; font-weight: 700; }
+    .section-header p  { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+    /* ── Grid layouts ──────────────────────────────────────────────── */
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 16px; }
+
+    /* ── Tool Card ─────────────────────────────────────────────────── */
+    .tool-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+      transition: border-color .2s, box-shadow .2s;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .tool-card:hover {
+      border-color: var(--accent2);
+      box-shadow: 0 0 12px rgba(224,94,26,.2);
+    }
+    .tool-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .tool-name { font-weight: 700; font-size: 15px; color: var(--accent3); }
+    .tool-tag {
+      font-size: 10px; padding: 2px 8px; border-radius: 12px;
+      font-weight: 600; white-space: nowrap; flex-shrink: 0;
+    }
+    .tag-go     { background: #00acd7; color: #000; }
+    .tag-python { background: #3572a5; color: #fff; }
+    .tag-ruby   { background: #cc342d; color: #fff; }
+    .tag-js     { background: #f7df1e; color: #000; }
+    .tag-java   { background: #b07219; color: #fff; }
+    .tag-c      { background: #555555; color: #fff; }
+    .tag-multi  { background: var(--purple); color: #000; }
+    .tool-desc  { font-size: 12px; color: var(--text2); flex: 1; }
+    .tool-footer { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text); font-size: 12px;
+      cursor: pointer; text-decoration: none; transition: all .2s;
+    }
+    .btn:hover { border-color: var(--accent); color: var(--accent3); text-decoration: none; }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+
+    /* ── Checklist ─────────────────────────────────────────────────── */
+    .checklist-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px; margin-bottom: 16px;
+    }
+    .checklist-title {
+      font-weight: 700; font-size: 14px; margin-bottom: 12px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border);
+      color: var(--accent3);
+    }
+    .check-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 7px 0; border-bottom: 1px solid rgba(48,54,61,.6);
+    }
+    .check-item:last-child { border-bottom: none; }
+    .check-item input[type=checkbox] {
+      width: 16px; height: 16px; accent-color: var(--accent);
+      cursor: pointer; flex-shrink: 0; margin-top: 2px;
+    }
+    .check-item label { cursor: pointer; flex: 1; font-size: 13px; }
+    .check-item input:checked + label { text-decoration: line-through; color: var(--text2); }
+    .severity {
+      font-size: 10px; padding: 1px 7px; border-radius: 10px;
+      font-weight: 700; flex-shrink: 0;
+    }
+    .sev-critical { background: #6e040d; color: #f85149; }
+    .sev-high     { background: #3d2100; color: #f0883e; }
+    .sev-medium   { background: #2f2000; color: #d29922; }
+    .sev-low      { background: #002200; color: #3fb950; }
+    .sev-info     { background: #002244; color: #58a6ff; }
+
+    /* ── Progress Bar ──────────────────────────────────────────────── */
+    .progress-wrap {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px; margin-bottom: 24px;
+    }
+    .progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+    .progress-bar-bg {
+      background: var(--bg3); border-radius: 10px;
+      height: 10px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; border-radius: 10px;
+      background: linear-gradient(90deg, var(--accent), var(--accent3));
+      transition: width .5s ease;
+      width: 0%;
+    }
+
+    /* ── OWASP Top 10 ─────────────────────────────────────────────── */
+    .owasp-item {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px; margin-bottom: 10px;
+      display: flex; align-items: flex-start; gap: 14px;
+      transition: border-color .2s;
+    }
+    .owasp-item:hover { border-color: var(--accent2); }
+    .owasp-num {
+      width: 36px; height: 36px; border-radius: 6px;
+      background: var(--accent); display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 13px; color: #fff; flex-shrink: 0;
+    }
+    .owasp-body h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .owasp-body p  { font-size: 12px; color: var(--text2); }
+    .owasp-body .tools-used { font-size: 11px; color: var(--accent3); margin-top: 4px; }
+
+    /* ── Findings Panel ───────────────────────────────────────────── */
+    .findings-panel {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+    }
+    .finding-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .finding-form input,
+    .finding-form select,
+    .finding-form textarea {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 8px 12px; font-size: 13px;
+      outline: none; transition: border-color .2s;
+      font-family: inherit;
+    }
+    .finding-form input:focus,
+    .finding-form select:focus,
+    .finding-form textarea:focus { border-color: var(--accent); }
+    .finding-form textarea { resize: vertical; min-height: 80px; }
+    .finding-list { display: flex; flex-direction: column; gap: 8px; }
+    .finding-item {
+      background: var(--bg3); border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0; padding: 10px 14px;
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+    }
+    .finding-item.crit { border-color: var(--red); }
+    .finding-item.high { border-color: #f0883e; }
+    .finding-item.med  { border-color: var(--yellow); }
+    .finding-item.low  { border-color: var(--green); }
+    .finding-item.info { border-color: var(--blue); }
+    .finding-title { font-weight: 600; font-size: 13px; }
+    .finding-meta  { font-size: 11px; color: var(--text2); margin-top: 2px; }
+    .finding-del { cursor: pointer; color: var(--text2); background: none; border: none; font-size: 16px; padding: 0 4px; }
+    .finding-del:hover { color: var(--red); }
+
+    /* ── Stats Row ────────────────────────────────────────────────── */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px; text-align: center;
+    }
+    .stat-num { font-size: 28px; font-weight: 800; color: var(--accent3); }
+    .stat-label { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+    /* ── Phase Flow ───────────────────────────────────────────────── */
+    .phase-flow {
+      display: flex; gap: 0; margin-bottom: 28px;
+      overflow-x: auto; padding-bottom: 4px;
+    }
+    .phase-step {
+      background: var(--bg2); border: 1px solid var(--border);
+      padding: 10px 20px; display: flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600; white-space: nowrap;
+      position: relative;
+    }
+    .phase-step:not(:first-child)::before {
+      content: '';
+      position: absolute; left: -1px; top: 50%;
+      transform: translateY(-50%);
+      width: 0; height: 0;
+      border-top: 20px solid transparent;
+      border-bottom: 20px solid transparent;
+      border-left: 12px solid var(--bg);
+    }
+    .phase-step:not(:last-child)::after {
+      content: '';
+      position: absolute; right: -12px; top: 50%;
+      transform: translateY(-50%); z-index: 1;
+      width: 0; height: 0;
+      border-top: 20px solid transparent;
+      border-bottom: 20px solid transparent;
+      border-left: 12px solid var(--bg2);
+    }
+    .phase-step.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .phase-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .phase-step:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+
+    /* ── Alert / Info boxes ───────────────────────────────────────── */
+    .alert {
+      border-radius: var(--radius); padding: 12px 16px;
+      margin-bottom: 16px; border-left: 4px solid;
+      font-size: 13px;
+    }
+    .alert-info    { background: #001f3d; border-color: var(--blue); color: #a8d4ff; }
+    .alert-warning { background: #1f1200; border-color: var(--yellow); color: #ffe08a; }
+    .alert-danger  { background: #1f0000; border-color: var(--red); color: #ffa8a8; }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    footer {
+      margin-top: 60px; padding: 24px;
+      border-top: 1px solid var(--border);
+      text-align: center; color: var(--text2); font-size: 12px;
+    }
+    footer span { color: var(--accent3); }
+
+    /* ── Utility ──────────────────────────────────────────────────── */
+    .mt-16 { margin-top: 16px; }
+    .mb-16 { margin-bottom: 16px; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .tag {
+      font-size: 11px; padding: 2px 8px; border-radius: 12px;
+      background: var(--bg3); border: 1px solid var(--border); color: var(--text2);
+    }
+
+    @media (max-width: 640px) {
+      .header-meta { display: none; }
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: repeat(2,1fr); }
+      .phase-flow { flex-direction: column; }
+      .phase-step::before, .phase-step::after { display: none; }
+    }
+
+    /* ── Web App Scan Tab ─────────────────────────────────────────── */
+    .scan-layout { display: grid; grid-template-columns: 380px 1fr; gap: 18px; align-items: start; }
+    @media (max-width: 900px) { .scan-layout { grid-template-columns: 1fr; } }
+
+    .scan-panel {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px;
+    }
+    .scan-panel-title {
+      font-weight: 700; font-size: 13px; color: var(--accent3);
+      margin-bottom: 14px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .scan-field { margin-bottom: 12px; }
+    .scan-field label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+    .scan-field input,
+    .scan-field select,
+    .scan-field textarea {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 8px 12px; font-size: 13px;
+      outline: none; transition: border-color .2s; font-family: inherit;
+    }
+    .scan-field input:focus,
+    .scan-field select:focus { border-color: var(--green); }
+
+    /* scan type pills */
+    .scan-type-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .scan-type-btn {
+      padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      border: 1px solid var(--border); background: var(--bg3); color: var(--text2);
+      cursor: pointer; transition: all .2s;
+    }
+    .scan-type-btn:hover { border-color: var(--green); color: var(--green); }
+    .scan-type-btn.active { background: var(--green); border-color: var(--green); color: #000; }
+
+    /* vulnerability category toggles */
+    .vuln-cats { display: flex; flex-wrap: wrap; gap: 6px; }
+    .vuln-cat {
+      padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+      border: 1px solid var(--border); background: var(--bg3); color: var(--text2);
+      cursor: pointer; transition: all .15s; user-select: none;
+    }
+    .vuln-cat.selected { background: rgba(63,185,80,.15); border-color: var(--green); color: var(--green); }
+
+    /* tool toggle chips */
+    .tool-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tool-chip {
+      padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+      border: 1px solid var(--border); background: var(--bg3); color: var(--text2);
+      cursor: pointer; transition: all .15s; user-select: none;
+    }
+    .tool-chip.selected { background: rgba(88,166,255,.15); border-color: var(--blue); color: var(--blue); }
+
+    /* Terminal / command output */
+    .scan-terminal {
+      background: #010409; border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 12px; line-height: 1.7;
+      min-height: 200px; max-height: 380px; overflow-y: auto;
+      white-space: pre-wrap; word-break: break-all;
+    }
+    .scan-terminal .t-prompt { color: var(--green); }
+    .scan-terminal .t-cmd    { color: var(--text); }
+    .scan-terminal .t-info   { color: var(--blue); }
+    .scan-terminal .t-warn   { color: var(--yellow); }
+    .scan-terminal .t-err    { color: var(--red); }
+    .scan-terminal .t-ok     { color: var(--green); }
+    .scan-terminal .t-dim    { color: var(--text2); }
+    .scan-terminal .t-find   { color: var(--accent3); font-weight: bold; }
+
+    /* Scan progress */
+    .scan-progress-bar {
+      background: var(--bg3); border-radius: 10px; height: 8px;
+      overflow: hidden; margin: 10px 0;
+    }
+    .scan-progress-fill {
+      height: 100%; border-radius: 10px; width: 0%;
+      background: linear-gradient(90deg, var(--green), #a8ff78);
+      transition: width .4s ease;
+    }
+
+    /* Result cards */
+    .scan-result-item {
+      background: var(--bg3); border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 8px;
+      animation: slideIn .3s ease;
+    }
+    .scan-result-item.crit { border-color: var(--red); }
+    .scan-result-item.high { border-color: #f0883e; }
+    .scan-result-item.med  { border-color: var(--yellow); }
+    .scan-result-item.low  { border-color: var(--green); }
+    .scan-result-item.info { border-color: var(--blue); }
+    .scan-result-title { font-weight: 700; font-size: 13px; margin-bottom: 3px; }
+    .scan-result-meta  { font-size: 11px; color: var(--text2); }
+    .scan-result-url   { font-size: 11px; color: var(--blue); word-break: break-all; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .scan-status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    }
+    .ssb-idle    { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); }
+    .ssb-running { background: rgba(63,185,80,.15); border: 1px solid var(--green); color: var(--green); }
+    .ssb-done    { background: rgba(88,166,255,.15); border: 1px solid var(--blue); color: var(--blue); }
+    .ssb-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .ssb-running .ssb-dot { animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    .scan-tabs { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    .scan-inner-tab {
+      padding: 5px 14px; border-radius: 6px 6px 0 0; font-size: 12px; font-weight: 600;
+      border: none; background: none; color: var(--text2); cursor: pointer; transition: all .2s;
+    }
+    .scan-inner-tab:hover { background: var(--bg3); color: var(--text); }
+    .scan-inner-tab.active { background: var(--bg3); color: var(--accent3); border-bottom: 2px solid var(--accent3); }
+    .scan-inner-content { display: none; }
+    .scan-inner-content.active { display: block; }
+
+    .history-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px 14px; background: var(--bg3); border-radius: 6px; margin-bottom: 8px;
+    }
+    .history-item-url { font-size: 13px; font-weight: 600; color: var(--blue); }
+    .history-item-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
+    .history-del { cursor:pointer; background:none; border:none; color:var(--text2); font-size:16px; }
+    .history-del:hover { color: var(--red); }
+
+    /* ── PDF Report Hidden Div (shown only when printing) ─────────── */
+    #pdf-report { display: none; }
+
+    @media print {
+      /* Hide all UI; show only the report */
+      header, footer, .container, #pdf-report ~ * { display: none !important; }
+      body { background: #fff !important; color: #111 !important; font-size: 11pt; margin: 0; padding: 0; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      #pdf-report { display: block !important; }
+
+      .rpt-cover {
+        text-align: center;
+        padding: 80px 40px 60px;
+        background: linear-gradient(160deg, #1a0a00 0%, #2a1200 50%, #0d1117 100%);
+        color: #fff;
+        page-break-after: always;
+        min-height: 100vh;
+        box-sizing: border-box;
+      }
+      .rpt-cover-logo {
+        width: 80px; height: 80px; border-radius: 50%;
+        background: linear-gradient(135deg, #e05e1a, #ff9a5c);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-weight: 900; font-size: 32px; color: #fff;
+        margin-bottom: 24px;
+        box-shadow: 0 0 30px rgba(224,94,26,.6);
+      }
+      .rpt-cover h1 { font-size: 28pt; color: #ff9a5c; margin: 0 0 8px; font-weight: 900; }
+      .rpt-cover h2 { font-size: 16pt; color: #fff; margin: 0 0 32px; font-weight: 400; }
+      .rpt-cover-meta {
+        display: inline-block; text-align: left;
+        background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+        border-radius: 10px; padding: 20px 32px; margin-top: 16px;
+        min-width: 320px;
+      }
+      .rpt-cover-meta table { border-collapse: collapse; width: 100%; }
+      .rpt-cover-meta td { padding: 6px 8px; font-size: 11pt; color: #e6edf3; }
+      .rpt-cover-meta td:first-child { color: #ff9a5c; font-weight: 700; padding-right: 16px; }
+      .rpt-cover-disclaimer {
+        margin-top: 48px; font-size: 9pt; color: rgba(255,255,255,.45);
+        border-top: 1px solid rgba(255,255,255,.15); padding-top: 16px;
+      }
+
+      .rpt-section { padding: 24px 40px; page-break-inside: avoid; }
+      .rpt-section + .rpt-section { border-top: 2px solid #f0f0f0; }
+      .rpt-h1 { font-size: 18pt; font-weight: 800; color: #e05e1a; margin: 0 0 4px; border-bottom: 3px solid #e05e1a; padding-bottom: 8px; }
+      .rpt-h2 { font-size: 13pt; font-weight: 700; color: #333; margin: 24px 0 10px; }
+      .rpt-sub { font-size: 10pt; color: #666; margin: 0 0 20px; }
+
+      /* Severity bar */
+      .rpt-stats { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+      .rpt-stat { flex: 1; min-width: 80px; text-align: center; border-radius: 8px; padding: 14px 8px; border: 1.5px solid #ddd; }
+      .rpt-stat-num { font-size: 22pt; font-weight: 900; }
+      .rpt-stat-lbl { font-size: 9pt; color: #666; margin-top: 4px; }
+      .rpt-stat.crit { border-color: #f85149; background: #fff5f5; }
+      .rpt-stat.crit .rpt-stat-num { color: #c0392b; }
+      .rpt-stat.high { border-color: #f0883e; background: #fff8f0; }
+      .rpt-stat.high .rpt-stat-num { color: #e06000; }
+      .rpt-stat.med  { border-color: #d29922; background: #fffdf0; }
+      .rpt-stat.med  .rpt-stat-num { color: #b8860b; }
+      .rpt-stat.low  { border-color: #3fb950; background: #f0fff4; }
+      .rpt-stat.low  .rpt-stat-num { color: #267326; }
+      .rpt-stat.info { border-color: #58a6ff; background: #f0f8ff; }
+      .rpt-stat.info .rpt-stat-num { color: #1a6db5; }
+      .rpt-stat.total { border-color: #888; background: #f9f9f9; }
+      .rpt-stat.total .rpt-stat-num { color: #333; }
+
+      /* Risk bar */
+      .rpt-risk-bar { display: flex; border-radius: 6px; overflow: hidden; height: 18px; margin-bottom: 8px; }
+      .rpt-risk-seg { height: 100%; transition: width .3s; }
+
+      /* Finding cards */
+      .rpt-finding {
+        border: 1.5px solid #ddd; border-radius: 8px;
+        margin-bottom: 18px; page-break-inside: avoid;
+        overflow: hidden;
+      }
+      .rpt-finding-header {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #ddd;
+      }
+      .rpt-finding-header.crit { background: #fff0f0; border-left: 5px solid #f85149; }
+      .rpt-finding-header.high { background: #fff5ee; border-left: 5px solid #f0883e; }
+      .rpt-finding-header.med  { background: #fffdf0; border-left: 5px solid #d29922; }
+      .rpt-finding-header.low  { background: #f0fff4; border-left: 5px solid #3fb950; }
+      .rpt-finding-header.info { background: #f0f8ff; border-left: 5px solid #58a6ff; }
+      .rpt-finding-title { font-size: 12pt; font-weight: 700; color: #222; flex: 1; }
+      .rpt-sev-badge {
+        font-size: 8pt; font-weight: 800; padding: 3px 10px;
+        border-radius: 12px; text-transform: uppercase;
+      }
+      .rpt-sev-badge.crit { background: #f85149; color: #fff; }
+      .rpt-sev-badge.high { background: #f0883e; color: #fff; }
+      .rpt-sev-badge.med  { background: #d29922; color: #fff; }
+      .rpt-sev-badge.low  { background: #3fb950; color: #fff; }
+      .rpt-sev-badge.info { background: #58a6ff; color: #fff; }
+      .rpt-finding-body { padding: 12px 16px; font-size: 10pt; color: #333; background: #fafafa; }
+      .rpt-finding-body table { border-collapse: collapse; width: 100%; margin-bottom: 10px; }
+      .rpt-finding-body td { padding: 5px 8px; border: 1px solid #e8e8e8; vertical-align: top; font-size: 10pt; }
+      .rpt-finding-body td:first-child { font-weight: 700; color: #555; width: 130px; background: #f0f0f0; }
+      .rpt-rec-title { font-weight: 700; color: #e05e1a; margin: 10px 0 6px; font-size: 10pt; }
+      .rpt-rec-list { margin: 0; padding-left: 18px; }
+      .rpt-rec-list li { margin-bottom: 4px; font-size: 10pt; color: #333; }
+
+      /* Signature page */
+      .rpt-sig { page-break-before: always; padding: 60px 40px; }
+      .rpt-sig-line { border-top: 1.5px solid #333; width: 280px; margin: 40px 0 6px; }
+      .rpt-sig-label { font-size: 10pt; color: #555; }
+
+      @page { margin: 0; size: A4; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo">R</div>
+      <div class="brand-text">
+        <h1>ramamano.com</h1>
+        <p>Web Application Vulnerability Assessment &amp; Penetration Testing Framework</p>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span class="badge live">● LIVE</span>
+      <span class="badge">VAPT v2.0</span>
+      <span class="badge">OWASP Aligned</span>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+    <button class="nav-tab" onclick="showTab('recon')">🔍 Reconnaissance</button>
+    <button class="nav-tab" onclick="showTab('scanning')">🛰️ Scanning</button>
+    <button class="nav-tab" onclick="showTab('vuln')">🔬 Vulnerability Assessment</button>
+    <button class="nav-tab" onclick="showTab('exploit')">⚔️ Exploitation</button>
+    <button class="nav-tab" onclick="showTab('checklist')">✅ Checklist</button>
+    <button class="nav-tab" onclick="showTab('findings')">📋 Findings</button>
+    <button class="nav-tab" onclick="showTab('owasp')">🛡️ OWASP Top 10</button>
+    <button class="nav-tab" onclick="showTab('tools')">🧰 All Tools</button>
+    <button class="nav-tab" onclick="showTab('webscan')" style="background:linear-gradient(135deg,#1a3a1a,#0d2b0d);border:1px solid #3fb950;color:#3fb950;">🌐 Web App Scan</button>
+  </div>
+</header>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="container">
+
+  <!-- ─── DASHBOARD ─── -->
+  <div id="tab-dashboard" class="tab-content active">
+    <div class="section-header">
+      <div class="section-icon">📊</div>
+      <div>
+        <h2>VAPT Dashboard</h2>
+        <p>Overview of your web application security assessment — ramamano.com</p>
+      </div>
+    </div>
+
+    <div class="alert alert-warning">
+      ⚠️ <strong>Authorized Use Only.</strong> This framework is intended for security professionals with explicit written permission to test the target application. Unauthorized use is illegal.
+    </div>
+
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total Findings</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--red)" id="stat-crit">0</div><div class="stat-label">Critical</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#f0883e" id="stat-high">0</div><div class="stat-label">High</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--yellow)" id="stat-med">0</div><div class="stat-label">Medium</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--green)" id="stat-low">0</div><div class="stat-label">Low</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--blue)" id="stat-info">0</div><div class="stat-label">Info</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-checks">0%</div><div class="stat-label">Checklist Done</div></div>
+    </div>
+
+    <!-- Pentest Phase Flow -->
+    <div class="phase-flow">
+      <div class="phase-step active">1. Reconnaissance</div>
+      <div class="phase-step">2. Scanning</div>
+      <div class="phase-step">3. Vulnerability Assessment</div>
+      <div class="phase-step">4. Exploitation</div>
+      <div class="phase-step">5. Post-Exploitation</div>
+      <div class="phase-step">6. Reporting</div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Quick Scope -->
+      <div class="findings-panel">
+        <div class="checklist-title">🎯 Engagement Scope</div>
+        <div class="finding-form">
+          <input type="text" id="scope-target" placeholder="Target URL (e.g. https://target.com)" />
+          <input type="text" id="scope-ip" placeholder="IP / CIDR Range" />
+          <input type="text" id="scope-company" placeholder="Company Name" value="ramamano.com" />
+          <input type="text" id="scope-tester" placeholder="Tester Name" />
+          <input type="date" id="scope-date" />
+          <button class="btn btn-primary" onclick="saveScope()">💾 Save Scope</button>
+        </div>
+        <div id="scope-display" style="font-size:12px;color:var(--text2);display:none;"></div>
+      </div>
+
+      <!-- VAPT Methodology -->
+      <div class="checklist-card">
+        <div class="checklist-title">📖 VAPT Methodology Overview</div>
+        <div class="owasp-item" style="margin-bottom:8px;">
+          <div class="owasp-num">1</div>
+          <div class="owasp-body">
+            <h4>Reconnaissance</h4>
+            <p>Passive &amp; active info-gathering — subdomains, IPs, technologies, emails.</p>
+            <div class="tools-used">Tools: Amass, Subfinder, theHarvester, Nmap</div>
+          </div>
+        </div>
+        <div class="owasp-item" style="margin-bottom:8px;">
+          <div class="owasp-num">2</div>
+          <div class="owasp-body">
+            <h4>Scanning &amp; Enumeration</h4>
+            <p>Port scanning, service detection, web crawling, parameter discovery.</p>
+            <div class="tools-used">Tools: Nmap, Naabu, httpx, Katana, Param Miner</div>
+          </div>
+        </div>
+        <div class="owasp-item" style="margin-bottom:8px;">
+          <div class="owasp-num">3</div>
+          <div class="owasp-body">
+            <h4>Vulnerability Assessment</h4>
+            <p>Automated scanning + manual testing against OWASP WSTG checklist.</p>
+            <div class="tools-used">Tools: Nuclei, ZAP, Nikto, Semgrep, OWASP WSTG</div>
+          </div>
+        </div>
+        <div class="owasp-item" style="margin-bottom:8px;">
+          <div class="owasp-num">4</div>
+          <div class="owasp-body">
+            <h4>Exploitation</h4>
+            <p>Validate and exploit confirmed findings to determine real-world impact.</p>
+            <div class="tools-used">Tools: sqlmap, XSStrike, jwt_tool, Metasploit, ffuf</div>
+          </div>
+        </div>
+        <div class="owasp-item">
+          <div class="owasp-num">5</div>
+          <div class="owasp-body">
+            <h4>Reporting</h4>
+            <p>Document findings with CVSS scores, evidence, and remediation steps.</p>
+            <div class="tools-used">Frameworks: OWASP ASVS, CVSS v3.1, OWASP WSTG</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── RECONNAISSANCE ─── -->
+  <div id="tab-recon" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🔍</div>
+      <div>
+        <h2>Reconnaissance</h2>
+        <p>Passive and active information gathering about the target</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      💡 Start with <strong>passive recon</strong> (no direct interaction with target) before moving to active scanning. Use OSINT, DNS enumeration, and certificate transparency logs.
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">Subdomain &amp; DNS Enumeration</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">OWASP Amass</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">In-depth attack surface mapping and asset discovery using DNS, certificates, APIs, and web archives.</div>
+        <div class="tag-list"><span class="tag">Subdomain</span><span class="tag">DNS</span><span class="tag">OSINT</span><span class="tag">ASN</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/OWASP/Amass" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">amass enum -d target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Subfinder</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Fast passive subdomain discovery tool using 40+ passive sources including Shodan, VirusTotal, crt.sh.</div>
+        <div class="tag-list"><span class="tag">Subdomain</span><span class="tag">Passive</span><span class="tag">Fast</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/subfinder" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">subfinder -d target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Sublist3r</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Enumerates subdomains using OSINT and brute-force with subbrute integration.</div>
+        <div class="tag-list"><span class="tag">Subdomain</span><span class="tag">OSINT</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/aboul3la/Sublist3r" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">python sublist3r.py -d target.com</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">OSINT &amp; Email Harvesting</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">theHarvester</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Gathers emails, subdomains, hosts, employee names, open ports, and banners from different public sources.</div>
+        <div class="tag-list"><span class="tag">Email</span><span class="tag">OSINT</span><span class="tag">LinkedIn</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/laramies/theHarvester" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">theHarvester -d target.com -b all</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Interactsh</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Out-of-band interaction server for detecting blind SSRF, blind XSS, XXE, and other OOB vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">OOB</span><span class="tag">SSRF</span><span class="tag">Blind XSS</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/interactsh" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">interactsh-client</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">OWASP WSTG</span><span class="tool-tag tag-multi">Guide</span></div>
+        <div class="tool-desc">Comprehensive web security testing guide covering all recon methodologies. The gold standard for VAPT.</div>
+        <div class="tag-list"><span class="tag">Guide</span><span class="tag">OWASP</span><span class="tag">Methodology</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/OWASP/wstg" target="_blank" class="btn">🔗 GitHub</a>
+          <a href="https://owasp.org/www-project-web-security-testing-guide/" target="_blank" class="btn btn-primary">📖 Read Guide</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SCANNING ─── -->
+  <div id="tab-scanning" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🛰️</div>
+      <div>
+        <h2>Scanning &amp; Enumeration</h2>
+        <p>Port scanning, service detection, HTTP probing, directory brute-forcing</p>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">Network &amp; Port Scanning</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Nmap</span><span class="tool-tag tag-c">C/C++</span></div>
+        <div class="tool-desc">Industry-standard network scanner for host discovery, port scanning, OS/service detection, and scripting (NSE).</div>
+        <div class="tag-list"><span class="tag">Ports</span><span class="tag">OS Detection</span><span class="tag">NSE Scripts</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/nmap/nmap" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">nmap -sV -sC -A target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Naabu</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Fast and reliable port scanner built with a focus on reliability and simplicity for security researchers.</div>
+        <div class="tag-list"><span class="tag">Fast Scan</span><span class="tag">SYN Scan</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/naabu" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">naabu -host target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">httpx</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Fast and multi-purpose HTTP toolkit that probes services, follows redirects, and identifies web technologies.</div>
+        <div class="tag-list"><span class="tag">HTTP Probe</span><span class="tag">Tech Detection</span><span class="tag">Status</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/httpx" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">httpx -l hosts.txt -tech-detect</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">Web Crawling &amp; Fuzzing</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Katana</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Next-generation crawling framework designed for Attack Surface Management, with JS parsing support.</div>
+        <div class="tag-list"><span class="tag">Crawler</span><span class="tag">JS Parsing</span><span class="tag">ASM</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/katana" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">katana -u https://target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">ffuf</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Blazing-fast web fuzzer for directory, file, vhost, and parameter discovery using wordlists.</div>
+        <div class="tag-list"><span class="tag">Fuzzing</span><span class="tag">Directory</span><span class="tag">VHost</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/ffuf/ffuf" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">ffuf -w wordlist.txt -u URL/FUZZ</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">dirsearch</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Advanced web path scanner featuring recursive scanning, multi-threading, and smart output filtering.</div>
+        <div class="tag-list"><span class="tag">Path Scan</span><span class="tag">Recursive</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/maurosoria/dirsearch" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">dirsearch -u https://target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">gobuster</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Directory/file, DNS, VHost, S3, and TFTP brute-forcing tool — fast, reliable, and feature-rich.</div>
+        <div class="tag-list"><span class="tag">Directory</span><span class="tag">DNS</span><span class="tag">S3</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/OJ/gobuster" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">gobuster dir -u URL -w wordlist</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Param Miner</span><span class="tool-tag tag-java">Java/Burp</span></div>
+        <div class="tool-desc">Burp Suite extension that identifies hidden/unlinked parameters using wordlists and diff-based analysis.</div>
+        <div class="tag-list"><span class="tag">Parameters</span><span class="tag">Burp</span><span class="tag">Cache Poison</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/PortSwigger/param-miner" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">wafw00f</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Detects and fingerprints Web Application Firewall (WAF) products protecting the target — crucial before testing.</div>
+        <div class="tag-list"><span class="tag">WAF</span><span class="tag">Fingerprint</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/EnableSecurity/wafw00f" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">wafw00f https://target.com</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── VULNERABILITY ASSESSMENT ─── -->
+  <div id="tab-vuln" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🔬</div>
+      <div>
+        <h2>Vulnerability Assessment</h2>
+        <p>Automated scanning and manual testing to discover security weaknesses</p>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">Web Application Scanners</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">OWASP ZAP</span><span class="tool-tag tag-java">Java</span></div>
+        <div class="tool-desc">The world's most widely used web app scanner. Active/passive scanning, spider, REST API, CI/CD integration.</div>
+        <div class="tag-list"><span class="tag">Active Scan</span><span class="tag">Passive Scan</span><span class="tag">AJAX Spider</span><span class="tag">API</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/OWASP/ZAP" target="_blank" class="btn">🔗 GitHub</a>
+          <a href="https://www.zaproxy.org/download/" target="_blank" class="btn btn-primary">⬇ Download</a>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Nuclei</span><span class="tool-tag tag-go">Go</span></div>
+        <div class="tool-desc">Template-based vulnerability scanner with 7000+ community templates for CVEs, misconfigs, and exposures.</div>
+        <div class="tag-list"><span class="tag">Templates</span><span class="tag">CVE</span><span class="tag">Fast</span><span class="tag">CI/CD</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/projectdiscovery/nuclei" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">nuclei -u https://target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Nikto</span><span class="tool-tag tag-multi">Perl</span></div>
+        <div class="tool-desc">Open-source web server scanner that checks for dangerous files, outdated server software, and known vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">Web Server</span><span class="tag">Misconfig</span><span class="tag">Outdated</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/sullo/nikto" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">nikto -h https://target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Wapiti</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Web application vulnerability scanner that audits security by injecting payloads and analyzing responses.</div>
+        <div class="tag-list"><span class="tag">SQLi</span><span class="tag">XSS</span><span class="tag">LFI</span><span class="tag">SSRF</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/EnableSecurity/wapiti" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">wapiti -u https://target.com</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">OWASP Nettacker</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Automated penetration testing framework with modules for scanning, brute-force, and vulnerability detection.</div>
+        <div class="tag-list"><span class="tag">Automated</span><span class="tag">Modules</span><span class="tag">Brute Force</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/OWASP/Nettacker" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">OpenVAS / Greenbone</span><span class="tool-tag tag-c">C</span></div>
+        <div class="tool-desc">Full-featured vulnerability scanner with daily NVT feed updates, covering network and web vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">NVT Feed</span><span class="tag">Network</span><span class="tag">CVE</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/Greenbone/openvas-scanner" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">Static Analysis &amp; Code Review</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Semgrep</span><span class="tool-tag tag-multi">Multi</span></div>
+        <div class="tool-desc">Lightweight SAST tool with 2000+ rules. Supports 30+ languages, runs in CI/CD, finds bugs and vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">SAST</span><span class="tag">Rules</span><span class="tag">CI/CD</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/semgrep/semgrep" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">semgrep --config=auto .</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">CodeQL</span><span class="tool-tag tag-multi">Multi</span></div>
+        <div class="tool-desc">GitHub's semantic code analysis engine that treats code as data, finding complex security vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">SAST</span><span class="tag">Semantic</span><span class="tag">GitHub</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/github/codeql" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">SonarQube</span><span class="tool-tag tag-java">Java</span></div>
+        <div class="tool-desc">Continuous code quality and security platform with deep analysis for 27+ languages. Detects bugs, smells, vulnerabilities.</div>
+        <div class="tag-list"><span class="tag">SAST</span><span class="tag">Quality</span><span class="tag">Coverage</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/SonarSource/sonarqube" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── EXPLOITATION ─── -->
+  <div id="tab-exploit" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">⚔️</div>
+      <div>
+        <h2>Exploitation Tools</h2>
+        <p>Validate discovered vulnerabilities — use only with explicit authorization</p>
+      </div>
+    </div>
+
+    <div class="alert alert-danger">
+      🚨 <strong>Warning:</strong> Only use exploitation tools against systems you own or have written authorization to test. Unauthorized exploitation is a criminal offense.
+    </div>
+
+    <div class="grid-3 mb-16">
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">sqlmap</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Automatic SQL injection detection and exploitation tool supporting 6 injection techniques across all major DBs.</div>
+        <div class="tag-list"><span class="tag">SQLi</span><span class="tag">Blind SQLi</span><span class="tag">DB Dump</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/sqlmapproject/sqlmap" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">sqlmap -u "URL?id=1" --dbs</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">XSStrike</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Advanced XSS detection suite with DOM analysis, fuzzer, and payload generator that bypasses WAF filters.</div>
+        <div class="tag-list"><span class="tag">XSS</span><span class="tag">DOM</span><span class="tag">WAF Bypass</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/s0md3v/XSStrike" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">python xsstrike.py -u URL</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">jwt_tool</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Toolkit for testing JWT security: decode, forge, crack weak secrets, and test algorithm confusion attacks.</div>
+        <div class="tag-list"><span class="tag">JWT</span><span class="tag">Auth Bypass</span><span class="tag">Brute Force</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/ticarpi/jwt_tool" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">python jwt_tool.py [token]</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Metasploit</span><span class="tool-tag tag-ruby">Ruby</span></div>
+        <div class="tool-desc">The world's most used penetration testing framework. Thousands of exploits, payloads, and auxiliary modules.</div>
+        <div class="tag-list"><span class="tag">Exploits</span><span class="tag">Payloads</span><span class="tag">Post-Exploit</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/rapid7/metasploit-framework" target="_blank" class="btn">🔗 GitHub</a>
+          <span class="btn">msfconsole</span>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">PayloadsAllTheThings</span><span class="tool-tag tag-multi">Reference</span></div>
+        <div class="tool-desc">Massive collection of payloads and bypasses for SQLi, XSS, SSRF, SSTI, XXE, open redirect, and 40+ attack types.</div>
+        <div class="tag-list"><span class="tag">Payloads</span><span class="tag">Bypass</span><span class="tag">Reference</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/swisskyrepo/PayloadsAllTheThings" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-header"><span class="tool-name">Impacket</span><span class="tool-tag tag-python">Python</span></div>
+        <div class="tool-desc">Python classes for network protocols — ideal for SMB, NTLM, Kerberos, and Active Directory attacks.</div>
+        <div class="tag-list"><span class="tag">SMB</span><span class="tag">Kerberos</span><span class="tag">NTLM</span></div>
+        <div class="tool-footer">
+          <a href="https://github.com/fortra/impacket" target="_blank" class="btn">🔗 GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── CHECKLIST ─── -->
+  <div id="tab-checklist" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">✅</div>
+      <div>
+        <h2>VAPT Checklist</h2>
+        <p>OWASP WSTG-aligned testing checklist — track your progress</p>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span>Overall Testing Progress</span>
+        <span id="progress-pct">0 / 0 completed (0%)</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+    </div>
+
+    <!-- Information Gathering -->
+    <div class="checklist-card">
+      <div class="checklist-title">📡 Information Gathering (WSTG-INFO)</div>
+      <div class="check-item"><input type="checkbox" id="c1"><label for="c1">Fingerprint web server, OS, and framework versions</label><span class="severity sev-info">INFO</span></div>
+      <div class="check-item"><input type="checkbox" id="c2"><label for="c2">Enumerate application entry points and functionality</label><span class="severity sev-info">INFO</span></div>
+      <div class="check-item"><input type="checkbox" id="c3"><label for="c3">Map application architecture (load balancers, CDN, WAF)</label><span class="severity sev-info">INFO</span></div>
+      <div class="check-item"><input type="checkbox" id="c4"><label for="c4">Enumerate all subdomains and related assets</label><span class="severity sev-low">LOW</span></div>
+      <div class="check-item"><input type="checkbox" id="c5"><label for="c5">Identify third-party services and JavaScript libraries</label><span class="severity sev-info">INFO</span></div>
+      <div class="check-item"><input type="checkbox" id="c6"><label for="c6">Review HTTP response headers for security misconfigs</label><span class="severity sev-medium">MED</span></div>
+    </div>
+
+    <!-- Configuration Testing -->
+    <div class="checklist-card">
+      <div class="checklist-title">⚙️ Configuration &amp; Deployment Testing (WSTG-CONF)</div>
+      <div class="check-item"><input type="checkbox" id="c7"><label for="c7">Test for HTTP Strict Transport Security (HSTS)</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c8"><label for="c8">Test for Content Security Policy (CSP) header</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c9"><label for="c9">Test for clickjacking (X-Frame-Options / CSP frame-ancestors)</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c10"><label for="c10">Check for exposed admin interfaces and default credentials</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c11"><label for="c11">Enumerate HTTP methods allowed (PUT, DELETE, TRACE, etc.)</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c12"><label for="c12">Test for sensitive files and backup files (.bak, .old, .git, etc.)</label><span class="severity sev-high">HIGH</span></div>
+    </div>
+
+    <!-- Identity / Authentication -->
+    <div class="checklist-card">
+      <div class="checklist-title">🔐 Authentication Testing (WSTG-ATHN)</div>
+      <div class="check-item"><input type="checkbox" id="c13"><label for="c13">Test for weak / default passwords and account enumeration</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c14"><label for="c14">Test password reset functionality for flaws (predictable tokens, no expiry)</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c15"><label for="c15">Test authentication bypass (SQL injection in login, response manipulation)</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c16"><label for="c16">Test MFA implementation for bypasses</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c17"><label for="c17">Check for account lockout mechanism and brute-force protection</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c18"><label for="c18">Test JWT token security (algorithm confusion, weak secret, none alg)</label><span class="severity sev-critical">CRIT</span></div>
+    </div>
+
+    <!-- Session Management -->
+    <div class="checklist-card">
+      <div class="checklist-title">🍪 Session Management Testing (WSTG-SESS)</div>
+      <div class="check-item"><input type="checkbox" id="c19"><label for="c19">Analyze session token entropy and predictability</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c20"><label for="c20">Test for CSRF vulnerabilities on state-changing actions</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c21"><label for="c21">Test session cookie attributes (HttpOnly, Secure, SameSite)</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c22"><label for="c22">Test session fixation and session expiry</label><span class="severity sev-high">HIGH</span></div>
+    </div>
+
+    <!-- Input Validation -->
+    <div class="checklist-card">
+      <div class="checklist-title">🔡 Input Validation Testing (WSTG-INPV)</div>
+      <div class="check-item"><input type="checkbox" id="c23"><label for="c23">Test for Reflected XSS in all input parameters</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c24"><label for="c24">Test for Stored XSS in persistent data (comments, profiles, messages)</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c25"><label for="c25">Test for DOM-based XSS via JavaScript sources/sinks</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c26"><label for="c26">Test for SQL Injection (error-based, blind, time-based, OOB)</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c27"><label for="c27">Test for Server-Side Template Injection (SSTI)</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c28"><label for="c28">Test for XML/XXE injection</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c29"><label for="c29">Test for SSRF in URL parameters, file imports, webhooks</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c30"><label for="c30">Test for Path Traversal / Local File Inclusion</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c31"><label for="c31">Test for Open Redirect vulnerabilities</label><span class="severity sev-medium">MED</span></div>
+      <div class="check-item"><input type="checkbox" id="c32"><label for="c32">Test for HTTP Request Smuggling</label><span class="severity sev-high">HIGH</span></div>
+    </div>
+
+    <!-- Access Control -->
+    <div class="checklist-card">
+      <div class="checklist-title">🚦 Authorization &amp; Access Control (WSTG-ATHZ)</div>
+      <div class="check-item"><input type="checkbox" id="c33"><label for="c33">Test for Insecure Direct Object References (IDOR)</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c34"><label for="c34">Test horizontal and vertical privilege escalation</label><span class="severity sev-critical">CRIT</span></div>
+      <div class="check-item"><input type="checkbox" id="c35"><label for="c35">Test for function-level access control bypass</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c36"><label for="c36">Test API endpoints for missing authorization checks</label><span class="severity sev-high">HIGH</span></div>
+    </div>
+
+    <!-- Business Logic -->
+    <div class="checklist-card">
+      <div class="checklist-title">💼 Business Logic Testing (WSTG-BUSL)</div>
+      <div class="check-item"><input type="checkbox" id="c37"><label for="c37">Test for race conditions (e.g. buy multiple items with one payment)</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c38"><label for="c38">Test for negative values and integer overflow in financial logic</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c39"><label for="c39">Test workflow bypass (skipping steps in multi-stage processes)</label><span class="severity sev-high">HIGH</span></div>
+    </div>
+
+    <!-- Client-Side -->
+    <div class="checklist-card">
+      <div class="checklist-title">🌐 Client-Side Testing (WSTG-CLNT)</div>
+      <div class="check-item"><input type="checkbox" id="c40"><label for="c40">Test for DOM XSS via postMessage, location.hash, document.referrer</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c41"><label for="c41">Analyze JavaScript files for secrets, API keys, and sensitive logic</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c42"><label for="c42">Test for CORS misconfigurations (wildcard origins, credentials)</label><span class="severity sev-high">HIGH</span></div>
+      <div class="check-item"><input type="checkbox" id="c43"><label for="c43">Test for sensitive data in localStorage / sessionStorage</label><span class="severity sev-medium">MED</span></div>
+    </div>
+  </div>
+
+  <!-- ─── FINDINGS ─── -->
+  <div id="tab-findings" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">📋</div>
+      <div>
+        <h2>Findings Tracker</h2>
+        <p>Document and manage discovered vulnerabilities</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="findings-panel">
+        <div class="checklist-title">➕ Add New Finding</div>
+        <div class="finding-form">
+          <input type="text" id="f-title" placeholder="Finding Title (e.g. Reflected XSS in search parameter)" />
+          <select id="f-severity">
+            <option value="">-- Severity --</option>
+            <option value="crit">Critical</option>
+            <option value="high">High</option>
+            <option value="med">Medium</option>
+            <option value="low">Low</option>
+            <option value="info">Informational</option>
+          </select>
+          <input type="text" id="f-url" placeholder="Affected URL / Endpoint" />
+          <input type="text" id="f-cwe" placeholder="CWE / CVE (e.g. CWE-79, CVE-2024-1234)" />
+          <textarea id="f-desc" placeholder="Description / Proof of Concept / Evidence..."></textarea>
+          <button class="btn btn-primary" onclick="addFinding()">➕ Add Finding</button>
+        </div>
+      </div>
+
+      <div class="findings-panel">
+        <div class="flex-between mb-16">
+          <div class="checklist-title" style="margin-bottom:0">📋 Findings Log (<span id="findings-count">0</span>)</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn" onclick="exportFindings()">📤 Export JSON</button>
+            <button class="btn btn-primary" onclick="exportPDF('findings')" style="background:#c0392b;border-color:#c0392b;">📄 Export PDF</button>
+          </div>
+        </div>
+        <div id="findings-list" class="finding-list">
+          <div style="text-align:center;padding:30px;color:var(--text2);">No findings yet. Add your first finding above.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── OWASP TOP 10 ─── -->
+  <div id="tab-owasp" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🛡️</div>
+      <div>
+        <h2>OWASP Top 10 (2021)</h2>
+        <p>The most critical web application security risks — quick reference</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      📚 Reference the full <a href="https://github.com/OWASP/wstg" target="_blank">OWASP Web Security Testing Guide</a>, <a href="https://github.com/OWASP/ASVS" target="_blank">ASVS</a>, and <a href="https://github.com/OWASP/CheatSheetSeries" target="_blank">Cheat Sheet Series</a> for detailed methodology.
+    </div>
+
+    <div class="owasp-item">
+      <div class="owasp-num">A01</div>
+      <div class="owasp-body">
+        <h4>Broken Access Control</h4>
+        <p>Users acting outside intended permissions. Includes IDOR, path traversal, privilege escalation, and CORS misconfigs.</p>
+        <div class="tools-used">🔧 Tools: Nuclei, ffuf, gobuster, Burp Suite, OWASP ZAP</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A02</div>
+      <div class="owasp-body">
+        <h4>Cryptographic Failures</h4>
+        <p>Sensitive data exposure due to weak/missing encryption. Includes cleartext transmission, weak hashing, hardcoded keys.</p>
+        <div class="tools-used">🔧 Tools: Gitleaks, TruffleHog, detect-secrets, Semgrep, Trivy</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A03</div>
+      <div class="owasp-body">
+        <h4>Injection</h4>
+        <p>SQL, NoSQL, OS command, LDAP, SSTI, XXE injection. Hostile data is sent as part of a command or query.</p>
+        <div class="tools-used">🔧 Tools: sqlmap, XSStrike, Nuclei, ZAP, PayloadsAllTheThings</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A04</div>
+      <div class="owasp-body">
+        <h4>Insecure Design</h4>
+        <p>Missing or ineffective control design. Includes lack of threat modeling, insecure business logic, and design flaws.</p>
+        <div class="tools-used">🔧 Tools: OWASP WSTG, ASVS, Manual review</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A05</div>
+      <div class="owasp-body">
+        <h4>Security Misconfiguration</h4>
+        <p>Default configs, incomplete setup, open cloud storage, verbose error messages, unnecessary features enabled.</p>
+        <div class="tools-used">🔧 Tools: Nikto, Nuclei, KICS, Checkov, httpx, Nmap</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A06</div>
+      <div class="owasp-body">
+        <h4>Vulnerable and Outdated Components</h4>
+        <p>Using components with known vulnerabilities. Includes outdated libraries, frameworks, and OS packages.</p>
+        <div class="tools-used">🔧 Tools: retire.js, Grype, Trivy, OWASP Dependency-Check, dep-scan, Syft</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A07</div>
+      <div class="owasp-body">
+        <h4>Identification and Authentication Failures</h4>
+        <p>Weak credentials, missing MFA, exposed session tokens, weak password reset, credential stuffing.</p>
+        <div class="tools-used">🔧 Tools: jwt_tool, Hydra, Nuclei, ZAP, Burp Suite</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A08</div>
+      <div class="owasp-body">
+        <h4>Software and Data Integrity Failures</h4>
+        <p>Code and infrastructure not protected against integrity violations. Insecure CI/CD, unsigned updates, deserialisation.</p>
+        <div class="tools-used">🔧 Tools: Syft, CycloneDX, Semgrep, Gitleaks, Checkov</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A09</div>
+      <div class="owasp-body">
+        <h4>Security Logging and Monitoring Failures</h4>
+        <p>Insufficient logging, missing alerting, logs not monitored. Enables attackers to persist undetected.</p>
+        <div class="tools-used">🔧 Tools: Falco, Manual review, OWASP WSTG (WSTG-ERRH)</div>
+      </div>
+    </div>
+    <div class="owasp-item">
+      <div class="owasp-num">A10</div>
+      <div class="owasp-body">
+        <h4>Server-Side Request Forgery (SSRF)</h4>
+        <p>Web application fetches remote resources without validating the user-supplied URL, enabling internal access.</p>
+        <div class="tools-used">🔧 Tools: Interactsh, Nuclei (SSRF templates), Burp Collaborator, ffuf</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── ALL TOOLS ─── -->
+  <div id="tab-tools" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🧰</div>
+      <div>
+        <h2>Complete Tool Library</h2>
+        <p>All 65+ security tools and resources organized by category</p>
+      </div>
+    </div>
+
+    <!-- Secret Detection -->
+    <h3 style="margin:0 0 12px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">🔑 Secret Detection</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Gitleaks</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Detect hardcoded secrets, API keys, and credentials in git repositories and CI/CD pipelines.</div><div class="tool-footer"><a href="https://github.com/gitleaks/gitleaks" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">TruffleHog</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Searches through git history and filesystems for high-entropy strings and over 700 secret detectors.</div><div class="tool-footer"><a href="https://github.com/trufflesecurity/trufflehog" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">detect-secrets</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">Yelp's enterprise-friendly secret detection tool designed to work in pre-commit hooks and CI.</div><div class="tool-footer"><a href="https://github.com/Yelp/detect-secrets" target="_blank" class="btn">🔗 GitHub</a></div></div>
+    </div>
+
+    <!-- Supply Chain / SBOM -->
+    <h3 style="margin:0 0 12px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">📦 Supply Chain &amp; SBOM</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Syft</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">CLI tool and library for generating an SBOM from container images and filesystems (CycloneDX, SPDX).</div><div class="tool-footer"><a href="https://github.com/anchore/syft" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Grype</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Vulnerability scanner for container images and filesystems, uses multiple vulnerability DBs.</div><div class="tool-footer"><a href="https://github.com/anchore/grype" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Trivy</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Comprehensive all-in-one security scanner for containers, filesystems, git repos, IaC, and SBOMs.</div><div class="tool-footer"><a href="https://github.com/aquasecurity/trivy" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">OWASP dep-scan</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">Next-gen dependency and DevSecOps audit tool with risk scoring and reachability analysis.</div><div class="tool-footer"><a href="https://github.com/owasp-dep-scan/dep-scan" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Dependency-Check</span><span class="tool-tag tag-java">Java</span></div><div class="tool-desc">OWASP tool that identifies project dependencies and checks for known, publicly disclosed vulnerabilities.</div><div class="tool-footer"><a href="https://github.com/jeremylong/DependencyCheck" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">retire.js</span><span class="tool-tag tag-js">JS</span></div><div class="tool-desc">Scanner detecting use of JavaScript libraries with known vulnerabilities — CLI, Grunt, browser extension.</div><div class="tool-footer"><a href="https://github.com/retirejs/retire.js" target="_blank" class="btn">🔗 GitHub</a></div></div>
+    </div>
+
+    <!-- Cloud / Infrastructure -->
+    <h3 style="margin:0 0 12px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">☁️ Cloud &amp; Infrastructure</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">KICS</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Checkmarx's IaC security scanner for Terraform, CloudFormation, Docker, Ansible, and more.</div><div class="tool-footer"><a href="https://github.com/Checkmarx/kics" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Checkov</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">Static analysis tool for IaC: Terraform, CloudFormation, Kubernetes, Helm, ARM, and Bicep.</div><div class="tool-footer"><a href="https://github.com/bridgecrewio/checkov" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">kube-bench</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Checks whether Kubernetes is deployed securely by running the CIS Kubernetes Benchmark tests.</div><div class="tool-footer"><a href="https://github.com/aquasecurity/kube-bench" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">kube-hunter</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">Hunts for security weaknesses in Kubernetes clusters from an attacker's perspective.</div><div class="tool-footer"><a href="https://github.com/aquasecurity/kube-hunter" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Falco</span><span class="tool-tag tag-c">C++</span></div><div class="tool-desc">Cloud-native runtime security tool that detects anomalous activity in applications, containers, and hosts.</div><div class="tool-footer"><a href="https://github.com/falcosecurity/falco" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Prowler</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">AWS/Azure/GCP security tool for best-practice assessments, audits, incident response, and compliance.</div><div class="tool-footer"><a href="https://github.com/ProwlerCloud/prowler" target="_blank" class="btn">🔗 GitHub</a></div></div>
+    </div>
+
+    <!-- Red Team -->
+    <h3 style="margin:0 0 12px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">⚔️ Red Team &amp; Post-Exploitation</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">BloodHound</span><span class="tool-tag tag-js">JS/Go</span></div><div class="tool-desc">Uses graph theory to reveal hidden and unintended relationships within Active Directory / Azure AD.</div><div class="tool-footer"><a href="https://github.com/SpecterOps/BloodHound" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Sliver</span><span class="tool-tag tag-go">Go</span></div><div class="tool-desc">Open-source adversary simulation framework supporting multiple C2 protocols (mTLS, WireGuard, DNS, HTTP).</div><div class="tool-footer"><a href="https://github.com/BishopFox/sliver" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">CrackMapExec</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">Swiss army knife for pentesting Windows/AD environments. SMB, WinRM, LDAP, RDP, SSH modules.</div><div class="tool-footer"><a href="https://github.com/byt3bl33d3r/CrackMapExec" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Responder</span><span class="tool-tag tag-python">Python</span></div><div class="tool-desc">LLMNR, NBT-NS, and MDNS poisoner for capturing NTLMv1/NTLMv2 hashes in internal network assessments.</div><div class="tool-footer"><a href="https://github.com/lgandx/Responder" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">PowerSploit</span><span class="tool-tag tag-multi">PowerShell</span></div><div class="tool-desc">PowerShell post-exploitation framework with modules for recon, privilege escalation, and persistence.</div><div class="tool-footer"><a href="https://github.com/PowerShellMafia/PowerSploit" target="_blank" class="btn">🔗 GitHub</a></div></div>
+    </div>
+
+    <!-- Reference / Guides -->
+    <h3 style="margin:0 0 12px;color:var(--text2);font-size:13px;text-transform:uppercase;letter-spacing:1px;">📚 Guides, Standards &amp; References</h3>
+    <div class="grid-3 mb-16">
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">OWASP WSTG</span><span class="tool-tag tag-multi">Guide</span></div><div class="tool-desc">The Web Security Testing Guide — comprehensive methodology for web application security testing.</div><div class="tool-footer"><a href="https://github.com/OWASP/wstg" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">OWASP ASVS</span><span class="tool-tag tag-multi">Standard</span></div><div class="tool-desc">Application Security Verification Standard — defines security requirements for web application testing.</div><div class="tool-footer"><a href="https://github.com/OWASP/ASVS" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">OWASP CheatSheets</span><span class="tool-tag tag-multi">Guide</span></div><div class="tool-desc">Concise, actionable security guidance for developers on authentication, XSS prevention, SQL injection, and more.</div><div class="tool-footer"><a href="https://github.com/OWASP/CheatSheetSeries" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">OWASP MASTG</span><span class="tool-tag tag-multi">Guide</span></div><div class="tool-desc">Mobile Application Security Testing Guide for Android and iOS security assessments.</div><div class="tool-footer"><a href="https://github.com/OWASP/mastg" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Awesome Pentest</span><span class="tool-tag tag-multi">List</span></div><div class="tool-desc">Collection of penetration testing resources, tools, writeups, and cheatsheets.</div><div class="tool-footer"><a href="https://github.com/enaqx/awesome-pentest" target="_blank" class="btn">🔗 GitHub</a></div></div>
+      <div class="tool-card"><div class="tool-card-header"><span class="tool-name">Awesome Hacking</span><span class="tool-tag tag-multi">List</span></div><div class="tool-desc">Curated list of awesome hacking tools, resources, books, and learning materials by Hack-with-Github.</div><div class="tool-footer"><a href="https://github.com/Hack-with-Github/Awesome-Hacking" target="_blank" class="btn">🔗 GitHub</a></div></div>
+    </div>
+  </div>
+
+  <!-- ─── WEB APP SCAN ─── -->
+  <div id="tab-webscan" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🌐</div>
+      <div>
+        <h2>Web Application Scanner</h2>
+        <p>Configure, generate commands, and simulate a full web application security scan</p>
+      </div>
+    </div>
+
+    <div class="alert alert-danger">
+      🚨 <strong>Authorized Use Only.</strong> Only scan systems you own or have explicit written permission to test. This tool generates real attack commands — use responsibly.
+    </div>
+
+    <div class="scan-layout">
+      <!-- ─ LEFT: Config Panel ─ -->
+      <div>
+        <!-- Target -->
+        <div class="scan-panel" style="margin-bottom:16px;">
+          <div class="scan-panel-title">🎯 Target Configuration</div>
+          <div class="scan-field">
+            <label>Target URL *</label>
+            <div style="display:flex;gap:6px;">
+              <select id="ws-proto" style="width:110px;flex-shrink:0;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 6px;font-size:13px;outline:none;">
+                <option>https://</option>
+                <option>http://</option>
+              </select>
+              <input type="text" id="ws-url" placeholder="target.com or 192.168.1.1" />
+            </div>
+          </div>
+          <div class="scan-field">
+            <label>Authentication</label>
+            <select id="ws-auth" onchange="toggleAuthFields()">
+              <option value="none">None</option>
+              <option value="cookie">Cookie / Session Token</option>
+              <option value="basic">HTTP Basic Auth</option>
+              <option value="bearer">Bearer Token (JWT)</option>
+            </select>
+          </div>
+          <div id="ws-auth-cookie" class="scan-field" style="display:none;">
+            <label>Cookie Value</label>
+            <input type="text" id="ws-cookie" placeholder="PHPSESSID=abc123; auth_token=xyz" />
+          </div>
+          <div id="ws-auth-basic" class="scan-field" style="display:none;">
+            <label>Username : Password</label>
+            <input type="text" id="ws-basic" placeholder="admin:password123" />
+          </div>
+          <div id="ws-auth-bearer" class="scan-field" style="display:none;">
+            <label>JWT / Bearer Token</label>
+            <input type="text" id="ws-bearer" placeholder="eyJhbGciOiJIUzI1NiIs..." />
+          </div>
+          <div class="scan-field">
+            <label>Proxy (optional)</label>
+            <input type="text" id="ws-proxy" placeholder="http://127.0.0.1:8080" />
+          </div>
+        </div>
+
+        <!-- Scan Type -->
+        <div class="scan-panel" style="margin-bottom:16px;">
+          <div class="scan-panel-title">⚡ Scan Profile</div>
+          <div class="scan-type-row" id="ws-scan-type">
+            <button class="scan-type-btn active" data-type="quick"   onclick="setScanType(this)">⚡ Quick</button>
+            <button class="scan-type-btn"        data-type="standard" onclick="setScanType(this)">🔍 Standard</button>
+            <button class="scan-type-btn"        data-type="deep"    onclick="setScanType(this)">🔬 Deep</button>
+            <button class="scan-type-btn"        data-type="custom"  onclick="setScanType(this)">⚙️ Custom</button>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--text2);" id="ws-type-desc">
+            Quick scan: Header checks, tech fingerprint, common misconfigs — ~2 min
+          </div>
+        </div>
+
+        <!-- Vulnerability Categories -->
+        <div class="scan-panel" style="margin-bottom:16px;">
+          <div class="scan-panel-title" style="display:flex;justify-content:space-between;">
+            <span>🛡️ Vulnerability Categories</span>
+            <span style="font-size:11px;cursor:pointer;color:var(--blue);" onclick="toggleAllCats()">Toggle All</span>
+          </div>
+          <div class="vuln-cats" id="ws-cats">
+            <span class="vuln-cat selected" data-cat="xss">XSS</span>
+            <span class="vuln-cat selected" data-cat="sqli">SQLi</span>
+            <span class="vuln-cat selected" data-cat="csrf">CSRF</span>
+            <span class="vuln-cat selected" data-cat="ssrf">SSRF</span>
+            <span class="vuln-cat selected" data-cat="idor">IDOR</span>
+            <span class="vuln-cat selected" data-cat="auth">Auth Bypass</span>
+            <span class="vuln-cat selected" data-cat="headers">Sec Headers</span>
+            <span class="vuln-cat selected" data-cat="lfi">LFI/RFI</span>
+            <span class="vuln-cat selected" data-cat="xxe">XXE</span>
+            <span class="vuln-cat selected" data-cat="ssti">SSTI</span>
+            <span class="vuln-cat"          data-cat="redirect">Open Redirect</span>
+            <span class="vuln-cat"          data-cat="smuggling">HTTP Smuggling</span>
+            <span class="vuln-cat"          data-cat="cors">CORS</span>
+            <span class="vuln-cat"          data-cat="click">Clickjacking</span>
+            <span class="vuln-cat"          data-cat="jwt">JWT Flaws</span>
+            <span class="vuln-cat"          data-cat="rce">RCE</span>
+            <span class="vuln-cat"          data-cat="dir">Dir Traversal</span>
+            <span class="vuln-cat"          data-cat="secrets">Exposed Secrets</span>
+          </div>
+        </div>
+
+        <!-- Tool Selection -->
+        <div class="scan-panel" style="margin-bottom:16px;">
+          <div class="scan-panel-title" style="display:flex;justify-content:space-between;">
+            <span>🔧 Tools to Use</span>
+            <span style="font-size:11px;cursor:pointer;color:var(--blue);" onclick="toggleAllTools()">Toggle All</span>
+          </div>
+          <div class="tool-chips" id="ws-tools">
+            <span class="tool-chip selected" data-tool="zap">OWASP ZAP</span>
+            <span class="tool-chip selected" data-tool="nuclei">Nuclei</span>
+            <span class="tool-chip selected" data-tool="nikto">Nikto</span>
+            <span class="tool-chip selected" data-tool="httpx">httpx</span>
+            <span class="tool-chip"          data-tool="sqlmap">sqlmap</span>
+            <span class="tool-chip"          data-tool="xsstrike">XSStrike</span>
+            <span class="tool-chip"          data-tool="ffuf">ffuf</span>
+            <span class="tool-chip"          data-tool="gobuster">gobuster</span>
+            <span class="tool-chip"          data-tool="dirsearch">dirsearch</span>
+            <span class="tool-chip"          data-tool="wapiti">Wapiti</span>
+            <span class="tool-chip"          data-tool="jwt_tool">jwt_tool</span>
+            <span class="tool-chip"          data-tool="nmap">Nmap</span>
+          </div>
+        </div>
+
+        <!-- Advanced Options -->
+        <div class="scan-panel" style="margin-bottom:16px;">
+          <div class="scan-panel-title">⚙️ Advanced Options</div>
+          <div class="scan-field">
+            <label>Crawl Depth</label>
+            <select id="ws-depth">
+              <option value="1">1 – Top-level only</option>
+              <option value="3" selected>3 – Standard</option>
+              <option value="5">5 – Deep crawl</option>
+              <option value="10">10 – Full crawl</option>
+            </select>
+          </div>
+          <div class="scan-field">
+            <label>Request Delay (ms)</label>
+            <select id="ws-delay">
+              <option value="0">0 – No delay (fast)</option>
+              <option value="500" selected>500 ms</option>
+              <option value="1000">1 000 ms</option>
+              <option value="2000">2 000 ms (stealthy)</option>
+            </select>
+          </div>
+          <div class="scan-field">
+            <label>User-Agent</label>
+            <select id="ws-ua">
+              <option value="default">Default (tool default)</option>
+              <option value="chrome">Chrome 122 (Desktop)</option>
+              <option value="mobile">Chrome 122 (Mobile)</option>
+              <option value="bot">Googlebot</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="scan-field" id="ws-ua-custom-wrap" style="display:none;">
+            <label>Custom User-Agent</label>
+            <input type="text" id="ws-ua-custom" placeholder="Mozilla/5.0 ..." />
+          </div>
+          <div class="scan-field">
+            <label>Exclude Paths (comma-separated)</label>
+            <input type="text" id="ws-exclude" placeholder="/logout, /delete, /admin/reset" />
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="generateScanCommands()" style="flex:1;justify-content:center;padding:10px;">
+            📋 Generate Commands
+          </button>
+          <button class="btn" onclick="runSimulatedScan()" id="ws-run-btn"
+            style="flex:1;justify-content:center;padding:10px;border-color:var(--green);color:var(--green);">
+            ▶ Run Simulated Scan
+          </button>
+        </div>
+      </div>
+
+      <!-- ─ RIGHT: Output Panel ─ -->
+      <div>
+        <!-- Status Row -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+          <div id="ws-status-badge" class="scan-status-badge ssb-idle"><span class="ssb-dot"></span>Idle</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn" onclick="clearScanOutput()">🗑 Clear</button>
+            <button class="btn" onclick="exportScanReport()">📤 Export JSON</button>
+            <button class="btn" onclick="exportPDF('scan')" style="background:#c0392b;border-color:#c0392b;color:#fff;">📄 Export PDF</button>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="scan-progress-bar" id="ws-progress-wrap" style="display:none;">
+          <div class="scan-progress-fill" id="ws-progress-fill"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:10px;" id="ws-progress-label"></div>
+
+        <!-- Inner tabs: Commands | Results | History -->
+        <div class="scan-tabs">
+          <button class="scan-inner-tab active" onclick="showScanInner('commands',this)">📋 Commands</button>
+          <button class="scan-inner-tab"        onclick="showScanInner('results',this)">🔍 Results <span id="ws-result-count" style="background:var(--accent);color:#fff;border-radius:10px;padding:0 6px;font-size:10px;">0</span></button>
+          <button class="scan-inner-tab"        onclick="showScanInner('history',this)">🕘 History</button>
+        </div>
+
+        <!-- Commands panel -->
+        <div id="scan-inner-commands" class="scan-inner-content active">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="font-size:12px;color:var(--text2);">Generated CLI commands — copy &amp; run on your system</span>
+            <button class="btn" onclick="copyCommands()" style="font-size:11px;">📋 Copy All</button>
+          </div>
+          <div class="scan-terminal" id="ws-cmd-output">
+<span class="t-dim">── ramamano.com Web App Scanner ──────────────────────────────
+Configure a target and click "Generate Commands" to see commands.
+─────────────────────────────────────────────────────────────</span>
+          </div>
+        </div>
+
+        <!-- Results panel -->
+        <div id="scan-inner-results" class="scan-inner-content">
+          <!-- Summary bar -->
+          <div id="ws-results-summary" style="display:none;margin-bottom:12px;">
+            <div class="stats-row" style="grid-template-columns:repeat(5,1fr);margin-bottom:0;">
+              <div class="stat-card" style="padding:10px;"><div class="stat-num" style="font-size:20px;color:var(--red)" id="ws-stat-crit">0</div><div class="stat-label">Critical</div></div>
+              <div class="stat-card" style="padding:10px;"><div class="stat-num" style="font-size:20px;color:#f0883e" id="ws-stat-high">0</div><div class="stat-label">High</div></div>
+              <div class="stat-card" style="padding:10px;"><div class="stat-num" style="font-size:20px;color:var(--yellow)" id="ws-stat-med">0</div><div class="stat-label">Medium</div></div>
+              <div class="stat-card" style="padding:10px;"><div class="stat-num" style="font-size:20px;color:var(--green)" id="ws-stat-low">0</div><div class="stat-label">Low</div></div>
+              <div class="stat-card" style="padding:10px;"><div class="stat-num" style="font-size:20px;color:var(--blue)" id="ws-stat-info">0</div><div class="stat-label">Info</div></div>
+            </div>
+          </div>
+          <div id="ws-results-list">
+            <div style="text-align:center;padding:40px;color:var(--text2);">
+              Run a simulated scan to see results here.
+            </div>
+          </div>
+          <div style="margin-top:12px;display:none;" id="ws-add-to-findings-wrap">
+            <button class="btn btn-primary" onclick="addAllToFindings()" style="width:100%;justify-content:center;">
+              ➕ Add All Results to Findings Tracker
+            </button>
+          </div>
+        </div>
+
+        <!-- History panel -->
+        <div id="scan-inner-history" class="scan-inner-content">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span style="font-size:12px;color:var(--text2);">Previous scan sessions (stored locally)</span>
+            <button class="btn" onclick="clearScanHistory()" style="font-size:11px;">🗑 Clear History</button>
+          </div>
+          <div id="ws-history-list">
+            <div style="text-align:center;padding:40px;color:var(--text2);">No scan history yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- ══════════════ PDF REPORT (print-only) ══════════════ -->
+<div id="pdf-report"></div>
+
+<footer>
+  <p>Built for <span>ramamano.com</span> · Web Application VAPT Framework · Powered by Open-Source Security Tools</p>
+  <p style="margin-top:6px;">Based on OWASP WSTG · OWASP Top 10 2021 · 65+ Open-Source Security Tools</p>
+  <p style="margin-top:8px;font-size:10px;">⚠️ For authorized security testing only. Unauthorized use is prohibited.</p>
+</footer>
+
+<script>
+  /* ── Tab Navigation ──────────────────────────────────────────────── */
+  function showTab(name) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  /* ── Scope Save ─────────────────────────────────────────────────── */
+  function saveScope() {
+    const t = document.getElementById('scope-target').value;
+    const i = document.getElementById('scope-ip').value;
+    const c = document.getElementById('scope-company').value;
+    const te = document.getElementById('scope-tester').value;
+    const d = document.getElementById('scope-date').value;
+    const d2 = document.getElementById('scope-display');
+    d2.style.display = 'block';
+    d2.innerHTML = `<strong style="color:var(--accent3)">Scope saved ✓</strong><br>
+      Target: ${t || '—'} | IP: ${i || '—'}<br>
+      Company: ${c || '—'} | Tester: ${te || '—'} | Date: ${d || '—'}`;
+    localStorage.setItem('vapt_scope', JSON.stringify({t,i,c,te,d}));
+  }
+
+  /* ── Checklist Progress ─────────────────────────────────────────── */
+  function updateProgress() {
+    const all = document.querySelectorAll('#tab-checklist input[type=checkbox]');
+    const done = document.querySelectorAll('#tab-checklist input[type=checkbox]:checked');
+    const pct = all.length ? Math.round((done.length / all.length) * 100) : 0;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = `${done.length} / ${all.length} completed (${pct}%)`;
+    document.getElementById('stat-checks').textContent = pct + '%';
+  }
+
+  document.addEventListener('change', function(e) {
+    if (e.target.type === 'checkbox') updateProgress();
+  });
+
+  /* ── Findings ───────────────────────────────────────────────────── */
+  let findings = JSON.parse(localStorage.getItem('vapt_findings') || '[]');
+
+  function renderFindings() {
+    const list = document.getElementById('findings-list');
+    const counts = { crit:0, high:0, med:0, low:0, info:0 };
+    findings.forEach(f => { if (counts[f.sev] !== undefined) counts[f.sev]++; });
+
+    document.getElementById('findings-count').textContent = findings.length;
+    document.getElementById('stat-total').textContent = findings.length;
+    document.getElementById('stat-crit').textContent  = counts.crit;
+    document.getElementById('stat-high').textContent  = counts.high;
+    document.getElementById('stat-med').textContent   = counts.med;
+    document.getElementById('stat-low').textContent   = counts.low;
+    document.getElementById('stat-info').textContent  = counts.info;
+
+    if (!findings.length) {
+      list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2);">No findings yet. Add your first finding above.</div>';
+      return;
+    }
+    list.innerHTML = findings.map((f, i) => `
+      <div class="finding-item ${f.sev}">
+        <div>
+          <div class="finding-title">${escHtml(f.title)}</div>
+          <div class="finding-meta">
+            ${f.sev.toUpperCase()} · ${escHtml(f.url || 'N/A')} · ${escHtml(f.cwe || '')}
+          </div>
+          ${f.desc ? `<div class="finding-meta" style="margin-top:4px;white-space:pre-wrap;">${escHtml(f.desc)}</div>` : ''}
+        </div>
+        <button class="finding-del" onclick="deleteFinding(${i})" title="Delete">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function addFinding() {
+    const title = document.getElementById('f-title').value.trim();
+    const sev   = document.getElementById('f-severity').value;
+    if (!title || !sev) { alert('Please enter a title and severity.'); return; }
+    findings.unshift({
+      title,
+      sev,
+      url:  document.getElementById('f-url').value.trim(),
+      cwe:  document.getElementById('f-cwe').value.trim(),
+      desc: document.getElementById('f-desc').value.trim(),
+      ts:   new Date().toISOString()
+    });
+    localStorage.setItem('vapt_findings', JSON.stringify(findings));
+    ['f-title','f-url','f-cwe','f-desc'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-severity').value = '';
+    renderFindings();
+  }
+
+  function deleteFinding(i) {
+    if (!confirm('Delete this finding?')) return;
+    findings.splice(i, 1);
+    localStorage.setItem('vapt_findings', JSON.stringify(findings));
+    renderFindings();
+  }
+
+  function exportFindings() {
+    const blob = new Blob([JSON.stringify(findings, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'vapt-findings-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Init ───────────────────────────────────────────────────────── */
+  (function init() {
+    renderFindings();
+    updateProgress();
+
+    // Restore scope
+    const sc = localStorage.getItem('vapt_scope');
+    if (sc) {
+      try {
+        const s = JSON.parse(sc);
+        document.getElementById('scope-target').value  = s.t  || '';
+        document.getElementById('scope-ip').value      = s.i  || '';
+        document.getElementById('scope-company').value = s.c  || 'ramamano.com';
+        document.getElementById('scope-tester').value  = s.te || '';
+        document.getElementById('scope-date').value    = s.d  || '';
+      } catch(e) {}
+    }
+  })();
+  /* ── Web App Scan ───────────────────────────────────────────────── */
+
+  // Scan type descriptions
+  const scanTypeDescs = {
+    quick:    'Quick scan: Header checks, tech fingerprint, common misconfigs — ~2 min',
+    standard: 'Standard scan: Full OWASP Top 10 checks, crawl depth 3, all selected tools — ~10 min',
+    deep:     'Deep scan: Exhaustive fuzzing, deep crawl, all tools, all vuln categories — ~45 min',
+    custom:   'Custom scan: Run exactly the tools and categories you have selected above.'
+  };
+
+  function setScanType(btn) {
+    document.querySelectorAll('.scan-type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('ws-type-desc').textContent = scanTypeDescs[btn.dataset.type];
+    // auto-select categories / tools for preset profiles
+    const all = ['xss','sqli','csrf','ssrf','idor','auth','headers','lfi','xxe','ssti','redirect','smuggling','cors','click','jwt','rce','dir','secrets'];
+    const quick = ['xss','sqli','headers','auth','idor'];
+    const std   = ['xss','sqli','csrf','ssrf','idor','auth','headers','lfi','xxe','cors','click','jwt'];
+    const deep  = all;
+    if (btn.dataset.type === 'quick')    applyCatPreset(quick);
+    else if (btn.dataset.type === 'standard') applyCatPreset(std);
+    else if (btn.dataset.type === 'deep')     applyCatPreset(deep);
+  }
+
+  function applyCatPreset(cats) {
+    document.querySelectorAll('.vuln-cat').forEach(el => {
+      if (cats.includes(el.dataset.cat)) el.classList.add('selected');
+      else el.classList.remove('selected');
+    });
+  }
+
+  // Cat & tool toggle
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('vuln-cat'))  e.target.classList.toggle('selected');
+    if (e.target.classList.contains('tool-chip')) e.target.classList.toggle('selected');
+  });
+
+  let catAllState = false;
+  function toggleAllCats() {
+    catAllState = !catAllState;
+    document.querySelectorAll('.vuln-cat').forEach(el => {
+      if (catAllState) el.classList.add('selected'); else el.classList.remove('selected');
+    });
+  }
+
+  let toolAllState = false;
+  function toggleAllTools() {
+    toolAllState = !toolAllState;
+    document.querySelectorAll('.tool-chip').forEach(el => {
+      if (toolAllState) el.classList.add('selected'); else el.classList.remove('selected');
+    });
+  }
+
+  function toggleAuthFields() {
+    const v = document.getElementById('ws-auth').value;
+    document.getElementById('ws-auth-cookie').style.display  = v === 'cookie'  ? '' : 'none';
+    document.getElementById('ws-auth-basic').style.display   = v === 'basic'   ? '' : 'none';
+    document.getElementById('ws-auth-bearer').style.display  = v === 'bearer'  ? '' : 'none';
+  }
+
+  document.getElementById('ws-ua').addEventListener('change', function() {
+    document.getElementById('ws-ua-custom-wrap').style.display = this.value === 'custom' ? '' : 'none';
+  });
+
+  // Inner tab switching
+  function showScanInner(name, btn) {
+    document.querySelectorAll('.scan-inner-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.scan-inner-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('scan-inner-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // Build full target URL
+  function getTargetUrl() {
+    const proto = document.getElementById('ws-proto').value;
+    const url   = document.getElementById('ws-url').value.trim();
+    return url ? proto + url : null;
+  }
+
+  // Get selected items
+  function getSelectedCats()  { return [...document.querySelectorAll('.vuln-cat.selected')].map(e => e.dataset.cat); }
+  function getSelectedTools() { return [...document.querySelectorAll('.tool-chip.selected')].map(e => e.dataset.tool); }
+
+  /* ── Command Generator ──────────────────────────────────────────── */
+  function generateScanCommands() {
+    const target = getTargetUrl();
+    if (!target) { alert('Please enter a target URL.'); return; }
+
+    const tools   = getSelectedTools();
+    const cats    = getSelectedCats();
+    const proxy   = document.getElementById('ws-proxy').value.trim();
+    const depth   = document.getElementById('ws-depth').value;
+    const delay   = document.getElementById('ws-delay').value;
+    const auth    = document.getElementById('ws-auth').value;
+    const cookie  = document.getElementById('ws-cookie').value.trim();
+    const basic   = document.getElementById('ws-basic').value.trim();
+    const bearer  = document.getElementById('ws-bearer').value.trim();
+    const exclude = document.getElementById('ws-exclude').value.trim();
+
+    const proxyFlag = proxy ? ` --proxy ${proxy}` : '';
+    const cookieFlag = (auth === 'cookie' && cookie) ? ` -H "Cookie: ${cookie}"` : '';
+    const authHeader = (auth === 'bearer' && bearer) ? ` -H "Authorization: Bearer ${bearer}"` : '';
+    const basicFlag = (auth === 'basic' && basic) ? ` --auth "${basic}"` : '';
+
+    const lines = [];
+    const h = (s) => `<span class="t-dim">${s}</span>`;
+    const pr = (s) => `<span class="t-prompt">$</span> <span class="t-cmd">${s}</span>`;
+    const inf = (s) => `<span class="t-info">${s}</span>`;
+
+    lines.push(h('═══ ramamano.com VAPT — Generated Scan Commands ════════════════'));
+    lines.push(h(`Target : ${target}`));
+    lines.push(h(`Date   : ${new Date().toLocaleString()}`));
+    lines.push(h('════════════════════════════════════════════════════════════════'));
+    lines.push('');
+
+    if (tools.includes('httpx')) {
+      lines.push(inf('# 1. Technology Fingerprint & HTTP Probe'));
+      lines.push(pr(`httpx -u ${target} -tech-detect -title -status-code -content-length -follow-redirects`));
+      lines.push('');
+    }
+
+    if (tools.includes('nmap')) {
+      const host = target.replace(/https?:\/\//, '').split('/')[0];
+      lines.push(inf('# 2. Port & Service Scan'));
+      lines.push(pr(`nmap -sV -sC -A --open -T4 ${host}`));
+      lines.push('');
+    }
+
+    if (tools.includes('nikto')) {
+      lines.push(inf('# 3. Nikto Web Server Scan'));
+      const niktoProxy = proxy ? ` -useproxy ${proxy}` : '';
+      lines.push(pr(`nikto -h ${target}${niktoProxy} -Format htm -output nikto-report.html`));
+      lines.push('');
+    }
+
+    if (tools.includes('nuclei')) {
+      lines.push(inf('# 4. Nuclei Template Scan'));
+      const nucleiTags = [];
+      if (cats.includes('xss'))     nucleiTags.push('xss');
+      if (cats.includes('sqli'))    nucleiTags.push('sqli');
+      if (cats.includes('ssrf'))    nucleiTags.push('ssrf');
+      if (cats.includes('ssti'))    nucleiTags.push('ssti');
+      if (cats.includes('lfi'))     nucleiTags.push('lfi');
+      if (cats.includes('xxe'))     nucleiTags.push('xxe');
+      if (cats.includes('rce'))     nucleiTags.push('rce');
+      if (cats.includes('secrets')) nucleiTags.push('exposure,token');
+      if (cats.includes('headers')) nucleiTags.push('misconfig,headers');
+      const tagStr = nucleiTags.length ? ` -tags ${nucleiTags.join(',')}` : ' -t exposures/ -t vulnerabilities/ -t misconfigurations/';
+      const nucProxy = proxy ? ` -proxy ${proxy}` : '';
+      const nucH = cookie ? ` -H "Cookie: ${cookie}"` : '';
+      lines.push(pr(`nuclei -u ${target}${tagStr}${nucProxy}${nucH} -severity critical,high,medium -o nuclei-results.txt`));
+      lines.push('');
+    }
+
+    if (tools.includes('zap')) {
+      lines.push(inf('# 5. OWASP ZAP Active Scan (Docker)'));
+      const zapProxy = proxy ? ` -z "-config connection.proxyChain.enabled=true -config connection.proxyChain.hostName=${proxy.replace('http://','').split(':')[0]}"` : '';
+      lines.push(pr(`docker run -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t ${target}${zapProxy} -r zap-report.html`));
+      lines.push('');
+    }
+
+    if (tools.includes('ffuf')) {
+      lines.push(inf('# 6. Directory & File Fuzzing'));
+      const ffufH = cookie ? ` -H "Cookie: ${cookie}"` : '';
+      const ffufP = proxy ? ` -x ${proxy}` : '';
+      lines.push(pr(`ffuf -w /usr/share/wordlists/SecLists/Discovery/Web-Content/raft-medium-directories.txt -u ${target}/FUZZ${ffufH}${ffufP} -mc 200,204,301,302,307,401,403 -o ffuf-dirs.json -of json`));
+      lines.push('');
+    }
+
+    if (tools.includes('gobuster')) {
+      lines.push(inf('# 7. Gobuster Directory Brute-Force'));
+      const gobCookie = cookie ? ` -c "${cookie}"` : '';
+      const gobProxy = proxy ? ` --proxy ${proxy}` : '';
+      lines.push(pr(`gobuster dir -u ${target} -w /usr/share/wordlists/dirb/common.txt${gobCookie}${gobProxy} -o gobuster-results.txt`));
+      lines.push('');
+    }
+
+    if (tools.includes('dirsearch')) {
+      lines.push(inf('# 8. dirsearch Recursive Scan'));
+      const dsProxy = proxy ? ` --proxy=${proxy}` : '';
+      lines.push(pr(`python3 dirsearch.py -u ${target} -r --max-recursion-depth=${depth}${dsProxy} -o dirsearch-results.txt`));
+      lines.push('');
+    }
+
+    if (tools.includes('sqlmap') && cats.includes('sqli')) {
+      lines.push(inf('# 9. SQLMap Injection Test'));
+      const sqlProxy = proxy ? ` --proxy=${proxy}` : '';
+      const sqlCookie = cookie ? ` --cookie="${cookie}"` : '';
+      lines.push(pr(`sqlmap -u "${target}?id=1"${sqlProxy}${sqlCookie} --dbs --batch --random-agent --level=3 --risk=2`));
+      lines.push('');
+    }
+
+    if (tools.includes('xsstrike') && cats.includes('xss')) {
+      lines.push(inf('# 10. XSStrike Reflected/DOM XSS'));
+      lines.push(pr(`python3 xsstrike.py -u "${target}?q=test" --crawl --blind`));
+      lines.push('');
+    }
+
+    if (tools.includes('jwt_tool') && cats.includes('jwt')) {
+      lines.push(inf('# 11. JWT Security Test'));
+      lines.push(pr(`python3 jwt_tool.py [YOUR_JWT_TOKEN] -t ${target} -M at`));
+      lines.push('');
+    }
+
+    if (tools.includes('wapiti')) {
+      lines.push(inf('# 12. Wapiti Web App Audit'));
+      const wapProxy = proxy ? ` --proxy ${proxy}` : '';
+      const wapCookie = cookie ? ` --cookie "${cookie}"` : '';
+      lines.push(pr(`wapiti -u ${target}${wapProxy}${wapCookie} -f html -o wapiti-report/ --depth ${depth}`));
+      lines.push('');
+    }
+
+    lines.push(h('════════════════════════════════════════════════════════════════'));
+    lines.push(h('All commands generated. Review, adapt, and execute on your pentest system.'));
+
+    document.getElementById('ws-cmd-output').innerHTML = lines.join('\n');
+    showScanInner('commands', document.querySelector('.scan-inner-tab'));
+    document.querySelector('.scan-inner-tab').classList.add('active');
+  }
+
+  function copyCommands() {
+    const text = document.getElementById('ws-cmd-output').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = event.target;
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => { btn.textContent = '📋 Copy All'; }, 2000);
+    }).catch(() => {
+      const range = document.createRange();
+      range.selectNode(document.getElementById('ws-cmd-output'));
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+    });
+  }
+
+  /* ── Simulated Scan Engine ──────────────────────────────────────── */
+  const vulnDatabase = {
+    xss: [
+      { sev:'high', title:'Reflected XSS in search parameter', detail:'Parameter "q" reflects unsanitized input', cwe:'CWE-79' },
+      { sev:'high', title:'Stored XSS in comment field', detail:'HTML tags not stripped from user-submitted comments', cwe:'CWE-79' },
+      { sev:'med',  title:'DOM-based XSS via location.hash', detail:'Unsafe use of document.write with hash value', cwe:'CWE-79' }
+    ],
+    sqli: [
+      { sev:'crit', title:'SQL Injection — Error-Based (MySQL)', detail:'Parameter "id" vulnerable to ORDER BY-based blind injection', cwe:'CWE-89' },
+      { sev:'crit', title:'SQL Injection — Union-Based', detail:'UNION SELECT bypass detected in login form', cwe:'CWE-89' }
+    ],
+    csrf: [
+      { sev:'high', title:'Missing CSRF Token on password change', detail:'POST /account/password accepts requests without CSRF validation', cwe:'CWE-352' }
+    ],
+    ssrf: [
+      { sev:'crit', title:'Server-Side Request Forgery (SSRF)', detail:'URL parameter "url" fetches internal resources — AWS metadata reachable', cwe:'CWE-918' }
+    ],
+    idor: [
+      { sev:'high', title:'Insecure Direct Object Reference on /api/users/{id}', detail:'Sequential user IDs expose other users\' data without authorization check', cwe:'CWE-284' }
+    ],
+    auth: [
+      { sev:'crit', title:'Authentication Bypass via SQL Injection in Login', detail:'Login form vulnerable to \' OR 1=1-- payload', cwe:'CWE-287' },
+      { sev:'high', title:'No Account Lockout — Brute-Force Possible', detail:'/api/login allows unlimited password attempts', cwe:'CWE-307' }
+    ],
+    headers: [
+      { sev:'med',  title:'Missing Content-Security-Policy header', detail:'No CSP header reduces XSS defences', cwe:'CWE-693' },
+      { sev:'med',  title:'Missing X-Frame-Options header', detail:'Page can be embedded in an iframe — clickjacking risk', cwe:'CWE-1021' },
+      { sev:'low',  title:'Missing HSTS header', detail:'HTTP Strict Transport Security not enforced', cwe:'CWE-319' },
+      { sev:'info', title:'Server header discloses version (Apache/2.4.51)', detail:'Consider suppressing version from response headers', cwe:'CWE-200' }
+    ],
+    lfi: [
+      { sev:'crit', title:'Local File Inclusion via "file" parameter', detail:'GET /view?file=../../../../etc/passwd returns system files', cwe:'CWE-22' }
+    ],
+    xxe: [
+      { sev:'high', title:'XML External Entity (XXE) Injection', detail:'XML upload endpoint processes DTD and resolves external entities', cwe:'CWE-611' }
+    ],
+    ssti: [
+      { sev:'crit', title:'Server-Side Template Injection (Jinja2)', detail:'Payload {{7*7}} returns 49 — RCE possible via template engine', cwe:'CWE-94' }
+    ],
+    redirect: [
+      { sev:'med',  title:'Open Redirect in "next" parameter', detail:'/login?next=https://evil.com redirects user after authentication', cwe:'CWE-601' }
+    ],
+    cors: [
+      { sev:'high', title:'CORS Misconfiguration — Arbitrary Origin Allowed', detail:'Access-Control-Allow-Origin: * with Allow-Credentials: true', cwe:'CWE-942' }
+    ],
+    click: [
+      { sev:'med',  title:'Clickjacking — Missing Frame-Ancestors Directive', detail:'Sensitive pages can be framed by malicious sites', cwe:'CWE-1021' }
+    ],
+    jwt: [
+      { sev:'crit', title:'JWT Algorithm Confusion — "none" Algorithm Accepted', detail:'Token with alg:none bypasses signature verification', cwe:'CWE-327' },
+      { sev:'high', title:'Weak JWT Secret — Crackable via Brute-Force', detail:'Secret "secret123" cracked in <1 second with hashcat', cwe:'CWE-326' }
+    ],
+    rce: [
+      { sev:'crit', title:'Remote Code Execution via File Upload', detail:'PHP webshell uploaded through unrestricted file upload endpoint', cwe:'CWE-434' }
+    ],
+    dir: [
+      { sev:'high', title:'Path Traversal — ../../../../etc/passwd', detail:'GET /download?path=../../../../etc/passwd returns file contents', cwe:'CWE-22' }
+    ],
+    smuggling: [
+      { sev:'high', title:'HTTP Request Smuggling (CL.TE)', detail:'Discrepancy in Content-Length and Transfer-Encoding processing', cwe:'CWE-444' }
+    ],
+    secrets: [
+      { sev:'high', title:'AWS Secret Key Exposed in JavaScript', detail:'AKIAIOSFODNN7EXAMPLE found in /static/app.min.js', cwe:'CWE-312' },
+      { sev:'med',  title:'Database password in /robots.txt comment', detail:'"# db_pass=Sup3rS3cret" exposed in robots.txt', cwe:'CWE-200' }
+    ]
+  };
+
+  let scanResults = [];
+  let scanHistory = JSON.parse(localStorage.getItem('vapt_scan_history') || '[]');
+  let scanRunning = false;
+
+  function setStatus(state, label) {
+    const b = document.getElementById('ws-status-badge');
+    b.className = 'scan-status-badge ssb-' + state;
+    b.innerHTML = `<span class="ssb-dot"></span>${label}`;
+  }
+
+  function runSimulatedScan() {
+    if (scanRunning) return;
+    const target = getTargetUrl();
+    if (!target) { alert('Please enter a target URL.'); return; }
+    const cats  = getSelectedCats();
+    const tools = getSelectedTools();
+    if (!cats.length)  { alert('Select at least one vulnerability category.'); return; }
+    if (!tools.length) { alert('Select at least one tool.'); return; }
+
+    scanRunning = true;
+    scanResults = [];
+    document.getElementById('ws-results-list').innerHTML = '';
+    document.getElementById('ws-results-summary').style.display = 'none';
+    document.getElementById('ws-add-to-findings-wrap').style.display = 'none';
+    document.getElementById('ws-result-count').textContent = '0';
+    ['ws-stat-crit','ws-stat-high','ws-stat-med','ws-stat-low','ws-stat-info'].forEach(id => {
+      document.getElementById(id).textContent = '0';
+    });
+
+    setStatus('running', 'Scanning…');
+    document.getElementById('ws-run-btn').disabled = true;
+    document.getElementById('ws-run-btn').textContent = '⏳ Scanning…';
+
+    // Switch to results tab
+    const resultBtn = document.querySelectorAll('.scan-inner-tab')[1];
+    showScanInner('results', resultBtn);
+
+    const progressWrap = document.getElementById('ws-progress-wrap');
+    const progressFill = document.getElementById('ws-progress-fill');
+    const progressLabel = document.getElementById('ws-progress-label');
+    progressWrap.style.display = 'block';
+    progressFill.style.width = '0%';
+
+    // Build pool of findings based on selected cats
+    const pool = [];
+    cats.forEach(c => { if (vulnDatabase[c]) pool.push(...vulnDatabase[c]); });
+    // Shuffle and limit realistically
+    const shuffled = pool.sort(() => Math.random() - 0.5);
+    const scanType = document.querySelector('.scan-type-btn.active').dataset.type;
+    const maxFindings = { quick: 3, standard: 6, deep: pool.length, custom: 5 }[scanType] || 5;
+    const toFind = shuffled.slice(0, Math.min(maxFindings, shuffled.length));
+
+    const phases = [
+      { label: `Fingerprinting ${target}`, pct: 10 },
+      { label: 'Running httpx probe…',     pct: 20 },
+      { label: 'Crawling application…',    pct: 35 },
+      { label: 'Running Nuclei templates…',pct: 55 },
+      { label: 'Active vulnerability tests…', pct: 75 },
+      { label: 'Analyzing responses…',     pct: 90 },
+      { label: 'Generating report…',       pct: 100 }
+    ];
+
+    let phaseIdx = 0;
+    let findIdx  = 0;
+
+    const tick = setInterval(() => {
+      if (phaseIdx < phases.length) {
+        const ph = phases[phaseIdx++];
+        progressFill.style.width = ph.pct + '%';
+        progressLabel.textContent = ph.label;
+        // Drip-feed findings during middle phases
+        if (ph.pct >= 35 && findIdx < toFind.length) {
+          appendScanResult(toFind[findIdx++], target);
+        }
+        if (ph.pct >= 55 && findIdx < toFind.length) {
+          appendScanResult(toFind[findIdx++], target);
+        }
+        if (ph.pct >= 75) {
+          while (findIdx < toFind.length) appendScanResult(toFind[findIdx++], target);
+        }
+      } else {
+        clearInterval(tick);
+        scanRunning = false;
+        setStatus('done', `Done — ${scanResults.length} findings`);
+        progressLabel.textContent = `Scan complete. ${scanResults.length} findings detected.`;
+        document.getElementById('ws-run-btn').disabled = false;
+        document.getElementById('ws-run-btn').textContent = '▶ Run Simulated Scan';
+        document.getElementById('ws-results-summary').style.display = 'block';
+        if (scanResults.length) document.getElementById('ws-add-to-findings-wrap').style.display = 'block';
+
+        // Save to history
+        const histEntry = {
+          target, tools, cats,
+          total: scanResults.length,
+          ts: new Date().toISOString(),
+          results: [...scanResults]
+        };
+        scanHistory.unshift(histEntry);
+        if (scanHistory.length > 20) scanHistory.pop();
+        localStorage.setItem('vapt_scan_history', JSON.stringify(scanHistory));
+        renderScanHistory();
+      }
+    }, 700);
+  }
+
+  const sevColors = { crit:'var(--red)', high:'#f0883e', med:'var(--yellow)', low:'var(--green)', info:'var(--blue)' };
+
+  function appendScanResult(item, target) {
+    const r = { ...item, url: target + (item.detail.includes('/') ? '/' + item.detail.split('/')[1].split(' ')[0] : ''), id: Date.now() + Math.random() };
+    scanResults.push(r);
+
+    // Update counts
+    const countEl = document.getElementById('ws-stat-' + (r.sev === 'info' ? 'info' : r.sev === 'med' ? 'med' : r.sev));
+    if (countEl) countEl.textContent = parseInt(countEl.textContent || 0) + 1;
+    document.getElementById('ws-result-count').textContent = scanResults.length;
+
+    // Render item
+    const div = document.createElement('div');
+    div.className = `scan-result-item ${r.sev}`;
+    div.innerHTML = `
+      <div class="scan-result-title">${escHtml(r.title)}</div>
+      <div class="scan-result-meta"><span class="severity sev-${r.sev === 'med' ? 'medium' : r.sev === 'crit' ? 'critical' : r.sev}">${r.sev.toUpperCase()}</span> · ${escHtml(r.cwe)}</div>
+      <div class="scan-result-url">${escHtml(r.url)}</div>
+      <div class="scan-result-meta" style="margin-top:4px;">${escHtml(r.detail)}</div>
+    `;
+    const list = document.getElementById('ws-results-list');
+    if (list.querySelector('div[style]')) list.innerHTML = '';
+    list.appendChild(div);
+  }
+
+  function addAllToFindings() {
+    scanResults.forEach(r => {
+      const sevMap = { crit:'crit', high:'high', med:'med', low:'low', info:'info' };
+      findings.unshift({
+        title: r.title,
+        sev:   sevMap[r.sev] || 'info',
+        url:   r.url,
+        cwe:   r.cwe,
+        desc:  r.detail,
+        ts:    new Date().toISOString()
+      });
+    });
+    localStorage.setItem('vapt_findings', JSON.stringify(findings));
+    renderFindings();
+    alert(`${scanResults.length} finding(s) added to the Findings Tracker.`);
+  }
+
+  function clearScanOutput() {
+    document.getElementById('ws-cmd-output').innerHTML = '<span class="t-dim">── Cleared ───</span>';
+    document.getElementById('ws-results-list').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text2);">Run a simulated scan to see results here.</div>';
+    document.getElementById('ws-results-summary').style.display = 'none';
+    document.getElementById('ws-add-to-findings-wrap').style.display = 'none';
+    document.getElementById('ws-result-count').textContent = '0';
+    document.getElementById('ws-progress-wrap').style.display = 'none';
+    document.getElementById('ws-progress-label').textContent = '';
+    scanResults = [];
+    setStatus('idle', 'Idle');
+  }
+
+  function exportScanReport() {
+    const target = getTargetUrl() || 'unknown';
+    const report = {
+      company: 'ramamano.com',
+      target,
+      date: new Date().toISOString(),
+      tools: getSelectedTools(),
+      categories: getSelectedCats(),
+      totalFindings: scanResults.length,
+      findings: scanResults
+    };
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'webscan-report-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+  }
+
+  function renderScanHistory() {
+    const list = document.getElementById('ws-history-list');
+    if (!scanHistory.length) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text2);">No scan history yet.</div>';
+      return;
+    }
+    list.innerHTML = scanHistory.map((h, i) => `
+      <div class="history-item">
+        <div>
+          <div class="history-item-url">${escHtml(h.target)}</div>
+          <div class="history-item-meta">${h.total} finding(s) · Tools: ${h.tools.join(', ')} · ${new Date(h.ts).toLocaleString()}</div>
+        </div>
+        <button class="history-del" onclick="deleteScanHistory(${i})" title="Delete">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function deleteScanHistory(i) {
+    scanHistory.splice(i, 1);
+    localStorage.setItem('vapt_scan_history', JSON.stringify(scanHistory));
+    renderScanHistory();
+  }
+
+  function clearScanHistory() {
+    if (!confirm('Clear all scan history?')) return;
+    scanHistory = [];
+    localStorage.removeItem('vapt_scan_history');
+    renderScanHistory();
+  }
+
+  // Init scan history on load
+  (function initScan() {
+    renderScanHistory();
+  })();
+
+  /* ── PDF Report Export ──────────────────────────────────────────── */
+
+  // Remediation recommendations keyed by CWE number (string) and fallback by keyword
+  const remediations = {
+    'CWE-79': {
+      title: 'Cross-Site Scripting (XSS) Remediation',
+      steps: [
+        'Encode all user-supplied output using context-aware encoding (HTML, JS, CSS, URL).',
+        'Implement a strict Content Security Policy (CSP) header: Content-Security-Policy: default-src \'self\'.',
+        'Use modern frameworks (React, Angular, Vue) which auto-escape output by default.',
+        'Sanitize rich-text input with a allow-list HTML sanitizer (e.g. DOMPurify).',
+        'Set the HttpOnly and Secure flags on session cookies.',
+        'Validate and sanitize all input on the server side regardless of client-side validation.'
+      ]
+    },
+    'CWE-89': {
+      title: 'SQL Injection Remediation',
+      steps: [
+        'Use parameterized queries / prepared statements for all database interactions.',
+        'Apply stored procedures that do not concatenate input into queries.',
+        'Implement an ORM (Object-Relational Mapper) that handles parameterization automatically.',
+        'Apply the principle of least privilege — database accounts should have only required permissions.',
+        'Deploy a Web Application Firewall (WAF) with SQL injection rule sets as a defence-in-depth measure.',
+        'Regularly audit and review all database query code for raw concatenation.'
+      ]
+    },
+    'CWE-352': {
+      title: 'CSRF Remediation',
+      steps: [
+        'Implement synchronizer token pattern (CSRF tokens) on all state-changing requests.',
+        'Use the SameSite=Strict or SameSite=Lax cookie attribute for session cookies.',
+        'Validate the Origin and Referer headers on the server.',
+        'For REST APIs, use custom request headers (e.g. X-Requested-With) and validate them.',
+        'Require re-authentication for sensitive operations such as password/email change.'
+      ]
+    },
+    'CWE-918': {
+      title: 'SSRF Remediation',
+      steps: [
+        'Whitelist allowed destinations/protocols — reject all requests to internal RFC-1918 address ranges.',
+        'Disable support for non-HTTP(S) URL schemes (file://, dict://, gopher://).',
+        'Resolve hostnames server-side and validate the resolved IP before making requests.',
+        'Deploy network-level controls to prevent server egress to internal services.',
+        'Use a metadata service firewall (AWS IMDSv2, GCP metadata IP restriction).',
+        'Return generic error messages that do not reveal internal topology.'
+      ]
+    },
+    'CWE-284': {
+      title: 'IDOR / Broken Access Control Remediation',
+      steps: [
+        'Implement server-side authorization checks on every resource access — never rely on client-supplied IDs alone.',
+        'Use indirect references (GUIDs/opaque tokens) instead of sequential numeric IDs.',
+        'Apply attribute-based access control (ABAC) or role-based access control (RBAC).',
+        'Log all access control failures and alert on unusual patterns.',
+        'Perform regular automated and manual access-control testing as part of the SDLC.'
+      ]
+    },
+    'CWE-287': {
+      title: 'Authentication Bypass Remediation',
+      steps: [
+        'Enforce multi-factor authentication (MFA) on all privileged accounts.',
+        'Implement account lockout / progressive delay after failed login attempts.',
+        'Use a proven identity framework (OAuth 2.0, OpenID Connect) rather than custom auth.',
+        'Hash passwords with bcrypt, scrypt, or Argon2id — never MD5 or plain SHA.',
+        'Rotate session tokens after authentication and privilege changes.',
+        'Conduct regular penetration tests focused on authentication logic.'
+      ]
+    },
+    'CWE-307': {
+      title: 'Brute Force / No Rate Limiting Remediation',
+      steps: [
+        'Implement rate limiting and progressive delays on all authentication endpoints.',
+        'Lock accounts or require CAPTCHA after N consecutive failed attempts.',
+        'Monitor and alert on high-frequency login attempts from a single IP or user.',
+        'Deploy IP reputation-based blocking via a WAF or CDN security layer.',
+        'Enforce strong minimum password policy and check against known-breached-password lists (e.g. HaveIBeenPwned API).'
+      ]
+    },
+    'CWE-693': {
+      title: 'Missing Security Headers Remediation',
+      steps: [
+        'Add Content-Security-Policy (CSP) with a strict policy — use nonces/hashes for inline scripts.',
+        'Add X-Frame-Options: DENY or use CSP frame-ancestors \'none\'.',
+        'Add Strict-Transport-Security: max-age=63072000; includeSubDomains; preload.',
+        'Add X-Content-Type-Options: nosniff.',
+        'Add Referrer-Policy: strict-origin-when-cross-origin.',
+        'Remove or suppress Server and X-Powered-By headers to reduce information disclosure.',
+        'Regularly audit headers using tools like Mozilla Observatory or securityheaders.com.'
+      ]
+    },
+    'CWE-22': {
+      title: 'Path Traversal / LFI Remediation',
+      steps: [
+        'Validate and canonicalize file paths before use — reject paths containing "..", "%2e", or absolute path separators.',
+        'Use an allow-list of permitted files/directories rather than relying on blacklists.',
+        'Run the application under a dedicated OS user with minimal filesystem permissions (principle of least privilege).',
+        'Store sensitive files outside the web root.',
+        'Apply chroot or container isolation to limit filesystem access.',
+        'Log all file-access errors and alert on repeated traversal attempts.'
+      ]
+    },
+    'CWE-611': {
+      title: 'XXE Injection Remediation',
+      steps: [
+        'Disable external entity processing in all XML parsers (set FEATURE_EXTERNAL_GENERAL_ENTITIES to false).',
+        'Disable DTD processing entirely if not required.',
+        'Prefer JSON over XML where possible.',
+        'Use a modern, security-hardened XML library that defaults to safe settings.',
+        'Validate XML against a strict schema before processing.',
+        'Apply WAF rules that detect and block XXE payloads.'
+      ]
+    },
+    'CWE-94': {
+      title: 'SSTI / Code Injection Remediation',
+      steps: [
+        'Never pass user-supplied input directly into template render calls.',
+        'Use a sandboxed template engine that restricts access to dangerous built-ins.',
+        'Validate and whitelist allowed characters in any dynamic template context.',
+        'Apply output encoding to all template-rendered values.',
+        'Conduct code review specifically targeting template engine usage.',
+        'Move to a logic-less template engine (Mustache, Handlebars with no helpers) for simpler contexts.'
+      ]
+    },
+    'CWE-601': {
+      title: 'Open Redirect Remediation',
+      steps: [
+        'Validate redirect targets against an allow-list of trusted URLs or paths.',
+        'Use relative paths for post-login redirects instead of absolute URLs.',
+        'Reject redirects to external domains unless explicitly configured.',
+        'Encode the redirect URL and sign it with an HMAC to prevent tampering.',
+        'Warn users before redirecting to external sites.'
+      ]
+    },
+    'CWE-942': {
+      title: 'CORS Misconfiguration Remediation',
+      steps: [
+        'Explicitly whitelist trusted origins — never use Access-Control-Allow-Origin: * with credentials.',
+        'Validate the Origin header server-side against a strict allow-list.',
+        'Avoid Access-Control-Allow-Credentials: true unless absolutely required.',
+        'Do not echo back arbitrary Origin values from the request header.',
+        'Limit allowed methods and headers to the minimum required.'
+      ]
+    },
+    'CWE-1021': {
+      title: 'Clickjacking Remediation',
+      steps: [
+        'Set Content-Security-Policy: frame-ancestors \'none\' (or \'self\' if framing is required).',
+        'Add X-Frame-Options: DENY as a fallback for older browsers.',
+        'Apply JavaScript frame-busting code as defence-in-depth.',
+        'Review all sensitive pages to ensure framing headers are consistently applied.'
+      ]
+    },
+    'CWE-327': {
+      title: 'Weak JWT / Cryptographic Algorithm Remediation',
+      steps: [
+        'Use RS256 or ES256 asymmetric algorithms — never HS256 with a weak shared secret.',
+        'Explicitly reject tokens with alg: "none" on the server-side.',
+        'Validate the "typ" header and all standard claims (iss, aud, exp, nbf).',
+        'Use a short token expiry (15–60 minutes) and implement refresh token rotation.',
+        'Store tokens in httpOnly cookies, not localStorage, to mitigate XSS-based theft.',
+        'Rotate signing keys regularly and maintain a key revocation strategy.'
+      ]
+    },
+    'CWE-326': {
+      title: 'Weak Secret / Insufficient Key Strength Remediation',
+      steps: [
+        'Generate JWT secrets with at least 256 bits of entropy (32+ random bytes).',
+        'Store secrets in a secrets manager (AWS Secrets Manager, HashiCorp Vault) — never in source code.',
+        'Rotate secrets on a regular schedule and immediately after suspected compromise.',
+        'Use asymmetric key pairs (RSA/EC) for inter-service token validation.'
+      ]
+    },
+    'CWE-434': {
+      title: 'Unrestricted File Upload / RCE Remediation',
+      steps: [
+        'Validate file type server-side using magic bytes (file signature), not just the extension or Content-Type header.',
+        'Whitelist allowed MIME types and extensions; deny all others.',
+        'Store uploaded files outside the web root and serve them through a controller that sets Content-Disposition: attachment.',
+        'Rename uploaded files to a random UUID — never use the original filename.',
+        'Scan uploaded files with a malware/antivirus engine before storage.',
+        'Set the upload directory to be non-executable at the OS/web-server level.'
+      ]
+    },
+    'CWE-444': {
+      title: 'HTTP Request Smuggling Remediation',
+      steps: [
+        'Ensure consistent handling of Content-Length and Transfer-Encoding headers between all proxy and backend servers.',
+        'Upgrade HTTP/1.1 infrastructure to HTTP/2 where possible (H2 removes the ambiguity).',
+        'Configure your load balancer/reverse proxy to reject ambiguous requests.',
+        'Disable HTTP/1.1 keep-alive if it is not required.',
+        'Use a WAF with HTTP desync / smuggling detection rules.',
+        'Regularly test with tools like PortSwigger HTTP Request Smuggler.'
+      ]
+    },
+    'CWE-312': {
+      title: 'Exposed Secrets / Credential Exposure Remediation',
+      steps: [
+        'Rotate the exposed credential immediately and treat it as fully compromised.',
+        'Remove the secret from source code / static files and audit git history (use git-filter-repo).',
+        'Store all secrets in a secrets manager — never in frontend JS, HTML, or version control.',
+        'Add a pre-commit hook (git-secrets, gitleaks) to prevent future accidental commits.',
+        'Enable AWS CloudTrail / GCP Audit Logs to audit usage of the compromised key.',
+        'Implement SAST scanning in the CI/CD pipeline to detect secrets in every build.'
+      ]
+    },
+    'CWE-200': {
+      title: 'Information Disclosure Remediation',
+      steps: [
+        'Remove or suppress Server, X-Powered-By, X-AspNet-Version, and similar version-disclosure headers.',
+        'Return generic error messages to users — log detailed errors server-side only.',
+        'Review robots.txt and ensure it does not expose sensitive paths or credentials.',
+        'Disable directory listing on the web server.',
+        'Conduct regular source-code audits for hardcoded credentials, API keys, and debug information.'
+      ]
+    },
+    // Fallback generic
+    'default': {
+      title: 'General Remediation Guidance',
+      steps: [
+        'Apply the principle of least privilege across all application components.',
+        'Validate and sanitize all user-supplied input on the server side.',
+        'Keep all dependencies and frameworks up to date with security patches.',
+        'Implement defence-in-depth: multiple complementary security controls.',
+        'Perform regular security testing (SAST, DAST, penetration tests) as part of the SDLC.',
+        'Follow OWASP guidelines and the Web Security Testing Guide (WSTG).'
+      ]
+    }
+  };
+
+  function getRemediation(cwe) {
+    if (!cwe) return remediations['default'];
+    // Extract number like "CWE-79" or "79"
+    const m = String(cwe).match(/\d+/);
+    if (m) {
+      const key = 'CWE-' + m[0];
+      if (remediations[key]) return remediations[key];
+    }
+    return remediations['default'];
+  }
+
+  function sevLabel(s) {
+    const map = { crit:'CRITICAL', high:'HIGH', med:'MEDIUM', low:'LOW', info:'INFO' };
+    return map[s] || s.toUpperCase();
+  }
+
+  function exportPDF(source) {
+    // Gather findings
+    let data = [];
+    if (source === 'findings') {
+      data = findings;
+    } else {
+      // scan results
+      data = scanResults.map(r => ({
+        title: r.title,
+        sev:   r.sev,
+        url:   r.url || '',
+        cwe:   r.cwe || '',
+        desc:  r.detail || r.desc || '',
+        ts:    r.ts || new Date().toISOString()
+      }));
+    }
+
+    if (!data.length) {
+      alert('No findings to export. Add findings first or run a scan.');
+      return;
+    }
+
+    // Gather scope info
+    const sc = localStorage.getItem('vapt_scope');
+    let scope = { t:'', i:'', c:'ramamano.com', te:'', d:'' };
+    if (sc) { try { scope = { ...scope, ...JSON.parse(sc) }; } catch(e){} }
+    const target  = scope.t  || (source === 'scan' ? (getTargetUrl() || 'N/A') : 'N/A');
+    const company = scope.c  || 'ramamano.com';
+    const tester  = scope.te || 'Security Analyst';
+    const date    = scope.d  || new Date().toLocaleDateString();
+
+    // Count severities
+    const cnt = { crit:0, high:0, med:0, low:0, info:0 };
+    data.forEach(f => { if (cnt[f.sev] !== undefined) cnt[f.sev]++; });
+    const total = data.length;
+
+    // Build risk bar widths
+    const riskSegs = [
+      { sev:'crit', color:'#f85149', count: cnt.crit },
+      { sev:'high', color:'#f0883e', count: cnt.high },
+      { sev:'med',  color:'#d29922', count: cnt.med  },
+      { sev:'low',  color:'#3fb950', count: cnt.low  },
+      { sev:'info', color:'#58a6ff', count: cnt.info }
+    ].filter(s => s.count > 0)
+     .map(s => `<div class="rpt-risk-seg" style="width:${(s.count/total*100).toFixed(1)}%;background:${s.color};"></div>`)
+     .join('');
+
+    // Build findings HTML
+    const findingsHtml = data.map((f, i) => {
+      const rem = getRemediation(f.cwe);
+      const stepsHtml = rem.steps.map(s => `<li>${escHtml(s)}</li>`).join('');
+      return `
+        <div class="rpt-finding">
+          <div class="rpt-finding-header ${f.sev}">
+            <span class="rpt-finding-title">#${i+1} — ${escHtml(f.title)}</span>
+            <span class="rpt-sev-badge ${f.sev}">${sevLabel(f.sev)}</span>
+          </div>
+          <div class="rpt-finding-body">
+            <table>
+              <tr><td>CWE</td><td>${escHtml(f.cwe || '—')}</td></tr>
+              <tr><td>URL / Endpoint</td><td>${escHtml(f.url || '—')}</td></tr>
+              <tr><td>Description</td><td>${escHtml(f.desc || '—')}</td></tr>
+              <tr><td>Detected</td><td>${new Date(f.ts || Date.now()).toLocaleString()}</td></tr>
+            </table>
+            <div class="rpt-rec-title">🔧 ${escHtml(rem.title)}</div>
+            <ul class="rpt-rec-list">${stepsHtml}</ul>
+          </div>
+        </div>`;
+    }).join('');
+
+    const now = new Date().toLocaleString();
+    const reportHtml = `
+      <!-- Cover Page -->
+      <div class="rpt-cover">
+        <div class="rpt-cover-logo">R</div>
+        <h1>ramamano.com</h1>
+        <h2>Web Application Vulnerability Assessment &amp; Penetration Testing Report</h2>
+        <div class="rpt-cover-meta">
+          <table>
+            <tr><td>Target</td><td>${escHtml(target)}</td></tr>
+            <tr><td>Organisation</td><td>${escHtml(company)}</td></tr>
+            <tr><td>Tester / Author</td><td>${escHtml(tester)}</td></tr>
+            <tr><td>Report Date</td><td>${escHtml(date)}</td></tr>
+            <tr><td>Generated</td><td>${escHtml(now)}</td></tr>
+            <tr><td>Total Findings</td><td>${total}</td></tr>
+          </table>
+        </div>
+        <div class="rpt-cover-disclaimer">
+          CONFIDENTIAL — For authorized use only. This report contains sensitive security findings and must be handled accordingly.
+          Unauthorized disclosure is prohibited.
+        </div>
+      </div>
+
+      <!-- Executive Summary -->
+      <div class="rpt-section">
+        <div class="rpt-h1">📊 Executive Summary</div>
+        <div class="rpt-sub">Severity breakdown of findings identified during the assessment of ${escHtml(target)}</div>
+
+        <div class="rpt-stats">
+          <div class="rpt-stat total">
+            <div class="rpt-stat-num">${total}</div>
+            <div class="rpt-stat-lbl">Total</div>
+          </div>
+          <div class="rpt-stat crit">
+            <div class="rpt-stat-num">${cnt.crit}</div>
+            <div class="rpt-stat-lbl">Critical</div>
+          </div>
+          <div class="rpt-stat high">
+            <div class="rpt-stat-num">${cnt.high}</div>
+            <div class="rpt-stat-lbl">High</div>
+          </div>
+          <div class="rpt-stat med">
+            <div class="rpt-stat-num">${cnt.med}</div>
+            <div class="rpt-stat-lbl">Medium</div>
+          </div>
+          <div class="rpt-stat low">
+            <div class="rpt-stat-num">${cnt.low}</div>
+            <div class="rpt-stat-lbl">Low</div>
+          </div>
+          <div class="rpt-stat info">
+            <div class="rpt-stat-num">${cnt.info}</div>
+            <div class="rpt-stat-lbl">Info</div>
+          </div>
+        </div>
+
+        <div class="rpt-h2">Risk Distribution</div>
+        <div class="rpt-risk-bar">${riskSegs}</div>
+
+        <div class="rpt-h2">Overall Risk Rating</div>
+        <p style="font-size:11pt;color:#333;">
+          ${cnt.crit > 0 ? '<strong style="color:#c0392b">CRITICAL</strong> — Immediate remediation required. Critical vulnerabilities can lead to full system compromise, data breach, or service disruption.' :
+            cnt.high > 0 ? '<strong style="color:#e06000">HIGH</strong> — High-severity findings require prompt remediation within 7 days.' :
+            cnt.med  > 0 ? '<strong style="color:#b8860b">MEDIUM</strong> — Medium-severity issues should be addressed in the next sprint or release cycle.' :
+            cnt.low  > 0 ? '<strong style="color:#267326">LOW</strong> — Low-severity findings represent minor risks; schedule remediation in the next maintenance window.' :
+            '<strong style="color:#1a6db5">INFORMATIONAL</strong> — No exploitable vulnerabilities identified. Review informational findings for best-practice improvements.'}
+        </p>
+      </div>
+
+      <!-- Detailed Findings & Recommendations -->
+      <div class="rpt-section">
+        <div class="rpt-h1">🔍 Detailed Findings &amp; Recommendations</div>
+        <div class="rpt-sub">Each finding includes severity, affected URL, description, and specific remediation guidance.</div>
+        ${findingsHtml}
+      </div>
+
+      <!-- Methodology -->
+      <div class="rpt-section">
+        <div class="rpt-h1">📋 Methodology</div>
+        <p style="font-size:11pt;color:#333;margin-bottom:10px;">This assessment was conducted in accordance with the following industry standards:</p>
+        <ul style="font-size:11pt;color:#333;padding-left:20px;line-height:2;">
+          <li>OWASP Web Security Testing Guide (WSTG) v4.2</li>
+          <li>OWASP Top 10 Web Application Security Risks (2021)</li>
+          <li>OWASP Application Security Verification Standard (ASVS) v4.0</li>
+          <li>PTES (Penetration Testing Execution Standard)</li>
+          <li>NIST SP 800-115 Technical Guide to Information Security Testing</li>
+        </ul>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="rpt-section">
+        <div class="rpt-h1">⚖️ Disclaimer</div>
+        <p style="font-size:10pt;color:#555;line-height:1.8;">
+          This report is intended solely for the use of ${escHtml(company)} and its authorised representatives.
+          The findings documented herein reflect the state of the application at the time of testing and may not reflect all
+          vulnerabilities present. The tester(s) assume no liability for actions taken or not taken based on this report.
+          All testing was performed with explicit written authorisation.
+        </p>
+      </div>
+
+      <!-- Signature Page -->
+      <div class="rpt-sig">
+        <div class="rpt-h1" style="border:none;">✍️ Sign-off</div>
+        <br/>
+        <div style="display:flex;gap:80px;flex-wrap:wrap;">
+          <div>
+            <div class="rpt-sig-line"></div>
+            <div class="rpt-sig-label">Security Tester — ${escHtml(tester)}</div>
+            <div class="rpt-sig-label">Date: _______________</div>
+          </div>
+          <div>
+            <div class="rpt-sig-line"></div>
+            <div class="rpt-sig-label">Client Representative</div>
+            <div class="rpt-sig-label">Date: _______________</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('pdf-report').innerHTML = reportHtml;
+    window.print();
+  }
+
+</script>
+</body>
+</html>
