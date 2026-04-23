@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAPT Tool – Vulnerability Assessment & Penetration Testing</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --accent: #238636;
+      --accent-hover: #2ea043;
+      --danger: #da3633;
+      --warn: #d29922;
+      --info: #388bfd;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header .logo { font-size: 1.6rem; }
+    header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: .5px; }
+    header span.tag {
+      background: var(--accent);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .page-sub {
+      color: var(--muted);
+      margin-bottom: 36px;
+      font-size: .95rem;
+    }
+
+    /* ── Feature Grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color .2s, box-shadow .2s;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .card:hover {
+      border-color: var(--info);
+      box-shadow: 0 0 0 1px var(--info);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .card-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .card-desc {
+      font-size: .875rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ── Form elements ── */
+    .form-row {
+      display: flex;
+      gap: 8px;
+    }
+    input[type="text"], input[type="url"], input[type="number"], select {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: .875rem;
+      padding: 8px 12px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus, select:focus {
+      border-color: var(--info);
+    }
+    input::placeholder { color: var(--muted); }
+
+    button.btn {
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: .875rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      transition: background .2s, opacity .2s;
+      white-space: nowrap;
+    }
+    button.btn-primary { background: var(--accent); color: #fff; }
+    button.btn-primary:hover { background: var(--accent-hover); }
+    button.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ── Progress / Results ── */
+    .progress-wrap { display: none; }
+    .progress-wrap.active { display: block; }
+    .progress-bar-bg {
+      background: var(--border);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--info);
+      border-radius: 99px;
+      transition: width .4s ease;
+    }
+    .progress-label {
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    .result-box {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: .8rem;
+      font-family: 'Consolas', monospace;
+      padding: 12px;
+      max-height: 180px;
+      overflow-y: auto;
+      display: none;
+      line-height: 1.6;
+    }
+    .result-box.visible { display: block; }
+    .result-box .ok   { color: #3fb950; }
+    .result-box .warn { color: var(--warn); }
+    .result-box .err  { color: var(--danger); }
+    .result-box .info { color: var(--info); }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      font-size: .7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-left: auto;
+    }
+    .badge-high   { background: #3b1212; color: var(--danger); border: 1px solid var(--danger); }
+    .badge-medium { background: #2d2007; color: var(--warn);   border: 1px solid var(--warn); }
+    .badge-low    { background: #122b4a; color: var(--info);   border: 1px solid var(--info); }
+
+    /* ── Section Divider ── */
+    .section-label {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 40px 0 16px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-size: .8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="logo">🛡️</span>
+  <h1>VAPT Tool<span class="tag">DEMO</span></h1>
+</header>
+
+<div class="container">
+  <h2 class="page-title">Vulnerability Assessment &amp; Penetration Testing</h2>
+  <p class="page-sub">Select a scan module below, enter the target, and launch the assessment.</p>
+
+  <!-- ─────────────── WEB ─────────────── -->
+  <p class="section-label">Web Security</p>
+  <div class="grid">
+
+    <!-- Web App Scan -->
+    <div class="card" id="card-webapp">
+      <div class="card-header">
+        <span class="card-icon">🌐</span>
+        <span class="card-title">Web App Scan</span>
+        <span class="badge badge-high">Critical</span>
+      </div>
+      <p class="card-desc">Full-spectrum web application vulnerability scan: OWASP Top-10, misconfiguration checks, sensitive file exposure, and security-header analysis.</p>
+      <div class="form-row">
+        <input type="url" id="webapp-url" placeholder="https://target.example.com" />
+        <button class="btn btn-primary" onclick="runScan('webapp')">Scan</button>
+      </div>
+      <div class="progress-wrap" id="webapp-progress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="webapp-bar"></div></div>
+        <p class="progress-label" id="webapp-label">Initialising…</p>
+      </div>
+      <div class="result-box" id="webapp-result"></div>
+    </div>
+
+    <!-- XSS Scan -->
+    <div class="card" id="card-xss">
+      <div class="card-header">
+        <span class="card-icon">💥</span>
+        <span class="card-title">XSS Scanner</span>
+        <span class="badge badge-high">High</span>
+      </div>
+      <p class="card-desc">Detects reflected, stored, and DOM-based Cross-Site Scripting vulnerabilities by injecting polyglot payloads into all input vectors.</p>
+      <div class="form-row">
+        <input type="url" id="xss-url" placeholder="https://target.example.com/page" />
+        <button class="btn btn-primary" onclick="runScan('xss')">Scan</button>
+      </div>
+      <div class="progress-wrap" id="xss-progress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="xss-bar"></div></div>
+        <p class="progress-label" id="xss-label">Initialising…</p>
+      </div>
+      <div class="result-box" id="xss-result"></div>
+    </div>
+
+    <!-- SQL Injection -->
+    <div class="card" id="card-sqli">
+      <div class="card-header">
+        <span class="card-icon">💉</span>
+        <span class="card-title">SQL Injection</span>
+        <span class="badge badge-high">Critical</span>
+      </div>
+      <p class="card-desc">Automated SQL injection testing: error-based, time-based blind, boolean-based blind, and UNION-based extraction across all parameters.</p>
+      <div class="form-row">
+        <input type="url" id="sqli-url" placeholder="https://target.example.com/item?id=1" />
+        <button class="btn btn-primary" onclick="runScan('sqli')">Scan</button>
+      </div>
+      <div class="progress-wrap" id="sqli-progress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="sqli-bar"></div></div>
+        <p class="progress-label" id="sqli-label">Initialising…</p>
+      </div>
+      <div class="result-box" id="sqli-result"></div>
+    </div>
+
+    <!-- API Security -->
+    <div class="card" id="card-api">
+      <div class="card-header">
+        <span class="card-icon">📡</span>
+        <span class="card-title">API Security Scan</span>
+        <span class="badge badge-medium">Medium</span>
+      </div>
+      <p class="card-desc">Tests REST / GraphQL APIs for broken authentication, excessive data exposure, IDOR, mass-assignment, and rate-limiting gaps.</p>
+      <div class="form-row">
+        <input type="url" id="api-url" placeholder="https://api.example.com/v1" />
+        <button class="btn btn-primary" onclick="runScan('api')">Scan</button>
+      </div>
+      <div class="progress-wrap" id="api-progress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="api-bar"></div></div>
+        <p class="progress-label" id="api-label">Initialising…</p>
+      </div>
+      <div class="result-box" id="api-result"></div>
+    </div>
+
+  </div><!-- /grid web -->
+
+  <!-- ─────────────── NETWORK ─────────────── -->
+  <p class="section-label">Network & Infrastructure</p>
+  <div class="grid">
+
+    <!-- Network Scan -->
+    <div class="card" id="card-network">
+      <div class="card-header">
+        <span class="card-icon">🔍</span>
+        <span class="card-title">Network Scan</span>
+        <span class="badge badge-medium">Medium</span>
+      </div>
+      <p class="card-desc">ICMP host discovery, OS fingerprinting, service/version detection, and CVE correlation against live hosts in the target subnet.</p>
+      <div class="form-row">
+        <input type="text" id="network-target" placeholder="192.168.1.0/24" />
+        <button class="btn btn-primary" onclick="runScan('network')">Scan</button>
+      </div>
+      <div class="progress-wrap" id="network-progress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="network-bar"></div></div>
+        <p class="progress-label" id="network-label">Initialising…</p>
+      </div>
+      <div class="result-box" id="network-result"></div>
+    </div>
+
+    <!-- Port Scan -->
+    <div class="card" id="card-port">
+      <div class="card-header">
+        <span class="card-icon">🔌</span>
+        <span class="card-title">Port Scanner</span>
+        <span class="badge badge-low">Low</span>
+      </div>
+      <p class="card-desc">TCP/UDP port sweep with banner-grabbing and service identification. Supports full-range or custom port specification.</p>
+      <div class="form-row">
+        <input type="text" id="port-target" placeholder="192.168.1.1" style="flex:2" />
+        <input type="text" id="port-range" placeholder="1-1024" style="flex:1" />
+        <button class="btn btn-primary" onclick="runScan('port')">Scan</button>
+      </div>
+      <div class="progress-wrap" id="port-progress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="port-bar"></div></div>
+        <p class="progress-label" id="port-label">Initialising…</p>
+      </div>
+      <div class="result-box" id="port-result"></div>
+    </div>
+
+    <!-- SSL/TLS Scan -->
+    <div class="card" id="card-ssl">
+      <div class="card-header">
+        <span class="card-icon">🔐</span>
+        <span class="card-title">SSL / TLS Scan</span>
+        <span class="badge badge-medium">Medium</span>
+      </div>
+      <p class="card-desc">Checks certificate validity, weak cipher suites, protocol versions (SSLv2/3, TLS 1.0/1.1), HSTS, and known vulnerabilities (POODLE, BEAST, Heartbleed).</p>
+      <div class="form-row">
+        <input type="text" id="ssl-host" placeholder="example.com" />
+        <button class="btn btn-primary" onclick="runScan('ssl')">Scan</button>
+      </div>
+      <div class="progress-wrap" id="ssl-progress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="ssl-bar"></div></div>
+        <p class="progress-label" id="ssl-label">Initialising…</p>
+      </div>
+      <div class="result-box" id="ssl-result"></div>
+    </div>
+
+    <!-- DNS Scan -->
+    <div class="card" id="card-dns">
+      <div class="card-header">
+        <span class="card-icon">🗺️</span>
+        <span class="card-title">DNS Recon</span>
+        <span class="badge badge-low">Info</span>
+      </div>
+      <p class="card-desc">DNS enumeration: zone-transfer checks, subdomain brute-force, dangling DNS detection, and SPF/DMARC/DKIM misconfiguration analysis.</p>
+      <div class="form-row">
+        <input type="text" id="dns-domain" placeholder="example.com" />
+        <button class="btn btn-primary" onclick="runScan('dns')">Scan</button>
+      </div>
+      <div class="progress-wrap" id="dns-progress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="dns-bar"></div></div>
+        <p class="progress-label" id="dns-label">Initialising…</p>
+      </div>
+      <div class="result-box" id="dns-result"></div>
+    </div>
+
+  </div><!-- /grid network -->
+
+  <!-- ─────────────── HOST / DB ─────────────── -->
+  <p class="section-label">Host & Data</p>
+  <div class="grid">
+
+    <!-- Host / OS Scan -->
+    <div class="card" id="card-host">
+      <div class="card-header">
+        <span class="card-icon">🖥️</span>
+        <span class="card-title">Host / OS Scan</span>
+        <span class="badge badge-high">High</span>
+      </div>
+      <p class="card-desc">Identifies the operating system, kernel version, running services, and maps known CVEs to the detected software versions.</p>
+      <div class="form-row">
+        <input type="text" id="host-target" placeholder="192.168.1.50" />
+        <button class="btn btn-primary" onclick="runScan('host')">Scan</button>
+      </div>
+      <div class="progress-wrap" id="host-progress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="host-bar"></div></div>
+        <p class="progress-label" id="host-label">Initialising…</p>
+      </div>
+      <div class="result-box" id="host-result"></div>
+    </div>
+
+    <!-- Database Scan -->
+    <div class="card" id="card-db">
+      <div class="card-header">
+        <span class="card-icon">🗄️</span>
+        <span class="card-title">Database Scan</span>
+        <span class="badge badge-high">Critical</span>
+      </div>
+      <p class="card-desc">Probes exposed database ports (MySQL, MSSQL, PostgreSQL, MongoDB) for default credentials, excessive privileges, and unpatched vulnerabilities.</p>
+      <div class="form-row">
+        <input type="text" id="db-target" placeholder="192.168.1.50:3306" />
+        <select id="db-type" style="flex:0 0 120px;">
+          <option>MySQL</option>
+          <option>MSSQL</option>
+          <option>PostgreSQL</option>
+          <option>MongoDB</option>
+        </select>
+        <button class="btn btn-primary" onclick="runScan('db')">Scan</button>
+      </div>
+      <div class="progress-wrap" id="db-progress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="db-bar"></div></div>
+        <p class="progress-label" id="db-label">Initialising…</p>
+      </div>
+      <div class="result-box" id="db-result"></div>
+    </div>
+
+    <!-- Fuzzer -->
+    <div class="card" id="card-fuzz">
+      <div class="card-header">
+        <span class="card-icon">🎯</span>
+        <span class="card-title">Fuzzer</span>
+        <span class="badge badge-medium">Medium</span>
+      </div>
+      <p class="card-desc">HTTP parameter and path fuzzing to discover hidden endpoints, unhandled exceptions, and logic errors using custom wordlists.</p>
+      <div class="form-row">
+        <input type="url" id="fuzz-url" placeholder="https://target.example.com/FUZZ" />
+        <button class="btn btn-primary" onclick="runScan('fuzz')">Fuzz</button>
+      </div>
+      <div class="progress-wrap" id="fuzz-progress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="fuzz-bar"></div></div>
+        <p class="progress-label" id="fuzz-label">Initialising…</p>
+      </div>
+      <div class="result-box" id="fuzz-result"></div>
+    </div>
+
+  </div><!-- /grid host -->
+</div><!-- /container -->
+
+<footer>
+  VAPT Tool &mdash; For authorised security testing only. Unauthorised use is illegal.
+</footer>
+
+<script>
+  // ── Demo scan data ──────────────────────────────────────────────────────────
+  const scanData = {
+    webapp: {
+      steps: [
+        'Crawling target…',
+        'Analysing security headers…',
+        'Testing OWASP Top-10 vectors…',
+        'Checking for sensitive file exposure…',
+        'Generating report…'
+      ],
+      output: [
+        { cls: 'warn', msg: '[WARN]  Missing Content-Security-Policy header' },
+        { cls: 'warn', msg: '[WARN]  X-Frame-Options not set (Clickjacking risk)' },
+        { cls: 'err',  msg: '[HIGH]  Directory listing enabled at /uploads/' },
+        { cls: 'err',  msg: '[HIGH]  Reflected XSS in ?search= parameter' },
+        { cls: 'ok',   msg: '[OK]    HTTPS enforced, valid certificate' },
+        { cls: 'info', msg: '[INFO]  5 endpoints discovered, 2 require auth' }
+      ]
+    },
+    xss: {
+      steps: ['Mapping input vectors…', 'Injecting reflected payloads…', 'Testing DOM sinks…', 'Checking stored XSS…', 'Done.'],
+      output: [
+        { cls: 'err',  msg: '[HIGH]  Reflected XSS: ?q=<script>alert(1)</script>' },
+        { cls: 'err',  msg: '[HIGH]  DOM XSS via document.location.hash in /page#' },
+        { cls: 'ok',   msg: '[OK]    No stored XSS found' },
+        { cls: 'warn', msg: '[MED]   HTML injection in comment field' }
+      ]
+    },
+    sqli: {
+      steps: ['Detecting parameters…', 'Error-based probing…', 'Boolean-blind probing…', 'Time-based probing…', 'Done.'],
+      output: [
+        { cls: 'err',  msg: '[CRIT]  Error-based SQLi: GET /item?id=1' },
+        { cls: 'err',  msg: '[CRIT]  UNION-based extraction possible' },
+        { cls: 'warn', msg: '[MED]   Time-based blind SQLi: POST /login (username)' },
+        { cls: 'ok',   msg: '[OK]    Search parameter appears sanitised' }
+      ]
+    },
+    api: {
+      steps: ['Discovering endpoints…', 'Testing auth bypass…', 'Checking IDOR…', 'Rate-limit testing…', 'Done.'],
+      output: [
+        { cls: 'err',  msg: '[HIGH]  IDOR: GET /api/v1/users/{id} leaks other user data' },
+        { cls: 'warn', msg: '[MED]   No rate-limiting on /api/v1/login' },
+        { cls: 'ok',   msg: '[OK]    JWT signature verified correctly' },
+        { cls: 'info', msg: '[INFO]  12 endpoints enumerated from Swagger' }
+      ]
+    },
+    network: {
+      steps: ['Host discovery…', 'OS fingerprinting…', 'Service detection…', 'CVE correlation…', 'Done.'],
+      output: [
+        { cls: 'info', msg: '[INFO]  3 hosts up: .1, .50, .101' },
+        { cls: 'warn', msg: '[MED]   192.168.1.50 – OpenSSH 7.2 (CVE-2016-6210)' },
+        { cls: 'err',  msg: '[HIGH]  192.168.1.101 – Apache 2.4.49 (CVE-2021-41773)' },
+        { cls: 'ok',   msg: '[OK]    192.168.1.1 – No critical CVEs found' }
+      ]
+    },
+    port: {
+      steps: ['SYN sweep…', 'Banner grabbing…', 'UDP probe…', 'Done.'],
+      output: [
+        { cls: 'info', msg: '[OPEN]  22/tcp   – OpenSSH 8.4' },
+        { cls: 'info', msg: '[OPEN]  80/tcp   – Apache httpd 2.4.51' },
+        { cls: 'info', msg: '[OPEN]  443/tcp  – Apache httpd 2.4.51 (TLS)' },
+        { cls: 'warn', msg: '[OPEN]  3306/tcp – MySQL 5.7 (world-accessible!)' },
+        { cls: 'ok',   msg: '[CLOSED] All other ports 1-1024 closed' }
+      ]
+    },
+    ssl: {
+      steps: ['Connecting…', 'Checking protocols…', 'Enumerating ciphers…', 'Certificate analysis…', 'Done.'],
+      output: [
+        { cls: 'err',  msg: '[HIGH]  TLS 1.0 enabled – POODLE risk' },
+        { cls: 'warn', msg: '[MED]   Weak cipher: TLS_RSA_WITH_RC4_128_SHA' },
+        { cls: 'ok',   msg: '[OK]    Certificate valid, expires 2026-01-15' },
+        { cls: 'ok',   msg: '[OK]    HSTS header present (max-age=31536000)' }
+      ]
+    },
+    dns: {
+      steps: ['Zone transfer…', 'Subdomain enum…', 'SPF/DMARC check…', 'Done.'],
+      output: [
+        { cls: 'warn', msg: '[MED]   Zone transfer allowed from ns1.example.com' },
+        { cls: 'info', msg: '[INFO]  Subdomains found: dev, staging, api, mail' },
+        { cls: 'err',  msg: '[HIGH]  staging.example.com has no SSL certificate' },
+        { cls: 'warn', msg: '[MED]   SPF record missing – email spoofing risk' }
+      ]
+    },
+    host: {
+      steps: ['OS detection…', 'Service enum…', 'CVE lookup…', 'Done.'],
+      output: [
+        { cls: 'info', msg: '[INFO]  OS: Ubuntu 20.04.4 LTS (kernel 5.4.0-126)' },
+        { cls: 'warn', msg: '[MED]   Kernel CVE-2022-0847 (Dirty Pipe) – patch available' },
+        { cls: 'err',  msg: '[HIGH]  sudo 1.8.31 – CVE-2021-3156 (Baron Samedit)' },
+        { cls: 'ok',   msg: '[OK]    No RCE-level vulnerabilities in services' }
+      ]
+    },
+    db: {
+      steps: ['Connecting…', 'Auth testing…', 'Privilege check…', 'CVE lookup…', 'Done.'],
+      output: [
+        { cls: 'err',  msg: '[CRIT]  Login successful with root / (empty password)' },
+        { cls: 'err',  msg: '[CRIT]  Remote root access allowed from any host' },
+        { cls: 'warn', msg: '[MED]   MySQL 5.7 – CVE-2020-14812 (DoS)' },
+        { cls: 'info', msg: '[INFO]  Databases found: information_schema, app_db, users' }
+      ]
+    },
+    fuzz: {
+      steps: ['Loading wordlist…', 'Fuzzing paths…', 'Analysing responses…', 'Done.'],
+      output: [
+        { cls: 'ok',   msg: '[200]  /admin         – Admin panel exposed!' },
+        { cls: 'ok',   msg: '[200]  /backup.zip    – Backup file publicly accessible' },
+        { cls: 'warn', msg: '[403]  /config        – Forbidden (but exists)' },
+        { cls: 'info', msg: '[INFO]  1482 requests sent, 3 notable findings' }
+      ]
+    }
+  };
+
+  // ── Simulated scan runner ───────────────────────────────────────────────────
+  function runScan(id) {
+    const data    = scanData[id];
+    const bar     = document.getElementById(id + '-bar');
+    const label   = document.getElementById(id + '-label');
+    const prog    = document.getElementById(id + '-progress');
+    const result  = document.getElementById(id + '-result');
+
+    prog.classList.add('active');
+    result.classList.remove('visible');
+    result.innerHTML = '';
+    bar.style.width = '0%';
+
+    const total = data.steps.length;
+    let step = 0;
+
+    const tick = setInterval(() => {
+      step++;
+      const pct = Math.round((step / total) * 100);
+      bar.style.width = pct + '%';
+      label.textContent = data.steps[step - 1] || 'Done.';
+
+      if (step >= total) {
+        clearInterval(tick);
+        setTimeout(() => {
+          prog.classList.remove('active');
+          result.innerHTML = data.output
+            .map(o => `<div class="${o.cls}">${o.msg}</div>`)
+            .join('');
+          result.classList.add('visible');
+        }, 400);
+      }
+    }, 600);
+  }
+</script>
+</body>
+</html>
