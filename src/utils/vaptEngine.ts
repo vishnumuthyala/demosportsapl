@@ -269,7 +269,7 @@ function sampleFindings(
   return shuffled.slice(0, Math.min(count, shuffled.length)).map((f) => ({
     ...f,
     id: makeId(),
-    endpoint: pickEndpoint(targetUrl, f.cve ? category : category),
+    endpoint: pickEndpoint(targetUrl, category),
   }));
 }
 
