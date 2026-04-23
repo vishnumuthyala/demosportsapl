@@ -322,6 +322,138 @@
       .phase-flow { flex-direction: column; }
       .phase-step::before, .phase-step::after { display: none; }
     }
+
+    /* ── Web App Scan Tab ─────────────────────────────────────────── */
+    .scan-layout { display: grid; grid-template-columns: 380px 1fr; gap: 18px; align-items: start; }
+    @media (max-width: 900px) { .scan-layout { grid-template-columns: 1fr; } }
+
+    .scan-panel {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px;
+    }
+    .scan-panel-title {
+      font-weight: 700; font-size: 13px; color: var(--accent3);
+      margin-bottom: 14px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .scan-field { margin-bottom: 12px; }
+    .scan-field label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+    .scan-field input,
+    .scan-field select,
+    .scan-field textarea {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 8px 12px; font-size: 13px;
+      outline: none; transition: border-color .2s; font-family: inherit;
+    }
+    .scan-field input:focus,
+    .scan-field select:focus { border-color: var(--green); }
+
+    /* scan type pills */
+    .scan-type-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .scan-type-btn {
+      padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      border: 1px solid var(--border); background: var(--bg3); color: var(--text2);
+      cursor: pointer; transition: all .2s;
+    }
+    .scan-type-btn:hover { border-color: var(--green); color: var(--green); }
+    .scan-type-btn.active { background: var(--green); border-color: var(--green); color: #000; }
+
+    /* vulnerability category toggles */
+    .vuln-cats { display: flex; flex-wrap: wrap; gap: 6px; }
+    .vuln-cat {
+      padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+      border: 1px solid var(--border); background: var(--bg3); color: var(--text2);
+      cursor: pointer; transition: all .15s; user-select: none;
+    }
+    .vuln-cat.selected { background: rgba(63,185,80,.15); border-color: var(--green); color: var(--green); }
+
+    /* tool toggle chips */
+    .tool-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tool-chip {
+      padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+      border: 1px solid var(--border); background: var(--bg3); color: var(--text2);
+      cursor: pointer; transition: all .15s; user-select: none;
+    }
+    .tool-chip.selected { background: rgba(88,166,255,.15); border-color: var(--blue); color: var(--blue); }
+
+    /* Terminal / command output */
+    .scan-terminal {
+      background: #010409; border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 12px; line-height: 1.7;
+      min-height: 200px; max-height: 380px; overflow-y: auto;
+      white-space: pre-wrap; word-break: break-all;
+    }
+    .scan-terminal .t-prompt { color: var(--green); }
+    .scan-terminal .t-cmd    { color: var(--text); }
+    .scan-terminal .t-info   { color: var(--blue); }
+    .scan-terminal .t-warn   { color: var(--yellow); }
+    .scan-terminal .t-err    { color: var(--red); }
+    .scan-terminal .t-ok     { color: var(--green); }
+    .scan-terminal .t-dim    { color: var(--text2); }
+    .scan-terminal .t-find   { color: var(--accent3); font-weight: bold; }
+
+    /* Scan progress */
+    .scan-progress-bar {
+      background: var(--bg3); border-radius: 10px; height: 8px;
+      overflow: hidden; margin: 10px 0;
+    }
+    .scan-progress-fill {
+      height: 100%; border-radius: 10px; width: 0%;
+      background: linear-gradient(90deg, var(--green), #a8ff78);
+      transition: width .4s ease;
+    }
+
+    /* Result cards */
+    .scan-result-item {
+      background: var(--bg3); border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 8px;
+      animation: slideIn .3s ease;
+    }
+    .scan-result-item.crit { border-color: var(--red); }
+    .scan-result-item.high { border-color: #f0883e; }
+    .scan-result-item.med  { border-color: var(--yellow); }
+    .scan-result-item.low  { border-color: var(--green); }
+    .scan-result-item.info { border-color: var(--blue); }
+    .scan-result-title { font-weight: 700; font-size: 13px; margin-bottom: 3px; }
+    .scan-result-meta  { font-size: 11px; color: var(--text2); }
+    .scan-result-url   { font-size: 11px; color: var(--blue); word-break: break-all; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .scan-status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    }
+    .ssb-idle    { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); }
+    .ssb-running { background: rgba(63,185,80,.15); border: 1px solid var(--green); color: var(--green); }
+    .ssb-done    { background: rgba(88,166,255,.15); border: 1px solid var(--blue); color: var(--blue); }
+    .ssb-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .ssb-running .ssb-dot { animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    .scan-tabs { display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    .scan-inner-tab {
+      padding: 5px 14px; border-radius: 6px 6px 0 0; font-size: 12px; font-weight: 600;
+      border: none; background: none; color: var(--text2); cursor: pointer; transition: all .2s;
+    }
+    .scan-inner-tab:hover { background: var(--bg3); color: var(--text); }
+    .scan-inner-tab.active { background: var(--bg3); color: var(--accent3); border-bottom: 2px solid var(--accent3); }
+    .scan-inner-content { display: none; }
+    .scan-inner-content.active { display: block; }
+
+    .history-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px 14px; background: var(--bg3); border-radius: 6px; margin-bottom: 8px;
+    }
+    .history-item-url { font-size: 13px; font-weight: 600; color: var(--blue); }
+    .history-item-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
+    .history-del { cursor:pointer; background:none; border:none; color:var(--text2); font-size:16px; }
+    .history-del:hover { color: var(--red); }
   </style>
 </head>
 <body>
@@ -352,6 +484,7 @@
     <button class="nav-tab" onclick="showTab('findings')">📋 Findings</button>
     <button class="nav-tab" onclick="showTab('owasp')">🛡️ OWASP Top 10</button>
     <button class="nav-tab" onclick="showTab('tools')">🧰 All Tools</button>
+    <button class="nav-tab" onclick="showTab('webscan')" style="background:linear-gradient(135deg,#1a3a1a,#0d2b0d);border:1px solid #3fb950;color:#3fb950;">🌐 Web App Scan</button>
   </div>
 </header>
 
@@ -1098,6 +1231,255 @@
     </div>
   </div>
 
+  <!-- ─── WEB APP SCAN ─── -->
+  <div id="tab-webscan" class="tab-content">
+    <div class="section-header">
+      <div class="section-icon">🌐</div>
+      <div>
+        <h2>Web Application Scanner</h2>
+        <p>Configure, generate commands, and simulate a full web application security scan</p>
+      </div>
+    </div>
+
+    <div class="alert alert-danger">
+      🚨 <strong>Authorized Use Only.</strong> Only scan systems you own or have explicit written permission to test. This tool generates real attack commands — use responsibly.
+    </div>
+
+    <div class="scan-layout">
+      <!-- ─ LEFT: Config Panel ─ -->
+      <div>
+        <!-- Target -->
+        <div class="scan-panel" style="margin-bottom:16px;">
+          <div class="scan-panel-title">🎯 Target Configuration</div>
+          <div class="scan-field">
+            <label>Target URL *</label>
+            <div style="display:flex;gap:6px;">
+              <select id="ws-proto" style="width:110px;flex-shrink:0;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 6px;font-size:13px;outline:none;">
+                <option>https://</option>
+                <option>http://</option>
+              </select>
+              <input type="text" id="ws-url" placeholder="target.com or 192.168.1.1" />
+            </div>
+          </div>
+          <div class="scan-field">
+            <label>Authentication</label>
+            <select id="ws-auth" onchange="toggleAuthFields()">
+              <option value="none">None</option>
+              <option value="cookie">Cookie / Session Token</option>
+              <option value="basic">HTTP Basic Auth</option>
+              <option value="bearer">Bearer Token (JWT)</option>
+            </select>
+          </div>
+          <div id="ws-auth-cookie" class="scan-field" style="display:none;">
+            <label>Cookie Value</label>
+            <input type="text" id="ws-cookie" placeholder="PHPSESSID=abc123; auth_token=xyz" />
+          </div>
+          <div id="ws-auth-basic" class="scan-field" style="display:none;">
+            <label>Username : Password</label>
+            <input type="text" id="ws-basic" placeholder="admin:password123" />
+          </div>
+          <div id="ws-auth-bearer" class="scan-field" style="display:none;">
+            <label>JWT / Bearer Token</label>
+            <input type="text" id="ws-bearer" placeholder="eyJhbGciOiJIUzI1NiIs..." />
+          </div>
+          <div class="scan-field">
+            <label>Proxy (optional)</label>
+            <input type="text" id="ws-proxy" placeholder="http://127.0.0.1:8080" />
+          </div>
+        </div>
+
+        <!-- Scan Type -->
+        <div class="scan-panel" style="margin-bottom:16px;">
+          <div class="scan-panel-title">⚡ Scan Profile</div>
+          <div class="scan-type-row" id="ws-scan-type">
+            <button class="scan-type-btn active" data-type="quick"   onclick="setScanType(this)">⚡ Quick</button>
+            <button class="scan-type-btn"        data-type="standard" onclick="setScanType(this)">🔍 Standard</button>
+            <button class="scan-type-btn"        data-type="deep"    onclick="setScanType(this)">🔬 Deep</button>
+            <button class="scan-type-btn"        data-type="custom"  onclick="setScanType(this)">⚙️ Custom</button>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--text2);" id="ws-type-desc">
+            Quick scan: Header checks, tech fingerprint, common misconfigs — ~2 min
+          </div>
+        </div>
+
+        <!-- Vulnerability Categories -->
+        <div class="scan-panel" style="margin-bottom:16px;">
+          <div class="scan-panel-title" style="display:flex;justify-content:space-between;">
+            <span>🛡️ Vulnerability Categories</span>
+            <span style="font-size:11px;cursor:pointer;color:var(--blue);" onclick="toggleAllCats()">Toggle All</span>
+          </div>
+          <div class="vuln-cats" id="ws-cats">
+            <span class="vuln-cat selected" data-cat="xss">XSS</span>
+            <span class="vuln-cat selected" data-cat="sqli">SQLi</span>
+            <span class="vuln-cat selected" data-cat="csrf">CSRF</span>
+            <span class="vuln-cat selected" data-cat="ssrf">SSRF</span>
+            <span class="vuln-cat selected" data-cat="idor">IDOR</span>
+            <span class="vuln-cat selected" data-cat="auth">Auth Bypass</span>
+            <span class="vuln-cat selected" data-cat="headers">Sec Headers</span>
+            <span class="vuln-cat selected" data-cat="lfi">LFI/RFI</span>
+            <span class="vuln-cat selected" data-cat="xxe">XXE</span>
+            <span class="vuln-cat selected" data-cat="ssti">SSTI</span>
+            <span class="vuln-cat"          data-cat="redirect">Open Redirect</span>
+            <span class="vuln-cat"          data-cat="smuggling">HTTP Smuggling</span>
+            <span class="vuln-cat"          data-cat="cors">CORS</span>
+            <span class="vuln-cat"          data-cat="click">Clickjacking</span>
+            <span class="vuln-cat"          data-cat="jwt">JWT Flaws</span>
+            <span class="vuln-cat"          data-cat="rce">RCE</span>
+            <span class="vuln-cat"          data-cat="dir">Dir Traversal</span>
+            <span class="vuln-cat"          data-cat="secrets">Exposed Secrets</span>
+          </div>
+        </div>
+
+        <!-- Tool Selection -->
+        <div class="scan-panel" style="margin-bottom:16px;">
+          <div class="scan-panel-title" style="display:flex;justify-content:space-between;">
+            <span>🔧 Tools to Use</span>
+            <span style="font-size:11px;cursor:pointer;color:var(--blue);" onclick="toggleAllTools()">Toggle All</span>
+          </div>
+          <div class="tool-chips" id="ws-tools">
+            <span class="tool-chip selected" data-tool="zap">OWASP ZAP</span>
+            <span class="tool-chip selected" data-tool="nuclei">Nuclei</span>
+            <span class="tool-chip selected" data-tool="nikto">Nikto</span>
+            <span class="tool-chip selected" data-tool="httpx">httpx</span>
+            <span class="tool-chip"          data-tool="sqlmap">sqlmap</span>
+            <span class="tool-chip"          data-tool="xsstrike">XSStrike</span>
+            <span class="tool-chip"          data-tool="ffuf">ffuf</span>
+            <span class="tool-chip"          data-tool="gobuster">gobuster</span>
+            <span class="tool-chip"          data-tool="dirsearch">dirsearch</span>
+            <span class="tool-chip"          data-tool="wapiti">Wapiti</span>
+            <span class="tool-chip"          data-tool="jwt_tool">jwt_tool</span>
+            <span class="tool-chip"          data-tool="nmap">Nmap</span>
+          </div>
+        </div>
+
+        <!-- Advanced Options -->
+        <div class="scan-panel" style="margin-bottom:16px;">
+          <div class="scan-panel-title">⚙️ Advanced Options</div>
+          <div class="scan-field">
+            <label>Crawl Depth</label>
+            <select id="ws-depth">
+              <option value="1">1 – Top-level only</option>
+              <option value="3" selected>3 – Standard</option>
+              <option value="5">5 – Deep crawl</option>
+              <option value="10">10 – Full crawl</option>
+            </select>
+          </div>
+          <div class="scan-field">
+            <label>Request Delay (ms)</label>
+            <select id="ws-delay">
+              <option value="0">0 – No delay (fast)</option>
+              <option value="500" selected>500 ms</option>
+              <option value="1000">1 000 ms</option>
+              <option value="2000">2 000 ms (stealthy)</option>
+            </select>
+          </div>
+          <div class="scan-field">
+            <label>User-Agent</label>
+            <select id="ws-ua">
+              <option value="default">Default (tool default)</option>
+              <option value="chrome">Chrome 122 (Desktop)</option>
+              <option value="mobile">Chrome 122 (Mobile)</option>
+              <option value="bot">Googlebot</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="scan-field" id="ws-ua-custom-wrap" style="display:none;">
+            <label>Custom User-Agent</label>
+            <input type="text" id="ws-ua-custom" placeholder="Mozilla/5.0 ..." />
+          </div>
+          <div class="scan-field">
+            <label>Exclude Paths (comma-separated)</label>
+            <input type="text" id="ws-exclude" placeholder="/logout, /delete, /admin/reset" />
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="generateScanCommands()" style="flex:1;justify-content:center;padding:10px;">
+            📋 Generate Commands
+          </button>
+          <button class="btn" onclick="runSimulatedScan()" id="ws-run-btn"
+            style="flex:1;justify-content:center;padding:10px;border-color:var(--green);color:var(--green);">
+            ▶ Run Simulated Scan
+          </button>
+        </div>
+      </div>
+
+      <!-- ─ RIGHT: Output Panel ─ -->
+      <div>
+        <!-- Status Row -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+          <div id="ws-status-badge" class="scan-status-badge ssb-idle"><span class="ssb-dot"></span>Idle</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn" onclick="clearScanOutput()">🗑 Clear</button>
+            <button class="btn" onclick="exportScanReport()">📤 Export Report</button>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="scan-progress-bar" id="ws-progress-wrap" style="display:none;">
+          <div class="scan-progress-fill" id="ws-progress-fill"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:10px;" id="ws-progress-label"></div>
+
+        <!-- Inner tabs: Commands | Results | History -->
+        <div class="scan-tabs">
+          <button class="scan-inner-tab active" onclick="showScanInner('commands',this)">📋 Commands</button>
+          <button class="scan-inner-tab"        onclick="showScanInner('results',this)">🔍 Results <span id="ws-result-count" style="background:var(--accent);color:#fff;border-radius:10px;padding:0 6px;font-size:10px;">0</span></button>
+          <button class="scan-inner-tab"        onclick="showScanInner('history',this)">🕘 History</button>
+        </div>
+
+        <!-- Commands panel -->
+        <div id="scan-inner-commands" class="scan-inner-content active">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="font-size:12px;color:var(--text2);">Generated CLI commands — copy &amp; run on your system</span>
+            <button class="btn" onclick="copyCommands()" style="font-size:11px;">📋 Copy All</button>
+          </div>
+          <div class="scan-terminal" id="ws-cmd-output">
+<span class="t-dim">── ramamano.com Web App Scanner ──────────────────────────────
+Configure a target and click "Generate Commands" to see commands.
+─────────────────────────────────────────────────────────────</span>
+          </div>
+        </div>
+
+        <!-- Results panel -->
+        <div id="scan-inner-results" class="scan-inner-content">
+          <!-- Summary bar -->
+          <div id="ws-results-summary" style="display:none;margin-bottom:12px;">
+            <div class="stats-row" style="grid-template-columns:repeat(5,1fr);margin-bottom:0;">
+              <div class="stat-card" style="padding:10px;"><div class="stat-num" style="font-size:20px;color:var(--red)" id="ws-stat-crit">0</div><div class="stat-label">Critical</div></div>
+              <div class="stat-card" style="padding:10px;"><div class="stat-num" style="font-size:20px;color:#f0883e" id="ws-stat-high">0</div><div class="stat-label">High</div></div>
+              <div class="stat-card" style="padding:10px;"><div class="stat-num" style="font-size:20px;color:var(--yellow)" id="ws-stat-med">0</div><div class="stat-label">Medium</div></div>
+              <div class="stat-card" style="padding:10px;"><div class="stat-num" style="font-size:20px;color:var(--green)" id="ws-stat-low">0</div><div class="stat-label">Low</div></div>
+              <div class="stat-card" style="padding:10px;"><div class="stat-num" style="font-size:20px;color:var(--blue)" id="ws-stat-info">0</div><div class="stat-label">Info</div></div>
+            </div>
+          </div>
+          <div id="ws-results-list">
+            <div style="text-align:center;padding:40px;color:var(--text2);">
+              Run a simulated scan to see results here.
+            </div>
+          </div>
+          <div style="margin-top:12px;display:none;" id="ws-add-to-findings-wrap">
+            <button class="btn btn-primary" onclick="addAllToFindings()" style="width:100%;justify-content:center;">
+              ➕ Add All Results to Findings Tracker
+            </button>
+          </div>
+        </div>
+
+        <!-- History panel -->
+        <div id="scan-inner-history" class="scan-inner-content">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span style="font-size:12px;color:var(--text2);">Previous scan sessions (stored locally)</span>
+            <button class="btn" onclick="clearScanHistory()" style="font-size:11px;">🗑 Clear History</button>
+          </div>
+          <div id="ws-history-list">
+            <div style="text-align:center;padding:40px;color:var(--text2);">No scan history yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /container -->
 
 <footer>
@@ -1235,6 +1617,521 @@
       } catch(e) {}
     }
   })();
+  /* ── Web App Scan ───────────────────────────────────────────────── */
+
+  // Scan type descriptions
+  const scanTypeDescs = {
+    quick:    'Quick scan: Header checks, tech fingerprint, common misconfigs — ~2 min',
+    standard: 'Standard scan: Full OWASP Top 10 checks, crawl depth 3, all selected tools — ~10 min',
+    deep:     'Deep scan: Exhaustive fuzzing, deep crawl, all tools, all vuln categories — ~45 min',
+    custom:   'Custom scan: Run exactly the tools and categories you have selected above.'
+  };
+
+  function setScanType(btn) {
+    document.querySelectorAll('.scan-type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('ws-type-desc').textContent = scanTypeDescs[btn.dataset.type];
+    // auto-select categories / tools for preset profiles
+    const all = ['xss','sqli','csrf','ssrf','idor','auth','headers','lfi','xxe','ssti','redirect','smuggling','cors','click','jwt','rce','dir','secrets'];
+    const quick = ['xss','sqli','headers','auth','idor'];
+    const std   = ['xss','sqli','csrf','ssrf','idor','auth','headers','lfi','xxe','cors','click','jwt'];
+    const deep  = all;
+    if (btn.dataset.type === 'quick')    applyCatPreset(quick);
+    else if (btn.dataset.type === 'standard') applyCatPreset(std);
+    else if (btn.dataset.type === 'deep')     applyCatPreset(deep);
+  }
+
+  function applyCatPreset(cats) {
+    document.querySelectorAll('.vuln-cat').forEach(el => {
+      if (cats.includes(el.dataset.cat)) el.classList.add('selected');
+      else el.classList.remove('selected');
+    });
+  }
+
+  // Cat & tool toggle
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('vuln-cat'))  e.target.classList.toggle('selected');
+    if (e.target.classList.contains('tool-chip')) e.target.classList.toggle('selected');
+  });
+
+  let catAllState = false;
+  function toggleAllCats() {
+    catAllState = !catAllState;
+    document.querySelectorAll('.vuln-cat').forEach(el => {
+      if (catAllState) el.classList.add('selected'); else el.classList.remove('selected');
+    });
+  }
+
+  let toolAllState = false;
+  function toggleAllTools() {
+    toolAllState = !toolAllState;
+    document.querySelectorAll('.tool-chip').forEach(el => {
+      if (toolAllState) el.classList.add('selected'); else el.classList.remove('selected');
+    });
+  }
+
+  function toggleAuthFields() {
+    const v = document.getElementById('ws-auth').value;
+    document.getElementById('ws-auth-cookie').style.display  = v === 'cookie'  ? '' : 'none';
+    document.getElementById('ws-auth-basic').style.display   = v === 'basic'   ? '' : 'none';
+    document.getElementById('ws-auth-bearer').style.display  = v === 'bearer'  ? '' : 'none';
+  }
+
+  document.getElementById('ws-ua').addEventListener('change', function() {
+    document.getElementById('ws-ua-custom-wrap').style.display = this.value === 'custom' ? '' : 'none';
+  });
+
+  // Inner tab switching
+  function showScanInner(name, btn) {
+    document.querySelectorAll('.scan-inner-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.scan-inner-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('scan-inner-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // Build full target URL
+  function getTargetUrl() {
+    const proto = document.getElementById('ws-proto').value;
+    const url   = document.getElementById('ws-url').value.trim();
+    return url ? proto + url : null;
+  }
+
+  // Get selected items
+  function getSelectedCats()  { return [...document.querySelectorAll('.vuln-cat.selected')].map(e => e.dataset.cat); }
+  function getSelectedTools() { return [...document.querySelectorAll('.tool-chip.selected')].map(e => e.dataset.tool); }
+
+  /* ── Command Generator ──────────────────────────────────────────── */
+  function generateScanCommands() {
+    const target = getTargetUrl();
+    if (!target) { alert('Please enter a target URL.'); return; }
+
+    const tools   = getSelectedTools();
+    const cats    = getSelectedCats();
+    const proxy   = document.getElementById('ws-proxy').value.trim();
+    const depth   = document.getElementById('ws-depth').value;
+    const delay   = document.getElementById('ws-delay').value;
+    const auth    = document.getElementById('ws-auth').value;
+    const cookie  = document.getElementById('ws-cookie').value.trim();
+    const basic   = document.getElementById('ws-basic').value.trim();
+    const bearer  = document.getElementById('ws-bearer').value.trim();
+    const exclude = document.getElementById('ws-exclude').value.trim();
+
+    const proxyFlag = proxy ? ` --proxy ${proxy}` : '';
+    const cookieFlag = (auth === 'cookie' && cookie) ? ` -H "Cookie: ${cookie}"` : '';
+    const authHeader = (auth === 'bearer' && bearer) ? ` -H "Authorization: Bearer ${bearer}"` : '';
+    const basicFlag = (auth === 'basic' && basic) ? ` --auth "${basic}"` : '';
+
+    const lines = [];
+    const h = (s) => `<span class="t-dim">${s}</span>`;
+    const pr = (s) => `<span class="t-prompt">$</span> <span class="t-cmd">${s}</span>`;
+    const inf = (s) => `<span class="t-info">${s}</span>`;
+
+    lines.push(h('═══ ramamano.com VAPT — Generated Scan Commands ════════════════'));
+    lines.push(h(`Target : ${target}`));
+    lines.push(h(`Date   : ${new Date().toLocaleString()}`));
+    lines.push(h('════════════════════════════════════════════════════════════════'));
+    lines.push('');
+
+    if (tools.includes('httpx')) {
+      lines.push(inf('# 1. Technology Fingerprint & HTTP Probe'));
+      lines.push(pr(`httpx -u ${target} -tech-detect -title -status-code -content-length -follow-redirects`));
+      lines.push('');
+    }
+
+    if (tools.includes('nmap')) {
+      const host = target.replace(/https?:\/\//, '').split('/')[0];
+      lines.push(inf('# 2. Port & Service Scan'));
+      lines.push(pr(`nmap -sV -sC -A --open -T4 ${host}`));
+      lines.push('');
+    }
+
+    if (tools.includes('nikto')) {
+      lines.push(inf('# 3. Nikto Web Server Scan'));
+      const niktoProxy = proxy ? ` -useproxy ${proxy}` : '';
+      lines.push(pr(`nikto -h ${target}${niktoProxy} -Format htm -output nikto-report.html`));
+      lines.push('');
+    }
+
+    if (tools.includes('nuclei')) {
+      lines.push(inf('# 4. Nuclei Template Scan'));
+      const nucleiTags = [];
+      if (cats.includes('xss'))     nucleiTags.push('xss');
+      if (cats.includes('sqli'))    nucleiTags.push('sqli');
+      if (cats.includes('ssrf'))    nucleiTags.push('ssrf');
+      if (cats.includes('ssti'))    nucleiTags.push('ssti');
+      if (cats.includes('lfi'))     nucleiTags.push('lfi');
+      if (cats.includes('xxe'))     nucleiTags.push('xxe');
+      if (cats.includes('rce'))     nucleiTags.push('rce');
+      if (cats.includes('secrets')) nucleiTags.push('exposure,token');
+      if (cats.includes('headers')) nucleiTags.push('misconfig,headers');
+      const tagStr = nucleiTags.length ? ` -tags ${nucleiTags.join(',')}` : ' -t exposures/ -t vulnerabilities/ -t misconfigurations/';
+      const nucProxy = proxy ? ` -proxy ${proxy}` : '';
+      const nucH = cookie ? ` -H "Cookie: ${cookie}"` : '';
+      lines.push(pr(`nuclei -u ${target}${tagStr}${nucProxy}${nucH} -severity critical,high,medium -o nuclei-results.txt`));
+      lines.push('');
+    }
+
+    if (tools.includes('zap')) {
+      lines.push(inf('# 5. OWASP ZAP Active Scan (Docker)'));
+      const zapProxy = proxy ? ` -z "-config connection.proxyChain.enabled=true -config connection.proxyChain.hostName=${proxy.replace('http://','').split(':')[0]}"` : '';
+      lines.push(pr(`docker run -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t ${target}${zapProxy} -r zap-report.html`));
+      lines.push('');
+    }
+
+    if (tools.includes('ffuf')) {
+      lines.push(inf('# 6. Directory & File Fuzzing'));
+      const ffufH = cookie ? ` -H "Cookie: ${cookie}"` : '';
+      const ffufP = proxy ? ` -x ${proxy}` : '';
+      lines.push(pr(`ffuf -w /usr/share/wordlists/SecLists/Discovery/Web-Content/raft-medium-directories.txt -u ${target}/FUZZ${ffufH}${ffufP} -mc 200,204,301,302,307,401,403 -o ffuf-dirs.json -of json`));
+      lines.push('');
+    }
+
+    if (tools.includes('gobuster')) {
+      lines.push(inf('# 7. Gobuster Directory Brute-Force'));
+      const gobCookie = cookie ? ` -c "${cookie}"` : '';
+      const gobProxy = proxy ? ` --proxy ${proxy}` : '';
+      lines.push(pr(`gobuster dir -u ${target} -w /usr/share/wordlists/dirb/common.txt${gobCookie}${gobProxy} -o gobuster-results.txt`));
+      lines.push('');
+    }
+
+    if (tools.includes('dirsearch')) {
+      lines.push(inf('# 8. dirsearch Recursive Scan'));
+      const dsProxy = proxy ? ` --proxy=${proxy}` : '';
+      lines.push(pr(`python3 dirsearch.py -u ${target} -r --max-recursion-depth=${depth}${dsProxy} -o dirsearch-results.txt`));
+      lines.push('');
+    }
+
+    if (tools.includes('sqlmap') && cats.includes('sqli')) {
+      lines.push(inf('# 9. SQLMap Injection Test'));
+      const sqlProxy = proxy ? ` --proxy=${proxy}` : '';
+      const sqlCookie = cookie ? ` --cookie="${cookie}"` : '';
+      lines.push(pr(`sqlmap -u "${target}?id=1"${sqlProxy}${sqlCookie} --dbs --batch --random-agent --level=3 --risk=2`));
+      lines.push('');
+    }
+
+    if (tools.includes('xsstrike') && cats.includes('xss')) {
+      lines.push(inf('# 10. XSStrike Reflected/DOM XSS'));
+      lines.push(pr(`python3 xsstrike.py -u "${target}?q=test" --crawl --blind`));
+      lines.push('');
+    }
+
+    if (tools.includes('jwt_tool') && cats.includes('jwt')) {
+      lines.push(inf('# 11. JWT Security Test'));
+      lines.push(pr(`python3 jwt_tool.py [YOUR_JWT_TOKEN] -t ${target} -M at`));
+      lines.push('');
+    }
+
+    if (tools.includes('wapiti')) {
+      lines.push(inf('# 12. Wapiti Web App Audit'));
+      const wapProxy = proxy ? ` --proxy ${proxy}` : '';
+      const wapCookie = cookie ? ` --cookie "${cookie}"` : '';
+      lines.push(pr(`wapiti -u ${target}${wapProxy}${wapCookie} -f html -o wapiti-report/ --depth ${depth}`));
+      lines.push('');
+    }
+
+    lines.push(h('════════════════════════════════════════════════════════════════'));
+    lines.push(h('All commands generated. Review, adapt, and execute on your pentest system.'));
+
+    document.getElementById('ws-cmd-output').innerHTML = lines.join('\n');
+    showScanInner('commands', document.querySelector('.scan-inner-tab'));
+    document.querySelector('.scan-inner-tab').classList.add('active');
+  }
+
+  function copyCommands() {
+    const text = document.getElementById('ws-cmd-output').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = event.target;
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => { btn.textContent = '📋 Copy All'; }, 2000);
+    }).catch(() => {
+      const range = document.createRange();
+      range.selectNode(document.getElementById('ws-cmd-output'));
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+    });
+  }
+
+  /* ── Simulated Scan Engine ──────────────────────────────────────── */
+  const vulnDatabase = {
+    xss: [
+      { sev:'high', title:'Reflected XSS in search parameter', detail:'Parameter "q" reflects unsanitized input', cwe:'CWE-79' },
+      { sev:'high', title:'Stored XSS in comment field', detail:'HTML tags not stripped from user-submitted comments', cwe:'CWE-79' },
+      { sev:'med',  title:'DOM-based XSS via location.hash', detail:'Unsafe use of document.write with hash value', cwe:'CWE-79' }
+    ],
+    sqli: [
+      { sev:'crit', title:'SQL Injection — Error-Based (MySQL)', detail:'Parameter "id" vulnerable to ORDER BY-based blind injection', cwe:'CWE-89' },
+      { sev:'crit', title:'SQL Injection — Union-Based', detail:'UNION SELECT bypass detected in login form', cwe:'CWE-89' }
+    ],
+    csrf: [
+      { sev:'high', title:'Missing CSRF Token on password change', detail:'POST /account/password accepts requests without CSRF validation', cwe:'CWE-352' }
+    ],
+    ssrf: [
+      { sev:'crit', title:'Server-Side Request Forgery (SSRF)', detail:'URL parameter "url" fetches internal resources — AWS metadata reachable', cwe:'CWE-918' }
+    ],
+    idor: [
+      { sev:'high', title:'Insecure Direct Object Reference on /api/users/{id}', detail:'Sequential user IDs expose other users\' data without authorization check', cwe:'CWE-284' }
+    ],
+    auth: [
+      { sev:'crit', title:'Authentication Bypass via SQL Injection in Login', detail:'Login form vulnerable to \' OR 1=1-- payload', cwe:'CWE-287' },
+      { sev:'high', title:'No Account Lockout — Brute-Force Possible', detail:'/api/login allows unlimited password attempts', cwe:'CWE-307' }
+    ],
+    headers: [
+      { sev:'med',  title:'Missing Content-Security-Policy header', detail:'No CSP header reduces XSS defences', cwe:'CWE-693' },
+      { sev:'med',  title:'Missing X-Frame-Options header', detail:'Page can be embedded in an iframe — clickjacking risk', cwe:'CWE-1021' },
+      { sev:'low',  title:'Missing HSTS header', detail:'HTTP Strict Transport Security not enforced', cwe:'CWE-319' },
+      { sev:'info', title:'Server header discloses version (Apache/2.4.51)', detail:'Consider suppressing version from response headers', cwe:'CWE-200' }
+    ],
+    lfi: [
+      { sev:'crit', title:'Local File Inclusion via "file" parameter', detail:'GET /view?file=../../../../etc/passwd returns system files', cwe:'CWE-22' }
+    ],
+    xxe: [
+      { sev:'high', title:'XML External Entity (XXE) Injection', detail:'XML upload endpoint processes DTD and resolves external entities', cwe:'CWE-611' }
+    ],
+    ssti: [
+      { sev:'crit', title:'Server-Side Template Injection (Jinja2)', detail:'Payload {{7*7}} returns 49 — RCE possible via template engine', cwe:'CWE-94' }
+    ],
+    redirect: [
+      { sev:'med',  title:'Open Redirect in "next" parameter', detail:'/login?next=https://evil.com redirects user after authentication', cwe:'CWE-601' }
+    ],
+    cors: [
+      { sev:'high', title:'CORS Misconfiguration — Arbitrary Origin Allowed', detail:'Access-Control-Allow-Origin: * with Allow-Credentials: true', cwe:'CWE-942' }
+    ],
+    click: [
+      { sev:'med',  title:'Clickjacking — Missing Frame-Ancestors Directive', detail:'Sensitive pages can be framed by malicious sites', cwe:'CWE-1021' }
+    ],
+    jwt: [
+      { sev:'crit', title:'JWT Algorithm Confusion — "none" Algorithm Accepted', detail:'Token with alg:none bypasses signature verification', cwe:'CWE-327' },
+      { sev:'high', title:'Weak JWT Secret — Crackable via Brute-Force', detail:'Secret "secret123" cracked in <1 second with hashcat', cwe:'CWE-326' }
+    ],
+    rce: [
+      { sev:'crit', title:'Remote Code Execution via File Upload', detail:'PHP webshell uploaded through unrestricted file upload endpoint', cwe:'CWE-434' }
+    ],
+    dir: [
+      { sev:'high', title:'Path Traversal — ../../../../etc/passwd', detail:'GET /download?path=../../../../etc/passwd returns file contents', cwe:'CWE-22' }
+    ],
+    smuggling: [
+      { sev:'high', title:'HTTP Request Smuggling (CL.TE)', detail:'Discrepancy in Content-Length and Transfer-Encoding processing', cwe:'CWE-444' }
+    ],
+    secrets: [
+      { sev:'high', title:'AWS Secret Key Exposed in JavaScript', detail:'AKIAIOSFODNN7EXAMPLE found in /static/app.min.js', cwe:'CWE-312' },
+      { sev:'med',  title:'Database password in /robots.txt comment', detail:'"# db_pass=Sup3rS3cret" exposed in robots.txt', cwe:'CWE-200' }
+    ]
+  };
+
+  let scanResults = [];
+  let scanHistory = JSON.parse(localStorage.getItem('vapt_scan_history') || '[]');
+  let scanRunning = false;
+
+  function setStatus(state, label) {
+    const b = document.getElementById('ws-status-badge');
+    b.className = 'scan-status-badge ssb-' + state;
+    b.innerHTML = `<span class="ssb-dot"></span>${label}`;
+  }
+
+  function runSimulatedScan() {
+    if (scanRunning) return;
+    const target = getTargetUrl();
+    if (!target) { alert('Please enter a target URL.'); return; }
+    const cats  = getSelectedCats();
+    const tools = getSelectedTools();
+    if (!cats.length)  { alert('Select at least one vulnerability category.'); return; }
+    if (!tools.length) { alert('Select at least one tool.'); return; }
+
+    scanRunning = true;
+    scanResults = [];
+    document.getElementById('ws-results-list').innerHTML = '';
+    document.getElementById('ws-results-summary').style.display = 'none';
+    document.getElementById('ws-add-to-findings-wrap').style.display = 'none';
+    document.getElementById('ws-result-count').textContent = '0';
+    ['ws-stat-crit','ws-stat-high','ws-stat-med','ws-stat-low','ws-stat-info'].forEach(id => {
+      document.getElementById(id).textContent = '0';
+    });
+
+    setStatus('running', 'Scanning…');
+    document.getElementById('ws-run-btn').disabled = true;
+    document.getElementById('ws-run-btn').textContent = '⏳ Scanning…';
+
+    // Switch to results tab
+    const resultBtn = document.querySelectorAll('.scan-inner-tab')[1];
+    showScanInner('results', resultBtn);
+
+    const progressWrap = document.getElementById('ws-progress-wrap');
+    const progressFill = document.getElementById('ws-progress-fill');
+    const progressLabel = document.getElementById('ws-progress-label');
+    progressWrap.style.display = 'block';
+    progressFill.style.width = '0%';
+
+    // Build pool of findings based on selected cats
+    const pool = [];
+    cats.forEach(c => { if (vulnDatabase[c]) pool.push(...vulnDatabase[c]); });
+    // Shuffle and limit realistically
+    const shuffled = pool.sort(() => Math.random() - 0.5);
+    const scanType = document.querySelector('.scan-type-btn.active').dataset.type;
+    const maxFindings = { quick: 3, standard: 6, deep: pool.length, custom: 5 }[scanType] || 5;
+    const toFind = shuffled.slice(0, Math.min(maxFindings, shuffled.length));
+
+    const phases = [
+      { label: `Fingerprinting ${target}`, pct: 10 },
+      { label: 'Running httpx probe…',     pct: 20 },
+      { label: 'Crawling application…',    pct: 35 },
+      { label: 'Running Nuclei templates…',pct: 55 },
+      { label: 'Active vulnerability tests…', pct: 75 },
+      { label: 'Analyzing responses…',     pct: 90 },
+      { label: 'Generating report…',       pct: 100 }
+    ];
+
+    let phaseIdx = 0;
+    let findIdx  = 0;
+
+    const tick = setInterval(() => {
+      if (phaseIdx < phases.length) {
+        const ph = phases[phaseIdx++];
+        progressFill.style.width = ph.pct + '%';
+        progressLabel.textContent = ph.label;
+        // Drip-feed findings during middle phases
+        if (ph.pct >= 35 && findIdx < toFind.length) {
+          appendScanResult(toFind[findIdx++], target);
+        }
+        if (ph.pct >= 55 && findIdx < toFind.length) {
+          appendScanResult(toFind[findIdx++], target);
+        }
+        if (ph.pct >= 75) {
+          while (findIdx < toFind.length) appendScanResult(toFind[findIdx++], target);
+        }
+      } else {
+        clearInterval(tick);
+        scanRunning = false;
+        setStatus('done', `Done — ${scanResults.length} findings`);
+        progressLabel.textContent = `Scan complete. ${scanResults.length} findings detected.`;
+        document.getElementById('ws-run-btn').disabled = false;
+        document.getElementById('ws-run-btn').textContent = '▶ Run Simulated Scan';
+        document.getElementById('ws-results-summary').style.display = 'block';
+        if (scanResults.length) document.getElementById('ws-add-to-findings-wrap').style.display = 'block';
+
+        // Save to history
+        const histEntry = {
+          target, tools, cats,
+          total: scanResults.length,
+          ts: new Date().toISOString(),
+          results: [...scanResults]
+        };
+        scanHistory.unshift(histEntry);
+        if (scanHistory.length > 20) scanHistory.pop();
+        localStorage.setItem('vapt_scan_history', JSON.stringify(scanHistory));
+        renderScanHistory();
+      }
+    }, 700);
+  }
+
+  const sevColors = { crit:'var(--red)', high:'#f0883e', med:'var(--yellow)', low:'var(--green)', info:'var(--blue)' };
+
+  function appendScanResult(item, target) {
+    const r = { ...item, url: target + (item.detail.includes('/') ? '/' + item.detail.split('/')[1].split(' ')[0] : ''), id: Date.now() + Math.random() };
+    scanResults.push(r);
+
+    // Update counts
+    const countEl = document.getElementById('ws-stat-' + (r.sev === 'info' ? 'info' : r.sev === 'med' ? 'med' : r.sev));
+    if (countEl) countEl.textContent = parseInt(countEl.textContent || 0) + 1;
+    document.getElementById('ws-result-count').textContent = scanResults.length;
+
+    // Render item
+    const div = document.createElement('div');
+    div.className = `scan-result-item ${r.sev}`;
+    div.innerHTML = `
+      <div class="scan-result-title">${escHtml(r.title)}</div>
+      <div class="scan-result-meta"><span class="severity sev-${r.sev === 'med' ? 'medium' : r.sev === 'crit' ? 'critical' : r.sev}">${r.sev.toUpperCase()}</span> · ${escHtml(r.cwe)}</div>
+      <div class="scan-result-url">${escHtml(r.url)}</div>
+      <div class="scan-result-meta" style="margin-top:4px;">${escHtml(r.detail)}</div>
+    `;
+    const list = document.getElementById('ws-results-list');
+    if (list.querySelector('div[style]')) list.innerHTML = '';
+    list.appendChild(div);
+  }
+
+  function addAllToFindings() {
+    scanResults.forEach(r => {
+      const sevMap = { crit:'crit', high:'high', med:'med', low:'low', info:'info' };
+      findings.unshift({
+        title: r.title,
+        sev:   sevMap[r.sev] || 'info',
+        url:   r.url,
+        cwe:   r.cwe,
+        desc:  r.detail,
+        ts:    new Date().toISOString()
+      });
+    });
+    localStorage.setItem('vapt_findings', JSON.stringify(findings));
+    renderFindings();
+    alert(`${scanResults.length} finding(s) added to the Findings Tracker.`);
+  }
+
+  function clearScanOutput() {
+    document.getElementById('ws-cmd-output').innerHTML = '<span class="t-dim">── Cleared ───</span>';
+    document.getElementById('ws-results-list').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text2);">Run a simulated scan to see results here.</div>';
+    document.getElementById('ws-results-summary').style.display = 'none';
+    document.getElementById('ws-add-to-findings-wrap').style.display = 'none';
+    document.getElementById('ws-result-count').textContent = '0';
+    document.getElementById('ws-progress-wrap').style.display = 'none';
+    document.getElementById('ws-progress-label').textContent = '';
+    scanResults = [];
+    setStatus('idle', 'Idle');
+  }
+
+  function exportScanReport() {
+    const target = getTargetUrl() || 'unknown';
+    const report = {
+      company: 'ramamano.com',
+      target,
+      date: new Date().toISOString(),
+      tools: getSelectedTools(),
+      categories: getSelectedCats(),
+      totalFindings: scanResults.length,
+      findings: scanResults
+    };
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'webscan-report-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+  }
+
+  function renderScanHistory() {
+    const list = document.getElementById('ws-history-list');
+    if (!scanHistory.length) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text2);">No scan history yet.</div>';
+      return;
+    }
+    list.innerHTML = scanHistory.map((h, i) => `
+      <div class="history-item">
+        <div>
+          <div class="history-item-url">${escHtml(h.target)}</div>
+          <div class="history-item-meta">${h.total} finding(s) · Tools: ${h.tools.join(', ')} · ${new Date(h.ts).toLocaleString()}</div>
+        </div>
+        <button class="history-del" onclick="deleteScanHistory(${i})" title="Delete">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function deleteScanHistory(i) {
+    scanHistory.splice(i, 1);
+    localStorage.setItem('vapt_scan_history', JSON.stringify(scanHistory));
+    renderScanHistory();
+  }
+
+  function clearScanHistory() {
+    if (!confirm('Clear all scan history?')) return;
+    scanHistory = [];
+    localStorage.removeItem('vapt_scan_history');
+    renderScanHistory();
+  }
+
+  // Init scan history on load
+  (function initScan() {
+    renderScanHistory();
+  })();
+
 </script>
 </body>
 </html>
