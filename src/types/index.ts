@@ -36,3 +36,43 @@ export interface Recommendation {
   currentValue: number | string;
   targetValue: number | string;
 }
+
+// ── Mythos Scan / VAPT ───────────────────────────────────────────
+
+export type ScanStatus = 'idle' | 'scanning' | 'complete' | 'error';
+export type FindingSeverity = 'critical' | 'high' | 'medium' | 'low' | 'info';
+export type ScanCategory =
+  | 'sql-injection'
+  | 'xss'
+  | 'csrf'
+  | 'ssl-tls'
+  | 'auth'
+  | 'headers'
+  | 'open-redirect'
+  | 'file-inclusion'
+  | 'full-scan';
+
+export interface VaptFinding {
+  id: string;
+  severity: FindingSeverity;
+  title: string;
+  description: string;
+  evidence: string;
+  recommendation: string;
+  cve?: string;
+  endpoint: string;
+}
+
+export interface VaptScan {
+  id: string;
+  label: string;
+  targetUrl: string;
+  category: ScanCategory;
+  status: ScanStatus;
+  progress: number;           // 0–100
+  findings: VaptFinding[];
+  startedAt?: string;
+  completedAt?: string;
+  mythosAnalysis?: string;    // AI-generated summary
+  error?: string;
+}

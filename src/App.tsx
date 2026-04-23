@@ -6,9 +6,10 @@ import SummaryCards from './components/SummaryCards';
 import PointsTable from './components/PointsTable';
 import PlayerStats from './components/PlayerStats';
 import Recommendations from './components/Recommendations';
+import MythosScanDashboard from './components/MythosScanDashboard';
 import './App.css';
 
-type Tab = 'dashboard' | 'players' | 'recommendations';
+type Tab = 'dashboard' | 'players' | 'recommendations' | 'mythos-scan';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
@@ -28,38 +29,55 @@ const App: React.FC = () => {
   return (
     <div className="app">
       {/* Header */}
-      <header className="app-header">
+      <header className={`app-header ${activeTab === 'mythos-scan' ? 'app-header--mythos' : ''}`}>
         <div className="header-inner">
           <div className="brand">
-            <span className="brand-icon">🏏</span>
-            <div>
-              <h1 className="brand-name">Sports APL</h1>
-              <p className="brand-tagline">Performance Analytics Platform</p>
-            </div>
-          </div>
-          <button className="export-btn" onClick={handleExport} disabled={exporting}>
-            {exporting ? (
-              <><span className="spinner" />Generating…</>
+            {activeTab === 'mythos-scan' ? (
+              <>
+                <span className="brand-icon brand-icon--mythos">⬡</span>
+                <div>
+                  <h1 className="brand-name">Mythos Scan</h1>
+                  <p className="brand-tagline">Claude Mythos AI · VAPT Security Scanner</p>
+                </div>
+              </>
             ) : (
-              <><span>📄</span> Export PDF Report</>
+              <>
+                <span className="brand-icon">🏏</span>
+                <div>
+                  <h1 className="brand-name">Sports APL</h1>
+                  <p className="brand-tagline">Performance Analytics Platform</p>
+                </div>
+              </>
             )}
-          </button>
+          </div>
+          {activeTab !== 'mythos-scan' && (
+            <button className="export-btn" onClick={handleExport} disabled={exporting}>
+              {exporting ? (
+                <><span className="spinner" />Generating…</>
+              ) : (
+                <><span>📄</span> Export PDF Report</>
+              )}
+            </button>
+          )}
         </div>
       </header>
 
       {/* Navigation */}
-      <nav className="tab-nav">
+      <nav className={`tab-nav ${activeTab === 'mythos-scan' ? 'tab-nav--mythos' : ''}`}>
         <div className="tab-nav-inner">
-          {(['dashboard', 'players', 'recommendations'] as Tab[]).map((tab) => (
+          {(['dashboard', 'players', 'recommendations', 'mythos-scan'] as Tab[]).map((tab) => (
             <button
               key={tab}
-              className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
+              className={`tab-btn ${activeTab === tab ? 'active' : ''} ${tab === 'mythos-scan' ? 'tab-btn--mythos' : ''}`}
               onClick={() => setActiveTab(tab)}
             >
               {tab === 'dashboard' && '📊 '}
               {tab === 'players' && '👥 '}
               {tab === 'recommendations' && '💡 '}
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {tab === 'mythos-scan' && '⬡ '}
+              {tab === 'mythos-scan'
+                ? 'Mythos Scan'
+                : tab.charAt(0).toUpperCase() + tab.slice(1)}
               {tab === 'recommendations' && (
                 <span className="nav-badge">{recommendations.filter((r) => r.priority === 'high').length}</span>
               )}
@@ -86,10 +104,19 @@ const App: React.FC = () => {
             <Recommendations recommendations={recommendations} />
           </div>
         )}
+        {activeTab === 'mythos-scan' && (
+          <div className="tab-content tab-content--full">
+            <MythosScanDashboard />
+          </div>
+        )}
       </main>
 
       <footer className="app-footer">
-        <p>© {new Date().getFullYear()} Sports APL · Performance Analytics Platform</p>
+        {activeTab === 'mythos-scan' ? (
+          <p>© {new Date().getFullYear()} Mythos Scan · Claude Mythos AI Engine · For authorised testing only</p>
+        ) : (
+          <p>© {new Date().getFullYear()} Sports APL · Performance Analytics Platform</p>
+        )}
       </footer>
     </div>
   );
