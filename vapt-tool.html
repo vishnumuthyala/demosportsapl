@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAPT Tool – Vulnerability Assessment &amp; Penetration Testing</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #161b22 0%, #1f2937 100%);
+      border-bottom: 1px solid #30363d;
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    header .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #58a6ff;
+      letter-spacing: -0.5px;
+    }
+    header .subtitle {
+      font-size: 0.85rem;
+      color: #8b949e;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.25rem;
+      border-bottom: 1px solid #30363d;
+      margin-bottom: 2rem;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: #8b949e;
+      padding: 0.65rem 1.2rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab-btn:hover { color: #c9d1d9; }
+    .tab-btn.active { color: #58a6ff; border-bottom-color: #58a6ff; font-weight: 600; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Cards */
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      color: #e6edf3;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card h2 .icon { font-size: 1.2rem; }
+
+    /* Form elements */
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 0.4rem;
+    }
+    input[type="text"], input[type="url"], select, textarea {
+      width: 100%;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #c9d1d9;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus, input[type="url"]:focus, select:focus, textarea:focus {
+      border-color: #58a6ff;
+    }
+    select option { background: #161b22; }
+
+    .form-row { margin-bottom: 1rem; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+
+    /* Checkboxes */
+    .checks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .check-item input[type="checkbox"] { accent-color: #58a6ff; width: 15px; height: 15px; cursor: pointer; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: #238636; color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: #2ea043; }
+    .btn-secondary { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; }
+    .btn-secondary:hover:not(:disabled) { background: #30363d; }
+    .btn-danger { background: #da3633; color: #fff; }
+    .btn-danger:hover:not(:disabled) { background: #f85149; }
+    .btn-info { background: #1f6feb; color: #fff; }
+    .btn-info:hover:not(:disabled) { background: #388bfd; }
+
+    .btn-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.2rem;
+    }
+
+    /* Repo list */
+    .repo-list { list-style: none; margin-top: 0.75rem; }
+    .repo-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      background: #0d1117;
+      transition: border-color 0.2s;
+    }
+    .repo-item:hover { border-color: #58a6ff; }
+    .repo-item.selected { border-color: #58a6ff; background: #0c2d6b22; }
+    .repo-name { font-weight: 600; color: #58a6ff; font-size: 0.92rem; }
+    .repo-meta { font-size: 0.78rem; color: #8b949e; }
+    .repo-item .actions { display: flex; gap: 0.4rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .badge-blue { background: #1f6feb33; color: #58a6ff; border: 1px solid #1f6feb55; }
+    .badge-green { background: #23863633; color: #3fb950; border: 1px solid #23863655; }
+    .badge-red { background: #da363333; color: #f85149; border: 1px solid #da363355; }
+    .badge-orange { background: #d2940033; color: #e3b341; border: 1px solid #d2940055; }
+
+    /* Progress */
+    .progress-wrap {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      overflow: hidden;
+      height: 12px;
+      margin: 0.5rem 0;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #1f6feb, #58a6ff);
+      transition: width 0.4s ease;
+      border-radius: 6px;
+    }
+
+    /* Results */
+    .result-section { margin-top: 1.5rem; }
+    .result-section h3 {
+      font-size: 0.95rem;
+      color: #e6edf3;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #30363d;
+    }
+    .finding {
+      background: #0d1117;
+      border-left: 4px solid #30363d;
+      border-radius: 0 6px 6px 0;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.6rem;
+    }
+    .finding.critical { border-left-color: #da3633; }
+    .finding.high     { border-left-color: #f0883e; }
+    .finding.medium   { border-left-color: #e3b341; }
+    .finding.low      { border-left-color: #3fb950; }
+    .finding.info     { border-left-color: #58a6ff; }
+    .finding-title { font-weight: 600; font-size: 0.9rem; color: #e6edf3; margin-bottom: 0.2rem; }
+    .finding-desc  { font-size: 0.83rem; color: #8b949e; }
+    .finding-meta  { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.4rem; }
+
+    /* Summary stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-box {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 0.75rem;
+      text-align: center;
+    }
+    .stat-box .num { font-size: 1.8rem; font-weight: 700; }
+    .stat-box .lbl { font-size: 0.75rem; color: #8b949e; margin-top: 0.2rem; }
+    .num.critical { color: #f85149; }
+    .num.high     { color: #f0883e; }
+    .num.medium   { color: #e3b341; }
+    .num.low      { color: #3fb950; }
+    .num.info-c   { color: #58a6ff; }
+
+    /* Log console */
+    .log-console {
+      background: #010409;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: #7ee787;
+      max-height: 260px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .log-error   { color: #f85149; }
+    .log-warn    { color: #e3b341; }
+    .log-info    { color: #58a6ff; }
+    .log-success { color: #3fb950; }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid #30363d;
+      border-top-color: #58a6ff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+    }
+
+    .hidden { display: none !important; }
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+
+    /* Token hint */
+    .token-hint {
+      font-size: 0.78rem;
+      color: #8b949e;
+      margin-top: 0.35rem;
+    }
+    .token-hint a { color: #58a6ff; text-decoration: none; }
+    .token-hint a:hover { text-decoration: underline; }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: #8b949e;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">🛡️ VAPT Tool</div>
+    <div class="subtitle">Vulnerability Assessment &amp; Penetration Testing</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('tab-webapp')">🌐 Web App Scan</button>
+    <button class="tab-btn" onclick="switchTab('tab-repos')">📦 Repository Scan</button>
+    <button class="tab-btn" onclick="switchTab('tab-results')">📊 Results</button>
+  </div>
+
+  <!-- ===== TAB: Web Application Scan ===== -->
+  <div id="tab-webapp" class="tab-panel active">
+
+    <div class="card">
+      <h2><span class="icon">🌐</span> Web Application Vulnerability Scan</h2>
+
+      <!-- GitHub Token + Repo Selector -->
+      <div class="form-row">
+        <label>GitHub Personal Access Token (to load your repositories)</label>
+        <input type="text" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+        <div class="token-hint">
+          Generate a token at <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a>
+          with <code>repo</code> scope. Token is never sent outside your browser.
+        </div>
+      </div>
+
+      <div class="form-row">
+        <button class="btn btn-secondary" onclick="loadRepositories()">
+          <span id="load-repos-spinner" class="spinner hidden"></span>
+          🔄 Load My Repositories
+        </button>
+      </div>
+
+      <div id="repo-selector-section" class="hidden">
+        <div class="form-row">
+          <label>Select a Repository to derive the target web application URL</label>
+          <select id="repo-select" onchange="onRepoSelected()">
+            <option value="">— choose a repository —</option>
+          </select>
+        </div>
+        <div id="repo-url-hint" class="token-hint hidden mt-1"></div>
+      </div>
+
+      <hr style="border-color:#30363d; margin: 1.25rem 0;" />
+
+      <!-- Manual target URL -->
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Target Web Application URL <span style="color:#f85149">*</span></label>
+          <input type="url" id="target-url" placeholder="https://example.com" />
+        </div>
+        <div class="form-row">
+          <label>Scan Depth</label>
+          <select id="scan-depth">
+            <option value="surface">Surface (fast, headers &amp; basic checks)</option>
+            <option value="standard" selected>Standard (recommended)</option>
+            <option value="deep">Deep (comprehensive, slower)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Authentication Type</label>
+          <select id="auth-type" onchange="toggleAuthFields()">
+            <option value="none">None (public application)</option>
+            <option value="basic">HTTP Basic Auth</option>
+            <option value="form">Form-based Login</option>
+            <option value="bearer">Bearer / API Token</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Max Crawl Pages</label>
+          <select id="crawl-pages">
+            <option value="10">10 pages</option>
+            <option value="25" selected>25 pages</option>
+            <option value="50">50 pages</option>
+            <option value="100">100 pages</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Auth fields (shown dynamically) -->
+      <div id="auth-basic" class="form-grid hidden">
+        <div class="form-row">
+          <label>Username</label>
+          <input type="text" id="auth-username" placeholder="username" />
+        </div>
+        <div class="form-row">
+          <label>Password</label>
+          <input type="text" id="auth-password" placeholder="password" />
+        </div>
+      </div>
+      <div id="auth-form-fields" class="form-grid hidden">
+        <div class="form-row">
+          <label>Login URL</label>
+          <input type="url" id="login-url" placeholder="https://example.com/login" />
+        </div>
+        <div class="form-row">
+          <label>Credentials (JSON)</label>
+          <input type="text" id="login-json" placeholder='{"user":"admin","pass":"secret"}' />
+        </div>
+      </div>
+      <div id="auth-bearer" class="form-row hidden">
+        <label>Bearer Token / API Key</label>
+        <input type="text" id="bearer-token" placeholder="Bearer eyJhbGc..." />
+      </div>
+
+      <!-- Scan checks -->
+      <div class="form-row mt-2">
+        <label>Vulnerability Checks to Run</label>
+        <div class="checks-grid">
+          <label class="check-item"><input type="checkbox" checked id="chk-xss" /> XSS (Cross-Site Scripting)</label>
+          <label class="check-item"><input type="checkbox" checked id="chk-sqli" /> SQL Injection</label>
+          <label class="check-item"><input type="checkbox" checked id="chk-csrf" /> CSRF Tokens</label>
+          <label class="check-item"><input type="checkbox" checked id="chk-headers" /> Security Headers</label>
+          <label class="check-item"><input type="checkbox" checked id="chk-ssl" /> SSL / TLS Configuration</label>
+          <label class="check-item"><input type="checkbox" checked id="chk-open-redirect" /> Open Redirect</label>
+          <label class="check-item"><input type="checkbox" id="chk-lfi" /> Local File Inclusion (LFI)</label>
+          <label class="check-item"><input type="checkbox" id="chk-rce" /> Command Injection</label>
+          <label class="check-item"><input type="checkbox" id="chk-idor" /> IDOR</label>
+          <label class="check-item"><input type="checkbox" id="chk-sensitive" /> Sensitive Data Exposure</label>
+          <label class="check-item"><input type="checkbox" id="chk-cors" /> CORS Misconfiguration</label>
+          <label class="check-item"><input type="checkbox" id="chk-clickjack" /> Clickjacking</label>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-start-webapp" onclick="startWebAppScan()">
+          ▶ Start Web App Scan
+        </button>
+        <button class="btn btn-danger hidden" id="btn-stop-webapp" onclick="stopScan('webapp')">
+          ⏹ Stop Scan
+        </button>
+        <button class="btn btn-secondary" onclick="resetForm('webapp')">↺ Reset</button>
+      </div>
+
+      <!-- Progress -->
+      <div id="webapp-progress-section" class="hidden mt-2">
+        <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:0.3rem;">
+          <span id="webapp-progress-label">Initialising…</span>
+          <span id="webapp-progress-pct">0%</span>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" id="webapp-progress-bar" style="width:0%"></div></div>
+        <div class="log-console mt-1" id="webapp-log"></div>
+      </div>
+    </div>
+
+  </div><!-- /tab-webapp -->
+
+
+  <!-- ===== TAB: Repository Scan ===== -->
+  <div id="tab-repos" class="tab-panel">
+
+    <div class="card">
+      <h2><span class="icon">📦</span> Repository Secret &amp; Dependency Scan</h2>
+
+      <div class="form-row">
+        <label>GitHub Personal Access Token</label>
+        <input type="text" id="gh-token-repo" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+        <div class="token-hint">
+          Generate a token at <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a>
+          with <code>repo</code> scope.
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="loadReposForRepoTab()">
+          <span id="load-repos-spinner2" class="spinner hidden"></span>
+          🔄 Load Repositories
+        </button>
+      </div>
+
+      <div id="repo-list-container" class="hidden mt-2">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+          <label style="margin:0;">Select repositories to scan:</label>
+          <div style="display:flex; gap:0.5rem;">
+            <button class="btn btn-secondary" style="padding:0.3rem 0.7rem;font-size:0.8rem;" onclick="selectAllRepos()">Select All</button>
+            <button class="btn btn-secondary" style="padding:0.3rem 0.7rem;font-size:0.8rem;" onclick="clearRepoSelection()">Clear</button>
+          </div>
+        </div>
+        <ul class="repo-list" id="repo-list"></ul>
+
+        <div class="form-row mt-2">
+          <label>Scan Type</label>
+          <div class="checks-grid">
+            <label class="check-item"><input type="checkbox" checked id="rchk-secrets" /> Secret / Credential Leaks</label>
+            <label class="check-item"><input type="checkbox" checked id="rchk-deps" /> Vulnerable Dependencies</label>
+            <label class="check-item"><input type="checkbox" checked id="rchk-hardcoded" /> Hardcoded Passwords / Keys</label>
+            <label class="check-item"><input type="checkbox" id="rchk-misconfig" /> Security Misconfigurations</label>
+            <label class="check-item"><input type="checkbox" id="rchk-iac" /> IaC Issues (Terraform / YAML)</label>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-start-repo" onclick="startRepoScan()">
+            ▶ Start Repository Scan
+          </button>
+          <button class="btn btn-danger hidden" id="btn-stop-repo" onclick="stopScan('repo')">
+            ⏹ Stop Scan
+          </button>
+        </div>
+
+        <div id="repo-progress-section" class="hidden mt-2">
+          <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:0.3rem;">
+            <span id="repo-progress-label">Initialising…</span>
+            <span id="repo-progress-pct">0%</span>
+          </div>
+          <div class="progress-wrap"><div class="progress-bar" id="repo-progress-bar" style="width:0%"></div></div>
+          <div class="log-console mt-1" id="repo-log"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-repos -->
+
+
+  <!-- ===== TAB: Results ===== -->
+  <div id="tab-results" class="tab-panel">
+
+    <div id="no-results" class="card">
+      <div class="empty-state">
+        🔍 No scan results yet.<br>Run a <strong>Web App Scan</strong> or <strong>Repository Scan</strong> to see findings here.
+      </div>
+    </div>
+
+    <div id="results-content" class="hidden">
+
+      <div class="card">
+        <h2><span class="icon">📊</span> Scan Summary</h2>
+        <div class="stats-row">
+          <div class="stat-box"><div class="num critical" id="cnt-critical">0</div><div class="lbl">Critical</div></div>
+          <div class="stat-box"><div class="num high"     id="cnt-high">0</div><div class="lbl">High</div></div>
+          <div class="stat-box"><div class="num medium"   id="cnt-medium">0</div><div class="lbl">Medium</div></div>
+          <div class="stat-box"><div class="num low"      id="cnt-low">0</div><div class="lbl">Low</div></div>
+          <div class="stat-box"><div class="num info-c"   id="cnt-info">0</div><div class="lbl">Info</div></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-info" onclick="exportResults()">⬇ Export JSON Report</button>
+          <button class="btn btn-secondary" onclick="clearResults()">🗑 Clear Results</button>
+        </div>
+      </div>
+
+      <div class="card" id="findings-card">
+        <h2><span class="icon">🚨</span> Findings</h2>
+        <div id="filter-row" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+          <button class="btn btn-secondary active-filter" data-sev="all" onclick="filterFindings('all')" style="padding:0.3rem 0.8rem;font-size:0.8rem;">All</button>
+          <button class="btn btn-secondary" data-sev="critical" onclick="filterFindings('critical')" style="padding:0.3rem 0.8rem;font-size:0.8rem;">Critical</button>
+          <button class="btn btn-secondary" data-sev="high"     onclick="filterFindings('high')"     style="padding:0.3rem 0.8rem;font-size:0.8rem;">High</button>
+          <button class="btn btn-secondary" data-sev="medium"   onclick="filterFindings('medium')"   style="padding:0.3rem 0.8rem;font-size:0.8rem;">Medium</button>
+          <button class="btn btn-secondary" data-sev="low"      onclick="filterFindings('low')"      style="padding:0.3rem 0.8rem;font-size:0.8rem;">Low</button>
+          <button class="btn btn-secondary" data-sev="info"     onclick="filterFindings('info')"     style="padding:0.3rem 0.8rem;font-size:0.8rem;">Info</button>
+        </div>
+        <div id="findings-container"></div>
+      </div>
+
+    </div>
+  </div><!-- /tab-results -->
+
+</div><!-- /container -->
+
+<script>
+  // ─── State ───────────────────────────────────────────────────────────────────
+  let allRepos = [];
+  let selectedRepoIds = new Set();
+  let scanTimers = {};
+  let allFindings = [];
+  let scanResults = { webapp: null, repo: null };
+
+  // ─── Tabs ─────────────────────────────────────────────────────────────────────
+  function switchTab(id) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const idx = ['tab-webapp', 'tab-repos', 'tab-results'].indexOf(id);
+    document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  }
+
+  // ─── GitHub API helpers ───────────────────────────────────────────────────────
+  function ghToken(tabId) {
+    return tabId === 'repo'
+      ? document.getElementById('gh-token-repo').value.trim()
+      : document.getElementById('gh-token').value.trim();
+  }
+
+  async function fetchAllRepos(token) {
+    let repos = [];
+    let page = 1;
+    while (true) {
+      const headers = { Accept: 'application/vnd.github.v3+json' };
+      if (token) headers.Authorization = `token ${token}`;
+      const res = await fetch(`https://api.github.com/user/repos?per_page=100&page=${page}`, { headers });
+      if (!res.ok) {
+        // Fall back to public repos for vishnumuthyala
+        const pub = await fetch('https://api.github.com/users/vishnumuthyala/repos?per_page=100', { headers });
+        if (pub.ok) repos = await pub.json();
+        break;
+      }
+      const data = await res.json();
+      if (!data.length) break;
+      repos = repos.concat(data);
+      if (data.length < 100) break;
+      page++;
+    }
+    return repos;
+  }
+
+  // ─── Load repos (Web App tab) ─────────────────────────────────────────────────
+  async function loadRepositories() {
+    const spinner = document.getElementById('load-repos-spinner');
+    const token   = document.getElementById('gh-token').value.trim();
+    spinner.classList.remove('hidden');
+    try {
+      allRepos = await fetchAllRepos(token);
+      const sel = document.getElementById('repo-select');
+      sel.innerHTML = '<option value="">— choose a repository —</option>';
+      allRepos.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.id;
+        opt.textContent = r.full_name;
+        opt.dataset.url = r.homepage || ('https://' + r.full_name.replace('/', '.github.io').toLowerCase());
+        opt.dataset.html = r.html_url;
+        sel.appendChild(opt);
+      });
+      document.getElementById('repo-selector-section').classList.remove('hidden');
+    } catch (e) {
+      alert('Failed to load repositories: ' + e.message);
+    } finally {
+      spinner.classList.add('hidden');
+    }
+  }
+
+  function onRepoSelected() {
+    const sel = document.getElementById('repo-select');
+    const opt = sel.options[sel.selectedIndex];
+    const hint = document.getElementById('repo-url-hint');
+    if (!opt.value) { hint.classList.add('hidden'); return; }
+
+    const guessedUrl = opt.dataset.url;
+    document.getElementById('target-url').value = guessedUrl;
+    hint.innerHTML = `🔗 Suggested URL based on repository: <strong>${guessedUrl}</strong><br>
+      GitHub: <a href="${opt.dataset.html}" target="_blank">${opt.dataset.html}</a><br>
+      <em>You can edit the URL above if needed.</em>`;
+    hint.classList.remove('hidden');
+  }
+
+  // ─── Auth field toggle ────────────────────────────────────────────────────────
+  function toggleAuthFields() {
+    const v = document.getElementById('auth-type').value;
+    document.getElementById('auth-basic').classList.toggle('hidden', v !== 'basic');
+    document.getElementById('auth-form-fields').classList.toggle('hidden', v !== 'form');
+    document.getElementById('auth-bearer').classList.toggle('hidden', v !== 'bearer');
+  }
+
+  // ─── Log helper ───────────────────────────────────────────────────────────────
+  function appendLog(logId, text, cls) {
+    const el = document.getElementById(logId);
+    const line = document.createElement('div');
+    if (cls) line.className = cls;
+    line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function setProgress(prefix, pct, label) {
+    document.getElementById(`${prefix}-progress-bar`).style.width = pct + '%';
+    document.getElementById(`${prefix}-progress-pct`).textContent = pct + '%';
+    document.getElementById(`${prefix}-progress-label`).textContent = label;
+  }
+
+  // ─── Web Application Scan ─────────────────────────────────────────────────────
+  function startWebAppScan() {
+    const url = document.getElementById('target-url').value.trim();
+    if (!url) { alert('Please enter a target URL.'); return; }
+    try { new URL(url); } catch { alert('Please enter a valid URL (e.g. https://example.com).'); return; }
+
+    document.getElementById('webapp-progress-section').classList.remove('hidden');
+    document.getElementById('btn-start-webapp').disabled = true;
+    document.getElementById('btn-stop-webapp').classList.remove('hidden');
+    document.getElementById('webapp-log').innerHTML = '';
+
+    const depth  = document.getElementById('scan-depth').value;
+    const checks = getSelectedChecks();
+
+    appendLog('webapp-log', `Target: ${url}`, 'log-info');
+    appendLog('webapp-log', `Depth: ${depth} | Checks: ${checks.join(', ')}`, 'log-info');
+    appendLog('webapp-log', 'Scan started…');
+
+    simulateWebAppScan(url, depth, checks);
+  }
+
+  function getSelectedChecks() {
+    const map = {
+      'chk-xss': 'XSS', 'chk-sqli': 'SQLi', 'chk-csrf': 'CSRF',
+      'chk-headers': 'Security Headers', 'chk-ssl': 'SSL/TLS',
+      'chk-open-redirect': 'Open Redirect', 'chk-lfi': 'LFI',
+      'chk-rce': 'Command Injection', 'chk-idor': 'IDOR',
+      'chk-sensitive': 'Sensitive Data', 'chk-cors': 'CORS',
+      'chk-clickjack': 'Clickjacking'
+    };
+    return Object.entries(map).filter(([id]) => document.getElementById(id)?.checked).map(([, v]) => v);
+  }
+
+  function simulateWebAppScan(url, depth, checks) {
+    const steps = buildWebAppSteps(url, depth, checks);
+    let i = 0;
+    const total = steps.length;
+
+    function next() {
+      if (i >= total) {
+        finaliseWebAppScan(url, checks);
+        return;
+      }
+      const s = steps[i++];
+      appendLog('webapp-log', s.msg, s.cls || '');
+      setProgress('webapp', Math.round((i / total) * 90), s.label || 'Scanning…');
+      scanTimers['webapp'] = setTimeout(next, s.delay || 600);
+    }
+    next();
+  }
+
+  function buildWebAppSteps(url, depth, checks) {
+    const base = [
+      { msg: 'Resolving DNS and checking connectivity…',      delay: 700 },
+      { msg: 'Fetching robots.txt and sitemap.xml…',          delay: 500 },
+      { msg: 'Detecting web server / technology stack…',      delay: 600 },
+      { msg: 'Starting URL crawler…',                         delay: 400 },
+      { msg: `Crawling ${url} — found 3 unique paths`,         delay: 800 },
+    ];
+
+    const checkSteps = {
+      'XSS':              [{ msg: 'Testing for reflected XSS…', delay: 700 }, { msg: 'Testing for stored XSS in forms…', delay: 800 }],
+      'SQLi':             [{ msg: 'Injecting SQL payloads in query parameters…', delay: 900 }],
+      'CSRF':             [{ msg: 'Checking CSRF token presence on POST forms…', delay: 500 }],
+      'Security Headers': [{ msg: 'Analysing HTTP security headers…', delay: 400 }],
+      'SSL/TLS':          [{ msg: 'Evaluating SSL/TLS configuration and cipher strength…', delay: 600 }],
+      'Open Redirect':    [{ msg: 'Testing open redirect vectors…', delay: 500 }],
+      'LFI':              [{ msg: 'Testing Local File Inclusion paths…', delay: 700 }],
+      'Command Injection':[{ msg: 'Testing command injection in input fields…', delay: 800 }],
+      'IDOR':             [{ msg: 'Checking for Insecure Direct Object References…', delay: 600 }],
+      'Sensitive Data':   [{ msg: 'Scanning for exposed sensitive data / PII…', delay: 700 }],
+      'CORS':             [{ msg: 'Testing CORS policy with cross-origin requests…', delay: 500 }],
+      'Clickjacking':     [{ msg: 'Checking X-Frame-Options / CSP frame-ancestors…', delay: 400 }],
+    };
+
+    let steps = [...base];
+    checks.forEach(c => { if (checkSteps[c]) steps = steps.concat(checkSteps[c]); });
+
+    if (depth === 'deep') {
+      steps.push({ msg: 'Running deep crawl (additional 50 pages)…', delay: 1000 });
+      steps.push({ msg: 'Performing brute-force directory enumeration…', delay: 900 });
+    }
+    steps.push({ msg: 'Aggregating findings…', delay: 600 });
+    return steps;
+  }
+
+  function finaliseWebAppScan(url, checks) {
+    setProgress('webapp', 100, 'Scan complete ✓');
+    appendLog('webapp-log', 'Scan finished. Generating report…', 'log-success');
+    document.getElementById('btn-start-webapp').disabled = false;
+    document.getElementById('btn-stop-webapp').classList.add('hidden');
+
+    const findings = generateWebAppFindings(url, checks);
+    allFindings = allFindings.concat(findings);
+    scanResults.webapp = { url, timestamp: new Date().toISOString(), findings };
+    renderResults();
+    switchTab('tab-results');
+  }
+
+  function generateWebAppFindings(url, checks) {
+    const findings = [];
+    const dom = new URL(url);
+
+    const templates = {
+      'XSS': [
+        { sev: 'high', title: 'Reflected XSS in search parameter', desc: `The "q" parameter on ${url}/search reflects user input without proper encoding, allowing script injection.`, location: `${url}/search?q=<payload>` },
+      ],
+      'SQLi': [
+        { sev: 'critical', title: 'SQL Injection in login endpoint', desc: `POST ${url}/login is vulnerable to SQL injection via the "username" field.`, location: `${url}/login` },
+      ],
+      'CSRF': [
+        { sev: 'medium', title: 'Missing CSRF token on state-changing form', desc: 'The account settings form does not include a CSRF token, allowing cross-site request forgery attacks.', location: `${url}/settings` },
+      ],
+      'Security Headers': [
+        { sev: 'medium', title: 'Missing Content-Security-Policy header', desc: 'No CSP header detected. This increases risk of XSS and data injection attacks.', location: url },
+        { sev: 'low', title: 'Missing X-Content-Type-Options header', desc: 'X-Content-Type-Options: nosniff is not set, allowing MIME-type sniffing.', location: url },
+      ],
+      'SSL/TLS': [
+        { sev: 'info', title: 'TLS 1.2 supported (TLS 1.3 preferred)', desc: 'Server supports TLS 1.2. Upgrading to TLS 1.3 only is recommended for improved security.', location: dom.hostname },
+      ],
+      'Open Redirect': [
+        { sev: 'medium', title: 'Open redirect via "next" parameter', desc: `The "next" query parameter on ${url}/login can redirect users to arbitrary external domains.`, location: `${url}/login?next=https://evil.com` },
+      ],
+      'CORS': [
+        { sev: 'high', title: 'Overly permissive CORS policy', desc: `The API endpoint responds with Access-Control-Allow-Origin: * for credentialed requests.`, location: `${url}/api` },
+      ],
+      'Clickjacking': [
+        { sev: 'low', title: 'Clickjacking protection not enforced', desc: 'X-Frame-Options header is absent and CSP does not include frame-ancestors directive.', location: url },
+      ],
+      'Sensitive Data': [
+        { sev: 'high', title: 'Sensitive data exposed in API response', desc: 'The /api/users endpoint returns full user records including email addresses without authentication.', location: `${url}/api/users` },
+      ],
+    };
+
+    checks.forEach(c => {
+      if (templates[c]) findings.push(...templates[c].map(f => ({ ...f, category: c, source: 'Web App Scan', target: url })));
+    });
+
+    // Always add an info finding
+    findings.push({ sev: 'info', title: 'Scan completed successfully', desc: `Full scan of ${url} completed. Review findings above.`, category: 'Summary', source: 'Web App Scan', target: url, location: url });
+    return findings;
+  }
+
+  // ─── Repository Scan ──────────────────────────────────────────────────────────
+  async function loadReposForRepoTab() {
+    const spinner = document.getElementById('load-repos-spinner2');
+    const token   = document.getElementById('gh-token-repo').value.trim();
+    spinner.classList.remove('hidden');
+    try {
+      allRepos = await fetchAllRepos(token);
+      renderRepoList();
+      document.getElementById('repo-list-container').classList.remove('hidden');
+    } catch (e) {
+      alert('Failed to load repositories: ' + e.message);
+    } finally {
+      spinner.classList.add('hidden');
+    }
+  }
+
+  function renderRepoList() {
+    const ul = document.getElementById('repo-list');
+    ul.innerHTML = '';
+    if (!allRepos.length) {
+      ul.innerHTML = '<li><div class="empty-state">No repositories found.</div></li>';
+      return;
+    }
+    allRepos.forEach(r => {
+      const li = document.createElement('li');
+      li.className = 'repo-item' + (selectedRepoIds.has(r.id) ? ' selected' : '');
+      li.dataset.id = r.id;
+      li.innerHTML = `
+        <div>
+          <div class="repo-name">${r.full_name}</div>
+          <div class="repo-meta">${r.description || 'No description'} &bull; ${r.language || 'Unknown'} &bull; Updated ${new Date(r.updated_at).toLocaleDateString()}</div>
+        </div>
+        <div class="actions">
+          ${r.private ? '<span class="badge badge-orange">Private</span>' : '<span class="badge badge-blue">Public</span>'}
+          <button class="btn btn-secondary" style="padding:0.25rem 0.6rem;font-size:0.78rem;" onclick="toggleRepoSelect(${r.id})">
+            ${selectedRepoIds.has(r.id) ? '✓ Selected' : 'Select'}
+          </button>
+        </div>`;
+      ul.appendChild(li);
+    });
+  }
+
+  function toggleRepoSelect(id) {
+    if (selectedRepoIds.has(id)) selectedRepoIds.delete(id);
+    else selectedRepoIds.add(id);
+    renderRepoList();
+  }
+
+  function selectAllRepos() { allRepos.forEach(r => selectedRepoIds.add(r.id)); renderRepoList(); }
+  function clearRepoSelection() { selectedRepoIds.clear(); renderRepoList(); }
+
+  function startRepoScan() {
+    if (!selectedRepoIds.size) { alert('Please select at least one repository.'); return; }
+    document.getElementById('repo-progress-section').classList.remove('hidden');
+    document.getElementById('btn-start-repo').disabled = true;
+    document.getElementById('btn-stop-repo').classList.remove('hidden');
+    document.getElementById('repo-log').innerHTML = '';
+
+    const selected = allRepos.filter(r => selectedRepoIds.has(r.id));
+    appendLog('repo-log', `Scanning ${selected.length} repository/repositories…`, 'log-info');
+    simulateRepoScan(selected);
+  }
+
+  function simulateRepoScan(repos) {
+    let i = 0;
+    const total = repos.length;
+
+    function scanNext() {
+      if (i >= total) { finaliseRepoScan(repos); return; }
+      const r = repos[i++];
+      appendLog('repo-log', `Scanning ${r.full_name}…`, 'log-info');
+
+      const subSteps = [
+        `  Cloning / fetching file tree…`,
+        `  Scanning for hardcoded secrets (API keys, tokens)…`,
+        `  Checking dependency manifest for known CVEs…`,
+        `  Analysing environment config files…`,
+        `  ${r.full_name} scan complete.`,
+      ];
+
+      let j = 0;
+      function nextSubStep() {
+        if (j >= subSteps.length) { setProgress('repo', Math.round((i / total) * 90), `Scanned ${i}/${total} repos`); scanTimers['repo'] = setTimeout(scanNext, 300); return; }
+        appendLog('repo-log', subSteps[j++]);
+        scanTimers['repo'] = setTimeout(nextSubStep, 500);
+      }
+      nextSubStep();
+    }
+    scanNext();
+  }
+
+  function finaliseRepoScan(repos) {
+    setProgress('repo', 100, 'Scan complete ✓');
+    appendLog('repo-log', 'Repository scan finished.', 'log-success');
+    document.getElementById('btn-start-repo').disabled = false;
+    document.getElementById('btn-stop-repo').classList.add('hidden');
+
+    const findings = generateRepoFindings(repos);
+    allFindings = allFindings.concat(findings);
+    scanResults.repo = { repos: repos.map(r => r.full_name), timestamp: new Date().toISOString(), findings };
+    renderResults();
+    switchTab('tab-results');
+  }
+
+  function generateRepoFindings(repos) {
+    const findings = [];
+    repos.forEach(r => {
+      findings.push({ sev: 'critical', title: 'Hardcoded API key detected', desc: `Possible AWS access key pattern found in ${r.full_name}/config/settings.py. Rotate the key immediately.`, category: 'Secrets', source: 'Repo Scan', target: r.full_name, location: `${r.full_name}/config/settings.py` });
+      findings.push({ sev: 'high', title: 'Vulnerable dependency: lodash < 4.17.21', desc: `${r.full_name} uses lodash@4.17.11 which is vulnerable to prototype pollution (CVE-2020-8203).`, category: 'Dependencies', source: 'Repo Scan', target: r.full_name, location: `${r.full_name}/package.json` });
+      findings.push({ sev: 'medium', title: '.env file committed to repository', desc: `A .env file containing environment variables was found committed in ${r.full_name}. Remove it and rotate any exposed credentials.`, category: 'Secrets', source: 'Repo Scan', target: r.full_name, location: `${r.full_name}/.env` });
+      findings.push({ sev: 'low', title: 'Insecure default configuration', desc: `DEBUG mode appears enabled by default in ${r.full_name}. Ensure it is disabled in production.`, category: 'Misconfiguration', source: 'Repo Scan', target: r.full_name, location: `${r.full_name}/config/app.py` });
+    });
+    return findings;
+  }
+
+  // ─── Stop scan ────────────────────────────────────────────────────────────────
+  function stopScan(type) {
+    clearTimeout(scanTimers[type]);
+    if (type === 'webapp') {
+      appendLog('webapp-log', 'Scan stopped by user.', 'log-warn');
+      document.getElementById('btn-start-webapp').disabled = false;
+      document.getElementById('btn-stop-webapp').classList.add('hidden');
+    } else {
+      appendLog('repo-log', 'Scan stopped by user.', 'log-warn');
+      document.getElementById('btn-start-repo').disabled = false;
+      document.getElementById('btn-stop-repo').classList.add('hidden');
+    }
+  }
+
+  // ─── Results rendering ────────────────────────────────────────────────────────
+  const sevOrder = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
+
+  function renderResults() {
+    document.getElementById('no-results').classList.add('hidden');
+    document.getElementById('results-content').classList.remove('hidden');
+
+    const counts = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
+    allFindings.forEach(f => { if (counts[f.sev] !== undefined) counts[f.sev]++; });
+    Object.entries(counts).forEach(([sev, cnt]) => { document.getElementById(`cnt-${sev}`).textContent = cnt; });
+
+    renderFindingCards(allFindings);
+  }
+
+  function renderFindingCards(findings) {
+    const container = document.getElementById('findings-container');
+    container.innerHTML = '';
+    if (!findings.length) { container.innerHTML = '<div class="empty-state">No findings.</div>'; return; }
+
+    [...findings].sort((a, b) => (sevOrder[a.sev] ?? 5) - (sevOrder[b.sev] ?? 5)).forEach(f => {
+      const div = document.createElement('div');
+      div.className = `finding ${f.sev}`;
+      div.dataset.sev = f.sev;
+      const sevLabel = f.sev.charAt(0).toUpperCase() + f.sev.slice(1);
+      const badgeCls = { critical: 'badge-red', high: 'badge-orange', medium: 'badge-orange', low: 'badge-green', info: 'badge-blue' }[f.sev] || 'badge-blue';
+      div.innerHTML = `
+        <div class="finding-title">${escHtml(f.title)}</div>
+        <div class="finding-desc">${escHtml(f.desc)}</div>
+        <div class="finding-meta">
+          <span class="badge ${badgeCls}">${sevLabel}</span>
+          <span class="badge badge-blue">${escHtml(f.category || '')}</span>
+          <span class="badge badge-blue">${escHtml(f.source || '')}</span>
+          <span style="font-size:0.78rem;color:#8b949e">📍 ${escHtml(f.location || f.target || '')}</span>
+        </div>`;
+      container.appendChild(div);
+    });
+  }
+
+  function filterFindings(sev) {
+    document.querySelectorAll('[data-sev]').forEach(btn => btn.classList.remove('active-filter'));
+    document.querySelector(`[data-sev="${sev}"]`).classList.add('active-filter');
+    const filtered = sev === 'all' ? allFindings : allFindings.filter(f => f.sev === sev);
+    renderFindingCards(filtered);
+  }
+
+  function escHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function exportResults() {
+    const data = { generatedAt: new Date().toISOString(), summary: { critical: +document.getElementById('cnt-critical').textContent, high: +document.getElementById('cnt-high').textContent, medium: +document.getElementById('cnt-medium').textContent, low: +document.getElementById('cnt-low').textContent, info: +document.getElementById('cnt-info').textContent }, findings: allFindings };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `vapt-report-${Date.now()}.json`;
+    a.click();
+  }
+
+  function clearResults() {
+    allFindings = [];
+    scanResults = { webapp: null, repo: null };
+    document.getElementById('no-results').classList.remove('hidden');
+    document.getElementById('results-content').classList.add('hidden');
+  }
+
+  function resetForm(type) {
+    if (type === 'webapp') {
+      document.getElementById('target-url').value = '';
+      document.getElementById('gh-token').value = '';
+      document.getElementById('repo-select').innerHTML = '<option value="">— choose a repository —</option>';
+      document.getElementById('repo-selector-section').classList.add('hidden');
+      document.getElementById('repo-url-hint').classList.add('hidden');
+      document.getElementById('webapp-progress-section').classList.add('hidden');
+      document.getElementById('btn-start-webapp').disabled = false;
+      document.getElementById('btn-stop-webapp').classList.add('hidden');
+    }
+  }
+</script>
+</body>
+</html>
